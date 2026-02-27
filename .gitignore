@@ -1,0 +1,19 @@
+# Binaries
+/z80opt
+*.exe
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store
+
+# Test/build artifacts
+*.test
+*.out
+*.prof
+
+# Claude Code
+.claude/
