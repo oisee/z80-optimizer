@@ -57,9 +57,45 @@ func enumerateRec(seq []inst.Instruction, pos int, nonImm []inst.OpCode, imm8Ops
 	return true
 }
 
-// InstructionCount returns the number of distinct instructions.
+// EnumerateSequences8 generates all instruction sequences of exactly length n,
+// excluding 16-bit immediate ops. Use for brute-force target enumeration where
+// the 16-bit search space (266K^2 per length-2) is too large.
+func EnumerateSequences8(n int, fn func(seq []inst.Instruction) bool) {
+	nonImm := inst.NonImmediateOps()
+	imm8Ops := inst.ImmediateOps()
+	seq := make([]inst.Instruction, n)
+	enumerateRec8(seq, 0, nonImm, imm8Ops, fn)
+}
+
+func enumerateRec8(seq []inst.Instruction, pos int, nonImm []inst.OpCode, imm8Ops []inst.OpCode, fn func([]inst.Instruction) bool) bool {
+	if pos == len(seq) {
+		return fn(seq)
+	}
+	for _, op := range nonImm {
+		seq[pos] = inst.Instruction{Op: op, Imm: 0}
+		if !enumerateRec8(seq, pos+1, nonImm, imm8Ops, fn) {
+			return false
+		}
+	}
+	for _, op := range imm8Ops {
+		for imm := 0; imm < 256; imm++ {
+			seq[pos] = inst.Instruction{Op: op, Imm: uint16(imm)}
+			if !enumerateRec8(seq, pos+1, nonImm, imm8Ops, fn) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// InstructionCount returns the number of distinct instructions (including 16-bit).
 func InstructionCount() int {
 	return len(inst.NonImmediateOps()) + len(inst.ImmediateOps())*256 + len(inst.Imm16Ops())*65536
+}
+
+// InstructionCount8 returns the number of distinct 8-bit instructions only.
+func InstructionCount8() int {
+	return len(inst.NonImmediateOps()) + len(inst.ImmediateOps())*256
 }
 
 // EnumerateFirstOp returns all possible first instructions (for partitioning).

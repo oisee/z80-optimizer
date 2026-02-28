@@ -53,10 +53,12 @@ func Run(cfg Config) *result.Table {
 }
 
 // collectTasks generates all non-prunable target sequences of the given length.
+// Uses 8-bit-only enumeration for targets to keep the search space feasible.
+// 16-bit immediate ops are still considered as candidate replacements.
 func collectTasks(targetLen, maxCandLen int) []SearchTask {
 	var tasks []SearchTask
 
-	EnumerateSequences(targetLen, func(seq []inst.Instruction) bool {
+	EnumerateSequences8(targetLen, func(seq []inst.Instruction) bool {
 		if ShouldPrune(seq) {
 			return true
 		}

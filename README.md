@@ -8,23 +8,52 @@ Given a sequence of Z80 instructions, it exhaustively searches for a shorter equ
 
 Compilers and hand-written Z80 code often contain suboptimal patterns that are hard to spot manually. A superoptimizer finds replacements that are *provably correct* by testing every possible input state — no heuristics, no pattern databases, just brute force.
 
-Examples it finds automatically:
-
-| Original | Replacement | Savings |
-|---|---|---|
-| `AND 0FFh` | `AND A` | -1 byte, -3 cycles |
-| `OR 00h` | `OR A` | -1 byte, -3 cycles |
-| `XOR 00h` | `OR A` | -1 byte, -3 cycles |
-| `SUB A : LD A, 0` | `SUB A` | -2 bytes, -7 cycles |
-| `AND A : AND A` | `AND A` | -1 byte, -4 cycles |
-
 Note: it correctly rejects `LD A, 0 -> XOR A` because `XOR A` modifies flags while `LD A, 0` does not. Full state equivalence means no false positives.
+
+## Results
+
+First full run: **602,008 optimizations** found from 8.4M length-2 target sequences in 3h16m (34.7 billion comparisons on Apple M2).
+
+### Highlights (83 unique transformation patterns)
+
+| Original | Replacement | Savings | Insight |
+|---|---|---|---|
+| `SLA A : RR A` | `OR A` | -3B, -12T | Shift left then rotate right = identity + flag set |
+| `SRL A : RL A` | `OR A` | -3B, -12T | Shift right then rotate left = identity + flag set |
+| `AND 00h : NEG` | `SUB A` | -3B, -11T | Zero then negate = zero with subtract flags |
+| `LD A, 00h : NEG` | `SUB A` | -3B, -11T | Load zero then negate = zero with subtract flags |
+| `LD A, 00h : SLA A` | `XOR A` | -3B, -11T | Load zero then shift = zero with logic flags |
+| `ADD A, A : RR A` | `OR A` | -2B, -8T | Double then halve = identity + flag set |
+| `SRL A : SLL A` | `OR 01h` | -2B, -9T | Shift right then undoc-shift-left = set bit 0 |
+| `XOR 0FFh : NEG` | `SUB 0FFh` | -2B, -8T | Complement then negate |
+| `CPL : NEG` | `SUB 0FFh` | -1B, -5T | Complement then negate = increment with sub flags |
+| `XOR 0FFh : SBC A, 0FFh` | `NEG` | -2B, -6T | Complement + subtract-with-borrow = negate |
+| `SCF : RL A` | `SLL A` | -1B, -4T | Set carry then rotate-through-carry = undoc shift |
+| `SCF : ADC A, 00h` | `ADD A, 01h` | -1B, -4T | Set carry then add-with-carry zero = add 1 |
+| `SET 0, L : DEC HL` | `RES 0, L` | -1B, -6T | Set bit then decrement = just clear the bit |
+| `RES 0, L : INC HL` | `SET 0, L` | -1B, -6T | Clear bit then increment = just set the bit |
+| `ADD A, 80h : OR A` | `XOR 80h` | -1B, -4T | Flip sign bit with correct flag behavior |
+| `RES 7, A : AND A` | `AND 7Fh` | -1B, -5T | Clear bit 7 then flag-set = mask to 7 bits |
+| `SET 0, A : OR A` | `OR 01h` | -1B, -5T | Set bit 0 then flag-set = OR with 1 |
+| `LD A, 7Fh : SLL A` | `OR 0FFh` | -2B, -8T | Load 0x7F then undoc-shift = set all bits |
+| `ADD A, 00h : RL A` | `SLA A` | -2B, -7T | Clear carry then rotate = shift left |
+| `AND 0FFh : RR A` | `SRL A` | -2B, -7T | Clear carry via AND then rotate = shift right |
+
+### Breakdown
+
+| Bytes saved | Count |
+|---|---|
+| 3 bytes | 1,212 |
+| 2 bytes | 580,937 |
+| 1 byte | 19,859 |
+
+The full results are in [`rules.json`](rules.json) (602K rules, 102MB).
 
 ## How it works
 
 1. **Enumerate** all target instruction sequences up to length N
 2. **Fingerprint** each sequence by running it on 8 test vectors (fast reject for 99.99% of non-matches)
-3. **Exhaustive verify** candidates that pass fingerprinting, sweeping all input registers (up to 256^3 states)
+3. **Exhaustive verify** candidates that pass fingerprinting, sweeping all input registers (up to 2^24 states)
 4. **Prune** redundant candidates (NOPs, self-loads, dead writes, canonical ordering)
 
 The executor runs at **~2.7ns per instruction** on Apple M2 with zero allocations.
@@ -40,7 +69,8 @@ The executor runs at **~2.7ns per instruction** on Apple M2 with zero allocation
 | Wave 2 | +14 | 16-bit pair ops (INC/DEC rr, ADD HL, EX DE,HL) |
 | Wave 4 | +12 | LD rr,nn, ADC/SBC HL,rr (ED prefix) |
 
-Total search space: **266,359 instructions per position**.
+Target search space: **4,215 instructions per position** (8-bit ops).
+Candidate search space: **266,359 instructions per position** (including 16-bit immediates).
 
 ## Usage
 
@@ -52,8 +82,8 @@ go build -o z80opt ./cmd/z80opt
 z80opt target "AND 0xFF"
 z80opt target "SUB A : LD A, 0"
 
-# Enumerate all length-1 and length-2 optimizations
-z80opt enumerate --max-target 2 --output rules.json
+# Enumerate all length-2 optimizations
+z80opt enumerate --max-target 2 --output rules.json -v
 
 # Verify previously found rules
 z80opt verify rules.json

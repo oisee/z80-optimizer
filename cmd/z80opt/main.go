@@ -36,7 +36,8 @@ func main() {
 
 			fmt.Printf("Z80 Superoptimizer\n")
 			fmt.Printf("  Max target length: %d\n", cfg.MaxTargetLen)
-			fmt.Printf("  Instruction count: %d per position\n", search.InstructionCount())
+			fmt.Printf("  Target instructions: %d per position (8-bit only)\n", search.InstructionCount8())
+			fmt.Printf("  Candidate instructions: %d per position (incl. 16-bit)\n", search.InstructionCount())
 			fmt.Printf("  Workers: %d\n", cfg.NumWorkers)
 			fmt.Println()
 

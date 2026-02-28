@@ -15,5 +15,9 @@
 *.out
 *.prof
 
+# Search results (too large for git, attached to releases)
+rules*.json
+rules*.json.gz
+
 # Claude Code
 .claude/

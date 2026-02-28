@@ -68,9 +68,11 @@ func (wp *WorkerPool) processTask(task SearchTask, verbose bool) {
 	targetTStates := inst.SeqTStates(task.Target)
 
 	// Try candidate lengths from 1 up to maxCandLen
+	// Use 8-bit-only enumeration since 16-bit immediate instructions are 3 bytes
+	// and rarely shorter than targets at this search depth.
 	for candLen := 1; candLen <= task.MaxCandLen; candLen++ {
 		found := false
-		EnumerateSequences(candLen, func(cand []inst.Instruction) bool {
+		EnumerateSequences8(candLen, func(cand []inst.Instruction) bool {
 			wp.checked.Add(1)
 
 			// Skip if candidate is not shorter
