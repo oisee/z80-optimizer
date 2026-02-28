@@ -110,6 +110,23 @@ Flag behavior is ported from [remogatto/z80](https://github.com/remogatto/z80), 
 
 The exhaustive verifier tests all 2^8 to 2^24 input combinations depending on which registers a sequence reads.
 
+## What's next
+
+The brute-force approach hits a wall at length 3+ (74.8 billion targets). Two paths forward:
+
+1. **GPU brute force** (CUDA) — port the Z80 executor to a GPU kernel. Our executor is an ideal GPU workload: fixed-size state (10 bytes), no branching, no memory access, embarrassingly parallel. Estimated: length-3 complete search in **~20 minutes** on 2× RTX 4060 Ti (vs. months on CPU).
+
+2. **STOKE-style stochastic search** ([Schkufza et al. 2013](https://theory.stanford.edu/~aiken/publications/papers/asplos13.pdf)) — MCMC random mutations for length 5-10+ sequences. Trades completeness for scalability: can't guarantee the optimum, but finds non-obvious replacements that brute force can't reach.
+
+See [docs/NEXT.md](docs/NEXT.md) for the full roadmap, architecture diagrams, and references to the five generations of superoptimizer research.
+
+## References
+
+- [Massalin 1987](https://dl.acm.org/doi/10.1145/36177.36194) — *Superoptimizer: A Look at the Smallest Program*. The original brute-force approach.
+- [Bansal & Aiken 2006](https://theory.stanford.edu/~aiken/publications/papers/asplos06.pdf) — *Automatic Generation of Peephole Superoptimizers*. Brute-force → compiler rules.
+- [STOKE 2013](https://theory.stanford.edu/~aiken/publications/papers/asplos13.pdf) — *Stochastic Superoptimization*. MCMC search, outperforms `gcc -O3`.
+- [Lens 2016](https://mangpo.net/papers/lens-asplos16.pdf) — *Scaling up Superoptimization*. Decomposition + SMT solving.
+
 ## License
 
 MIT
