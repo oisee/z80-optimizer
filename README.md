@@ -118,7 +118,7 @@ The brute-force approach hits a wall at length 3+ (74.8 billion targets). Two pa
 
 2. **STOKE-style stochastic search** ([Schkufza et al. 2013](https://theory.stanford.edu/~aiken/publications/papers/asplos13.pdf)) — MCMC random mutations for length 5-10+ sequences. Trades completeness for scalability: can't guarantee the optimum, but finds non-obvious replacements that brute force can't reach.
 
-See [docs/NEXT.md](docs/NEXT.md) for the full roadmap, architecture diagrams, and references to the five generations of superoptimizer research.
+See [docs/NEXT.md](docs/NEXT.md) for the full roadmap, architecture diagrams, and references to the five generations of superoptimizer research. See [docs/GenPlan.md](docs/GenPlan.md) for the migration/implementation plan.
 
 ## References
 

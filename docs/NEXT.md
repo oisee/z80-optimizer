@@ -200,6 +200,110 @@ The ultimate architecture combines both:
 └─────────────────────────────────────────────────────────────┘
 ```
 
+## Our Plan: Engine 4 — Reordering Optimizer
+
+The three search engines above **discover** rules. But rules alone aren't enough — real code has unrelated instructions interleaved between optimizable pairs:
+
+```z80
+AND 0FFh      ; ← part 1 of "AND 0FFh : AND A → AND A"
+INC H         ; unrelated — doesn't touch A or F
+LD C, 7       ; unrelated — doesn't touch A or F
+AND A         ; ← part 2, but separated by 2 instructions
+```
+
+A naive pattern matcher won't find this. We need to **prove** that the intervening instructions are independent, reorder to expose the pattern, and apply the rule.
+
+We already have the primitives: `opReads()`, `opWrites()`, and `areIndependent()` in `pkg/search/pruner.go`. These track exact register-level dependencies for all 406 opcodes.
+
+### Dependency DAG
+
+Given a basic block `[I₀, I₁, I₂, ..., Iₙ]`, build a DAG:
+
+```
+Edge Iⱼ → Iₖ (j < k) exists if any of:
+  - RAW: opWrites(Iⱼ) & opReads(Iₖ) ≠ 0   (read-after-write)
+  - WAW: opWrites(Iⱼ) & opWrites(Iₖ) ≠ 0   (write-after-write)
+  - WAR: opReads(Iⱼ)  & opWrites(Iₖ) ≠ 0   (write-after-read)
+```
+
+If there's no path between two instructions in the DAG, they can be freely reordered.
+
+### Pattern Matching with Reordering
+
+Don't enumerate all valid orderings (exponential in the number of independent instructions). Instead, for each known rule pattern `[P₀, P₁, ..., Pₘ]`:
+
+```
+1. Scan the basic block for instruction matching P₀
+2. From there, scan forward for instruction matching P₁
+   that has no dependency conflict with instructions between them
+3. Continue for P₂, P₃, ...
+4. If all parts found with no conflicts → rule applies
+5. Bubble the matched instructions adjacent, apply replacement
+```
+
+This is O(n² × rules) per basic block — fast enough for real use.
+
+### Multi-Pass Fixpoint
+
+One optimization can expose another:
+
+```
+Pass 1:  AND 0FFh : INC H : AND A  →  INC H : AND A     (rule: AND 0FFh : AND A → AND A)
+Pass 2:  INC H : AND A : OR 00h   →  INC H : AND A      (rule: AND A : OR 00h → AND A... if it exists)
+Pass 3:  no more matches → done
+```
+
+```
+repeat:
+  changed = false
+  for each window (i, j) in basic block:
+    if can_reorder_to_match(block[i:j+1], some_rule):
+      apply rule
+      changed = true
+      break  // restart scan from beginning
+until !changed
+```
+
+### Architecture
+
+```
+┌───────────────────────────────────────────────────────────┐
+│                  Reordering Optimizer                      │
+│                                                           │
+│  Input: basic block (list of Z80 instructions)            │
+│  Rules: loaded from rules.json (602K+ rules)              │
+│                                                           │
+│  ┌─────────────┐   ┌──────────────┐   ┌───────────────┐  │
+│  │  Dependency  │   │   Pattern    │   │   Reorder &   │  │
+│  │  DAG Builder │──→│   Matcher    │──→│   Apply Rule  │  │
+│  │  (opReads/   │   │ (scan with   │   │  (bubble +    │  │
+│  │   opWrites)  │   │  dep check)  │   │   replace)    │  │
+│  └─────────────┘   └──────────────┘   └───────┬───────┘  │
+│                                                │          │
+│                         ┌──────────────────────┘          │
+│                         ▼                                 │
+│                    changed? ──yes──→ restart               │
+│                         │                                 │
+│                         no                                │
+│                         ▼                                 │
+│                    Output: optimized basic block           │
+└───────────────────────────────────────────────────────────┘
+```
+
+### Implementation
+
+```
+New package: pkg/reorder/
+  dag.go        — dependency DAG construction from opReads/opWrites
+  matcher.go    — pattern matching with reordering awareness
+  optimizer.go  — multi-pass fixpoint optimizer
+  rules.go      — rule loading from rules.json
+
+New CLI command: z80opt optimize --input program.asm
+```
+
+This is the **application layer** that turns our brute-force results into a practical tool. Without it, our 602K rules are a research artifact. With it, they're a compiler pass.
+
 ## Implementation Roadmap
 
 ### Phase 1: STOKE on CPU
