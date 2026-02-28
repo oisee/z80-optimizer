@@ -5,6 +5,7 @@ import (
 	"runtime"
 	"sync"
 	"sync/atomic"
+	"time"
 
 	"github.com/oisee/z80-optimizer/pkg/inst"
 	"github.com/oisee/z80-optimizer/pkg/result"
@@ -17,6 +18,7 @@ type WorkerPool struct {
 	mu         sync.Mutex
 	checked    atomic.Int64
 	found      atomic.Int64
+	completed  atomic.Int64 // completed tasks
 }
 
 // NewWorkerPool creates a pool with the given number of workers.
@@ -43,11 +45,55 @@ func (wp *WorkerPool) Stats() (checked, found int64) {
 
 // RunTasks distributes search tasks across workers.
 func (wp *WorkerPool) RunTasks(tasks []SearchTask, verbose bool) {
+	totalTasks := int64(len(tasks))
+
 	ch := make(chan SearchTask, len(tasks))
 	for _, t := range tasks {
 		ch <- t
 	}
 	close(ch)
+
+	// Progress reporter goroutine
+	done := make(chan struct{})
+	startTime := time.Now()
+	go func() {
+		ticker := time.NewTicker(10 * time.Second)
+		defer ticker.Stop()
+		var lastChecked int64
+		lastTime := startTime
+		for {
+			select {
+			case <-done:
+				return
+			case <-ticker.C:
+				now := time.Now()
+				comp := wp.completed.Load()
+				checked := wp.checked.Load()
+				found := wp.found.Load()
+				elapsed := now.Sub(startTime)
+
+				// Rate
+				dt := now.Sub(lastTime).Seconds()
+				dc := checked - lastChecked
+				rate := float64(dc) / dt
+				lastChecked = checked
+				lastTime = now
+
+				// ETA
+				var eta string
+				if comp > 0 {
+					remaining := time.Duration(float64(elapsed) * float64(totalTasks-comp) / float64(comp))
+					eta = remaining.Round(time.Second).String()
+				} else {
+					eta = "..."
+				}
+
+				pct := float64(comp) / float64(totalTasks) * 100
+				fmt.Printf("  [%s] %d/%d targets (%.1f%%) | %d found | %.1fM checks/s | ETA %s\n",
+					elapsed.Round(time.Second), comp, totalTasks, pct, found, rate/1e6, eta)
+			}
+		}
+	}()
 
 	var wg sync.WaitGroup
 	for i := 0; i < wp.NumWorkers; i++ {
@@ -56,10 +102,21 @@ func (wp *WorkerPool) RunTasks(tasks []SearchTask, verbose bool) {
 			defer wg.Done()
 			for task := range ch {
 				wp.processTask(task, verbose)
+				wp.completed.Add(1)
 			}
 		}()
 	}
 	wg.Wait()
+
+	close(done)
+	// Final status line
+	elapsed := time.Since(startTime)
+	comp := wp.completed.Load()
+	checked := wp.checked.Load()
+	found := wp.found.Load()
+	rate := float64(checked) / elapsed.Seconds()
+	fmt.Printf("  [%s] %d/%d targets (100.0%%) | %d found | %.1fM checks/s avg | DONE\n",
+		elapsed.Round(time.Second), comp, totalTasks, found, rate/1e6)
 }
 
 // processTask finds the shortest replacement for a target sequence.

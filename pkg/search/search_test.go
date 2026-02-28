@@ -1,6 +1,7 @@
 package search
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/oisee/z80-optimizer/pkg/inst"
@@ -283,6 +284,39 @@ func TestSearchImmediateSubset(t *testing.T) {
 	t.Logf("Found %d optimizations from immediate instructions", found)
 	if found == 0 {
 		t.Error("expected to find at least some optimizations")
+	}
+}
+
+// BenchmarkParallelSearch benchmarks the full search pipeline with different worker counts.
+// Uses a mix of cheap (LD) and expensive (ALU) targets for realistic workload.
+func BenchmarkParallelSearch(b *testing.B) {
+	// Collect targets: skip first 200K (cheap LDs), take 2000 from the expensive ALU region
+	const skipTargets = 200000
+	const maxTargets = 2000
+	var tasks []SearchTask
+	skipped := 0
+	EnumerateSequences8(2, func(seq []inst.Instruction) bool {
+		if ShouldPrune(seq) {
+			return true
+		}
+		skipped++
+		if skipped <= skipTargets {
+			return true
+		}
+		seqCopy := make([]inst.Instruction, len(seq))
+		copy(seqCopy, seq)
+		tasks = append(tasks, SearchTask{Target: seqCopy, MaxCandLen: 1})
+		return len(tasks) < maxTargets
+	})
+	b.Logf("Collected %d tasks (skipped first %d)", len(tasks), skipTargets)
+
+	for _, workers := range []int{1, 2, 4, 8, 10, 12, 16, 24, 32} {
+		b.Run(fmt.Sprintf("workers-%02d", workers), func(b *testing.B) {
+			for i := 0; i < b.N; i++ {
+				pool := NewWorkerPool(workers)
+				pool.RunTasks(tasks, false)
+			}
+		})
 	}
 }
 
