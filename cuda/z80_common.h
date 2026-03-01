@@ -70,14 +70,14 @@ struct Z80State {
 #define OP_COUNT         394
 
 // ============================================================
-// Fingerprint constants
+// Fingerprint constants (QuickCheck — 8 vectors)
 // ============================================================
 #define FP_SIZE     10
 #define NUM_VECTORS 8
 #define FP_LEN      (FP_SIZE * NUM_VECTORS)  // 80
 
 // ============================================================
-// Test vectors (8 fixed inputs, same as Go TestVectors)
+// Test vectors (8 fixed inputs for QuickCheck, same as Go TestVectors)
 // ============================================================
 static const Z80State h_test_vectors[8] = {
     {{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}, 0x0000},
@@ -354,6 +354,68 @@ static void h_fingerprint(const uint16_t* ops, const uint16_t* imms, int n, uint
     }
 }
 
+// ============================================================
+// MidCheck vectors (24 additional test vectors for Stage 2)
+// Designed to cover edge cases the 8 QuickCheck vectors miss:
+// half-carry boundaries, overflow/sign, DAA, BIT/SET/RES, etc.
+// ============================================================
+#define MID_VECTORS 24
+#define MID_FP_SIZE 10
+#define MID_FP_LEN  (MID_FP_SIZE * MID_VECTORS)  // 240
+
+static const Z80State h_mid_vectors[MID_VECTORS] = {
+    // Half-carry boundary (0x0F/0x10)
+    {{0x0F, 0x00, 0x10, 0x0F, 0x10, 0x0F, 0x10, 0x0F}, 0x0F10},
+    {{0x10, 0x01, 0x0F, 0x10, 0x0F, 0x10, 0x0F, 0x10}, 0x100F},
+    // Overflow/sign boundary (0x7E/0x81)
+    {{0x7E, 0x00, 0x81, 0x7E, 0x81, 0x7E, 0x81, 0x7E}, 0x7E81},
+    {{0x81, 0x01, 0x7E, 0x81, 0x7E, 0x81, 0x7E, 0x81}, 0x817E},
+    // Near-zero / near-max
+    {{0x01, 0x01, 0x02, 0x01, 0x02, 0x01, 0x02, 0x01}, 0x0001},
+    {{0xFE, 0x00, 0xFD, 0xFE, 0xFD, 0xFE, 0xFD, 0xFE}, 0xFFFE},
+    // Single-bit patterns (BIT/SET/RES sensitivity)
+    {{0x01, 0x00, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40}, 0x0102},
+    {{0xFE, 0x01, 0xFD, 0xFB, 0xF7, 0xEF, 0xDF, 0xBF}, 0xFEFD},
+    // DAA-relevant patterns
+    {{0x09, 0x00, 0x99, 0x09, 0x90, 0x19, 0x91, 0x09}, 0x0999},
+    {{0x99, 0x01, 0x09, 0x90, 0x99, 0x90, 0x09, 0x99}, 0x9909},
+    // Nibble boundary patterns
+    {{0x1F, 0x00, 0x20, 0x3F, 0x40, 0xBF, 0xC0, 0xEF}, 0x1F20},
+    {{0xE0, 0x01, 0xDF, 0xC0, 0xBF, 0x40, 0x3F, 0x10}, 0xE0DF},
+    // Representative value cross patterns
+    {{0x03, 0x00, 0x07, 0x11, 0x33, 0x77, 0xBB, 0xDD}, 0x0307},
+    {{0xEE, 0x01, 0xDD, 0xBB, 0x77, 0x33, 0x11, 0x07}, 0xEEDD},
+    // Shifted powers of 2
+    {{0x04, 0x00, 0x08, 0x10, 0x20, 0x40, 0x80, 0x01}, 0x0408},
+    {{0x80, 0x01, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20}, 0x8001},
+    // Alternating with different periods
+    {{0x33, 0x00, 0xCC, 0x33, 0xCC, 0x33, 0xCC, 0x33}, 0x33CC},
+    {{0xCC, 0x01, 0x33, 0xCC, 0x33, 0xCC, 0x33, 0xCC}, 0xCC33},
+    // Near 0xC0 boundary (carry/borrow edge)
+    {{0xBF, 0x00, 0xC0, 0xBF, 0xC0, 0xBF, 0xC0, 0xBF}, 0xBFC0},
+    {{0xC0, 0x01, 0xBF, 0xC0, 0xBF, 0xC0, 0xBF, 0xC0}, 0xC0BF},
+    // Random-looking structured patterns
+    {{0xD5, 0x00, 0xAA, 0x55, 0x33, 0xDD, 0x77, 0xEE}, 0xD5AA},
+    {{0x2A, 0x01, 0x55, 0xAA, 0xCC, 0x22, 0x88, 0x11}, 0x2A55},
+    // SP-sensitive edge cases
+    {{0x40, 0x00, 0x80, 0x01, 0xFE, 0x7F, 0x20, 0xDF}, 0x0100},
+    {{0xBF, 0x01, 0x7F, 0xFE, 0x01, 0x80, 0xDF, 0x20}, 0xFEFF},
+};
+
+// Compute MidCheck fingerprint for a sequence (24 vectors).
+static void h_mid_fingerprint(const uint16_t* ops, const uint16_t* imms, int n, uint8_t mfp[MID_FP_LEN]) {
+    for (int v = 0; v < MID_VECTORS; v++) {
+        Z80State s = h_mid_vectors[v];
+        h_exec_seq(s, ops, imms, n);
+        int off = v * MID_FP_SIZE;
+        mfp[off+0] = s.r[REG_A]; mfp[off+1] = s.r[REG_F];
+        mfp[off+2] = s.r[REG_B]; mfp[off+3] = s.r[REG_C];
+        mfp[off+4] = s.r[REG_D]; mfp[off+5] = s.r[REG_E];
+        mfp[off+6] = s.r[REG_H]; mfp[off+7] = s.r[REG_L];
+        mfp[off+8] = (uint8_t)(s.sp >> 8); mfp[off+9] = (uint8_t)s.sp;
+    }
+}
+
 // Compare states, optionally masking dead flags.
 static bool h_states_equal(const Z80State &a, const Z80State &b, uint8_t dead_flags) {
     return a.r[REG_A] == b.r[REG_A] &&
@@ -362,4 +424,20 @@ static bool h_states_equal(const Z80State &a, const Z80State &b, uint8_t dead_fl
            a.r[REG_D] == b.r[REG_D] && a.r[REG_E] == b.r[REG_E] &&
            a.r[REG_H] == b.r[REG_H] && a.r[REG_L] == b.r[REG_L] &&
            a.sp == b.sp;
+}
+
+// MidCheck: run target and candidate on all 24 MidCheck vectors, compare outputs.
+// Returns true if they match on all vectors (candidate is likely equivalent).
+static bool h_midcheck(
+    const uint16_t* t_ops, const uint16_t* t_imms, int t_n,
+    const uint16_t* c_ops, const uint16_t* c_imms, int c_n,
+    uint8_t dead_flags
+) {
+    for (int v = 0; v < MID_VECTORS; v++) {
+        Z80State st = h_mid_vectors[v], sc = h_mid_vectors[v];
+        h_exec_seq(st, t_ops, t_imms, t_n);
+        h_exec_seq(sc, c_ops, c_imms, c_n);
+        if (!h_states_equal(st, sc, dead_flags)) return false;
+    }
+    return true;
 }

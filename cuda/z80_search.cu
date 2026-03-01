@@ -524,7 +524,8 @@ static void set_reg_by_offset(Z80State &s, int offset, uint8_t val) {
     }
 }
 
-static bool exhaustive_check(
+// CPU ExhaustiveCheck — kept for reference/verification fallback.
+static bool __attribute__((unused)) exhaustive_check(
     const uint16_t* t_ops, const uint16_t* t_imms, int t_n,
     const uint16_t* c_ops, const uint16_t* c_imms, int c_n,
     uint8_t dead_flags
@@ -540,11 +541,6 @@ static bool exhaustive_check(
     if (reads & RMASK_H) extra[nextra++] = 6;
     if (reads & RMASK_L) extra[nextra++] = 7;
     bool sweep_sp = (reads & RMASK_SP) != 0;
-
-    // Full sweep for 0-2 extra regs (no SP)
-    bool use_full = (nextra <= 2 && !sweep_sp);
-    int nvals = use_full ? 256 : 32;
-    const uint8_t* vals = use_full ? nullptr : rep_values;
 
     for (int a = 0; a < 256; a++) {
         for (int carry = 0; carry <= 1; carry++) {
@@ -620,6 +616,180 @@ static bool exhaustive_check(
 }
 
 // ============================================================
+// GPU ExhaustiveCheck kernel
+// ============================================================
+// Each thread block verifies one (target, candidate) pair.
+// Thread i handles A=i (256 threads), each testing both carry values
+// and looping over extra registers.
+// Uses shared memory flag for early termination.
+
+#define EXHAUST_BLOCK 256
+#define MAX_SEQ_LEN 4
+#define EXHAUST_BATCH 4096
+
+struct ExhaustPair {
+    uint32_t target[MAX_SEQ_LEN];     // packed (op | imm<<16)
+    uint32_t candidate[MAX_SEQ_LEN];
+    uint16_t target_len;
+    uint16_t candidate_len;
+    uint16_t reads;                   // combined regsRead bitmask
+    uint16_t pad;
+};
+
+// Representative values for reduced sweep (matches CPU)
+__device__ __constant__ uint8_t d_rep_values[32] = {
+    0x00, 0x01, 0x02, 0x0F, 0x10, 0x1F, 0x20, 0x3F,
+    0x40, 0x55, 0x7E, 0x7F, 0x80, 0x81, 0xAA, 0xBF,
+    0xC0, 0xD5, 0xE0, 0xEF, 0xF0, 0xF7, 0xFE, 0xFF,
+    0x03, 0x07, 0x11, 0x33, 0x77, 0xBB, 0xDD, 0xEE,
+};
+
+__device__ __constant__ uint16_t d_rep_sp[16] = {
+    0x0000, 0x0001, 0x00FF, 0x0100, 0x7FFE, 0x7FFF, 0x8000, 0x8001,
+    0xFFFE, 0xFFFF, 0x1234, 0x5678, 0xABCD, 0xDEAD, 0xBEEF, 0xCAFE,
+};
+
+__device__ void d_exec_seq(Z80State &s, const uint32_t* packed, int n) {
+    for (int i = 0; i < n; i++) {
+        exec_instruction(s, (uint16_t)(packed[i] & 0xFFFF), (uint16_t)(packed[i] >> 16));
+    }
+}
+
+__device__ void d_set_reg(Z80State &s, int offset, uint8_t val) {
+    switch (offset) {
+        case 2: s.r[REG_B] = val; break; case 3: s.r[REG_C] = val; break;
+        case 4: s.r[REG_D] = val; break; case 5: s.r[REG_E] = val; break;
+        case 6: s.r[REG_H] = val; break; case 7: s.r[REG_L] = val; break;
+    }
+}
+
+__device__ bool d_states_equal(const Z80State &a, const Z80State &b, uint8_t dead_flags) {
+    return a.r[REG_A] == b.r[REG_A] &&
+           ((a.r[REG_F] & ~dead_flags) == (b.r[REG_F] & ~dead_flags)) &&
+           a.r[REG_B] == b.r[REG_B] && a.r[REG_C] == b.r[REG_C] &&
+           a.r[REG_D] == b.r[REG_D] && a.r[REG_E] == b.r[REG_E] &&
+           a.r[REG_H] == b.r[REG_H] && a.r[REG_L] == b.r[REG_L] &&
+           a.sp == b.sp;
+}
+
+__global__ void exhaustive_kernel(
+    const ExhaustPair* __restrict__ pairs,
+    uint32_t* __restrict__ results,    // 1 = equivalent, 0 = not
+    uint32_t num_pairs,
+    uint32_t dead_flags
+) {
+    uint32_t pair_idx = blockIdx.x;
+    if (pair_idx >= num_pairs) return;
+
+    __shared__ uint32_t rejected;
+    if (threadIdx.x == 0) rejected = 0;
+    __syncthreads();
+
+    const ExhaustPair &p = pairs[pair_idx];
+    uint8_t a_val = (uint8_t)threadIdx.x;
+    uint8_t df = (uint8_t)dead_flags;
+
+    // Determine extra registers from reads bitmask
+    int extra[6]; int nextra = 0;
+    if (p.reads & RMASK_B) extra[nextra++] = 2;
+    if (p.reads & RMASK_C) extra[nextra++] = 3;
+    if (p.reads & RMASK_D) extra[nextra++] = 4;
+    if (p.reads & RMASK_E) extra[nextra++] = 5;
+    if (p.reads & RMASK_H) extra[nextra++] = 6;
+    if (p.reads & RMASK_L) extra[nextra++] = 7;
+    bool sweep_sp = (p.reads & RMASK_SP) != 0;
+    bool use_full = (nextra <= 2 && !sweep_sp);
+    int nvals = use_full ? 256 : 32;
+
+    for (int carry = 0; carry <= 1 && !rejected; carry++) {
+        if (nextra == 0 && !sweep_sp) {
+            // Simple case: just A + carry
+            Z80State st = {}, sc = {};
+            st.r[REG_A] = a_val; st.r[REG_F] = (uint8_t)carry;
+            sc = st;
+            d_exec_seq(st, p.target, p.target_len);
+            d_exec_seq(sc, p.candidate, p.candidate_len);
+            if (!d_states_equal(st, sc, df)) atomicOr(&rejected, 1);
+        } else if (nextra == 1 && !sweep_sp) {
+            for (int r = 0; r < nvals && !rejected; r++) {
+                Z80State st = {}, sc = {};
+                st.r[REG_A] = a_val; st.r[REG_F] = (uint8_t)carry;
+                uint8_t rv = use_full ? (uint8_t)r : d_rep_values[r];
+                d_set_reg(st, extra[0], rv);
+                sc = st;
+                d_exec_seq(st, p.target, p.target_len);
+                d_exec_seq(sc, p.candidate, p.candidate_len);
+                if (!d_states_equal(st, sc, df)) atomicOr(&rejected, 1);
+            }
+        } else if (nextra == 2 && !sweep_sp) {
+            for (int r1 = 0; r1 < nvals && !rejected; r1++) {
+                for (int r2 = 0; r2 < nvals && !rejected; r2++) {
+                    Z80State st = {}, sc = {};
+                    st.r[REG_A] = a_val; st.r[REG_F] = (uint8_t)carry;
+                    uint8_t rv1 = use_full ? (uint8_t)r1 : d_rep_values[r1];
+                    uint8_t rv2 = use_full ? (uint8_t)r2 : d_rep_values[r2];
+                    d_set_reg(st, extra[0], rv1);
+                    d_set_reg(st, extra[1], rv2);
+                    sc = st;
+                    d_exec_seq(st, p.target, p.target_len);
+                    d_exec_seq(sc, p.candidate, p.candidate_len);
+                    if (!d_states_equal(st, sc, df)) atomicOr(&rejected, 1);
+                }
+            }
+        } else {
+            // 3+ extra regs or SP: reduced sweep with nested loops
+            // Up to 6 extra regs, each with 32 values
+            // Thread handles its A value, loops over all combinations
+            // Stack-based iteration to avoid deep recursion
+            int idx[6] = {};
+            bool done = false;
+            while (!done && !rejected) {
+                Z80State st = {}, sc = {};
+                st.r[REG_A] = a_val; st.r[REG_F] = (uint8_t)carry;
+                for (int ri = 0; ri < nextra; ri++)
+                    d_set_reg(st, extra[ri], d_rep_values[idx[ri]]);
+                if (sweep_sp) {
+                    for (int si = 0; si < 16 && !rejected; si++) {
+                        Z80State st2 = st; st2.sp = d_rep_sp[si];
+                        sc = st2;
+                        d_exec_seq(st2, p.target, p.target_len);
+                        d_exec_seq(sc, p.candidate, p.candidate_len);
+                        if (!d_states_equal(st2, sc, df)) atomicOr(&rejected, 1);
+                    }
+                } else {
+                    sc = st;
+                    d_exec_seq(st, p.target, p.target_len);
+                    d_exec_seq(sc, p.candidate, p.candidate_len);
+                    if (!d_states_equal(st, sc, df)) atomicOr(&rejected, 1);
+                }
+                // Increment index array (odometer style)
+                int k = nextra - 1;
+                while (k >= 0) {
+                    idx[k]++;
+                    if (idx[k] < 32) break;
+                    idx[k] = 0;
+                    k--;
+                }
+                if (k < 0) done = true;
+            }
+        }
+    }
+
+    __syncthreads();
+    if (threadIdx.x == 0) {
+        results[pair_idx] = rejected ? 0u : 1u;
+    }
+}
+
+// Host-side tracking for GPU ExhaustiveCheck results
+struct PairInfo {
+    uint16_t t_ops[MAX_SEQ_LEN], t_imms[MAX_SEQ_LEN];
+    uint16_t c_ops[MAX_SEQ_LEN], c_imms[MAX_SEQ_LEN];
+    int t_len, c_len;
+    int target_bytes, cand_bytes;
+};
+
+// ============================================================
 // Instruction enumeration
 // ============================================================
 struct Inst {
@@ -648,15 +818,45 @@ static std::vector<Inst> enumerate_instructions_8() {
 int main(int argc, char** argv) {
     int max_target = 2;
     uint8_t dead_flags = 0;
+    int gpu_id = 0;
+    const char* output_file = NULL;
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--max-target") == 0 && i+1 < argc) max_target = atoi(argv[++i]);
         else if (strcmp(argv[i], "--dead-flags") == 0 && i+1 < argc) dead_flags = (uint8_t)strtoul(argv[++i], NULL, 0);
+        else if (strcmp(argv[i], "--gpu-id") == 0 && i+1 < argc) gpu_id = atoi(argv[++i]);
+        else if ((strcmp(argv[i], "--output") == 0 || strcmp(argv[i], "-o") == 0) && i+1 < argc) output_file = argv[++i];
         else if (strcmp(argv[i], "--help") == 0) {
-            fprintf(stderr, "Usage: z80search [--max-target N] [--dead-flags 0xNN]\n");
-            fprintf(stderr, "  Output: JSONL to stdout, progress to stderr\n");
+            fprintf(stderr, "Usage: z80search [--max-target N] [--dead-flags 0xNN] [--gpu-id N] [--output FILE]\n");
+            fprintf(stderr, "  --max-target N    Max target sequence length (default: 2)\n");
+            fprintf(stderr, "  --dead-flags 0xNN Flag mask for dead flags\n");
+            fprintf(stderr, "  --gpu-id N        CUDA device ID (default: 0)\n");
+            fprintf(stderr, "  --output FILE     Write JSONL results to FILE (default: stdout)\n");
             return 0;
         }
+    }
+
+    // Select GPU device
+    cudaSetDevice(gpu_id);
+    int device_count = 0;
+    cudaGetDeviceCount(&device_count);
+    if (gpu_id >= device_count) {
+        fprintf(stderr, "Error: GPU %d not found (%d devices available)\n", gpu_id, device_count);
+        return 1;
+    }
+    cudaDeviceProp prop;
+    cudaGetDeviceProperties(&prop, gpu_id);
+    fprintf(stderr, "Using GPU %d: %s\n", gpu_id, prop.name);
+
+    // Open output file
+    FILE* outf = stdout;
+    if (output_file) {
+        outf = fopen(output_file, "w");
+        if (!outf) {
+            fprintf(stderr, "Error: cannot open output file '%s'\n", output_file);
+            return 1;
+        }
+        fprintf(stderr, "Output: %s\n", output_file);
     }
 
     init_tables();
@@ -686,11 +886,103 @@ int main(int argc, char** argv) {
     int blockSize = 256;
     int gridSize = (cand_count + blockSize - 1) / blockSize;
 
+    // GPU ExhaustiveCheck buffers
+    ExhaustPair* h_exhaust_buf = (ExhaustPair*)malloc(EXHAUST_BATCH * sizeof(ExhaustPair));
+    PairInfo* h_pair_info = (PairInfo*)malloc(EXHAUST_BATCH * sizeof(PairInfo));
+    uint32_t* h_exhaust_results = (uint32_t*)malloc(EXHAUST_BATCH * sizeof(uint32_t));
+    ExhaustPair* d_exhaust_buf;
+    uint32_t* d_exhaust_results;
+    cudaMalloc(&d_exhaust_buf, EXHAUST_BATCH * sizeof(ExhaustPair));
+    cudaMalloc(&d_exhaust_results, EXHAUST_BATCH * sizeof(uint32_t));
+    int exhaust_count = 0;
+
     uint64_t total_found = 0;
     uint64_t total_targets = 0;
     uint64_t total_gpu_hits = 0;
-    uint64_t total_cpu_checks = 0;
+    uint64_t total_mid_passed = 0;
+    uint64_t total_mid_rejected = 0;
+    uint64_t total_gpu_exhaust = 0;
     time_t start_time = time(NULL);
+
+    // Flush GPU ExhaustiveCheck batch: dispatch kernel, output results
+    auto flush_exhaust = [&]() {
+        if (exhaust_count == 0) return;
+
+        cudaMemcpy(d_exhaust_buf, h_exhaust_buf, exhaust_count * sizeof(ExhaustPair), cudaMemcpyHostToDevice);
+        exhaustive_kernel<<<exhaust_count, EXHAUST_BLOCK>>>(
+            d_exhaust_buf, d_exhaust_results, (uint32_t)exhaust_count, dead_flags);
+        cudaDeviceSynchronize();
+        cudaMemcpy(h_exhaust_results, d_exhaust_results, exhaust_count * sizeof(uint32_t), cudaMemcpyDeviceToHost);
+
+        total_gpu_exhaust += exhaust_count;
+
+        for (int ei = 0; ei < exhaust_count; ei++) {
+            if (!h_exhaust_results[ei]) continue;  // not equivalent
+
+            PairInfo &pi = h_pair_info[ei];
+            total_found++;
+
+            char src_buf[192], repl_buf[128];
+            char bufs[MAX_SEQ_LEN][64], rbuf[MAX_SEQ_LEN][64];
+            src_buf[0] = '\0';
+            for (int j = 0; j < pi.t_len; j++) {
+                disasm(pi.t_ops[j], pi.t_imms[j], bufs[j], sizeof(bufs[j]));
+                if (j > 0) strcat(src_buf, " : ");
+                strcat(src_buf, bufs[j]);
+            }
+            repl_buf[0] = '\0';
+            for (int j = 0; j < pi.c_len; j++) {
+                disasm(pi.c_ops[j], pi.c_imms[j], rbuf[j], sizeof(rbuf[j]));
+                if (j > 0) strcat(repl_buf, " : ");
+                strcat(repl_buf, rbuf[j]);
+            }
+
+            int bytes_saved = pi.target_bytes - pi.cand_bytes;
+            int t_cycles = 0, c_cycles = 0;
+            for (int j = 0; j < pi.t_len; j++) t_cycles += tstates(pi.t_ops[j]);
+            for (int j = 0; j < pi.c_len; j++) c_cycles += tstates(pi.c_ops[j]);
+
+            fprintf(outf, "{\"source_asm\":\"%s\",\"replacement_asm\":\"%s\","
+                   "\"source_bytes\":%d,\"replacement_bytes\":%d,"
+                   "\"bytes_saved\":%d,\"cycles_saved\":%d",
+                   src_buf, repl_buf, pi.target_bytes, pi.cand_bytes,
+                   bytes_saved, t_cycles - c_cycles);
+            if (dead_flags) fprintf(outf, ",\"dead_flags\":\"0x%02X\"", dead_flags);
+            fprintf(outf, "}\n");
+            fflush(outf);
+        }
+        exhaust_count = 0;
+    };
+
+    // Add a MidCheck-passing pair to the GPU ExhaustiveCheck batch
+    auto add_exhaust_pair = [&](
+        const uint16_t* t_ops, const uint16_t* t_imms, int t_n,
+        const uint16_t* c_ops, const uint16_t* c_imms, int c_n,
+        int target_bytes, int cand_bytes
+    ) {
+        ExhaustPair &ep = h_exhaust_buf[exhaust_count];
+        for (int j = 0; j < t_n; j++)
+            ep.target[j] = (uint32_t)t_ops[j] | ((uint32_t)t_imms[j] << 16);
+        for (int j = 0; j < c_n; j++)
+            ep.candidate[j] = (uint32_t)c_ops[j] | ((uint32_t)c_imms[j] << 16);
+        ep.target_len = (uint16_t)t_n;
+        ep.candidate_len = (uint16_t)c_n;
+        // Compute combined reads
+        uint16_t reads = 0;
+        for (int j = 0; j < t_n; j++) reads |= (uint16_t)op_reads(t_ops[j]);
+        for (int j = 0; j < c_n; j++) reads |= (uint16_t)op_reads(c_ops[j]);
+        ep.reads = reads;
+        ep.pad = 0;
+
+        PairInfo &pi = h_pair_info[exhaust_count];
+        for (int j = 0; j < t_n; j++) { pi.t_ops[j] = t_ops[j]; pi.t_imms[j] = t_imms[j]; }
+        for (int j = 0; j < c_n; j++) { pi.c_ops[j] = c_ops[j]; pi.c_imms[j] = c_imms[j]; }
+        pi.t_len = t_n; pi.c_len = c_n;
+        pi.target_bytes = target_bytes; pi.cand_bytes = cand_bytes;
+
+        exhaust_count++;
+        if (exhaust_count >= EXHAUST_BATCH) flush_exhaust();
+    };
 
     fprintf(stderr, "Starting search: max_target=%d, dead_flags=0x%02X\n", max_target, dead_flags);
 
@@ -703,6 +995,7 @@ int main(int argc, char** argv) {
         uint64_t found_this_len = 0;
         time_t len_start = time(NULL);
         time_t last_report = len_start;
+        uint64_t found_before_len = total_found;
 
         // Enumerate all target sequences of this length
         // For length 2: nested loop over all_insts × all_insts
@@ -749,7 +1042,7 @@ int main(int argc, char** argv) {
 
                     total_gpu_hits += match_count;
 
-                    // CPU ExhaustiveCheck on hits
+                    // MidCheck (32 vectors) → batch for GPU ExhaustiveCheck
                     for (uint32_t mi = 0; mi < match_count; mi++) {
                         uint32_t ci = matches[mi];
                         uint16_t c_ops[1] = {all_insts[ci].op};
@@ -759,37 +1052,20 @@ int main(int argc, char** argv) {
                         if (cand_bytes >= target_bytes) continue;
                         if (should_prune(c_ops, c_imms, 1)) continue;
 
-                        total_cpu_checks++;
-
-                        if (!exhaustive_check(t_ops, t_imms, 2, c_ops, c_imms, 1, dead_flags))
+                        // MidCheck: 32-vector filter to catch false positives
+                        if (!h_midcheck(t_ops, t_imms, 2, c_ops, c_imms, 1, dead_flags)) {
+                            total_mid_rejected++;
                             continue;
+                        }
+                        total_mid_passed++;
 
-                        // Found! Output JSONL
-                        total_found++;
-                        found_this_len++;
-
-                        char src_buf[128], repl_buf[64];
-                        char s0[64], s1[64], r0[64];
-                        disasm(t_ops[0], t_imms[0], s0, sizeof(s0));
-                        disasm(t_ops[1], t_imms[1], s1, sizeof(s1));
-                        disasm(c_ops[0], c_imms[0], r0, sizeof(r0));
-                        snprintf(src_buf, sizeof(src_buf), "%s : %s", s0, s1);
-                        snprintf(repl_buf, sizeof(repl_buf), "%s", r0);
-
-                        int bytes_saved = target_bytes - cand_bytes;
-                        int cycles_saved = (tstates(t_ops[0]) + tstates(t_ops[1])) - tstates(c_ops[0]);
-
-                        printf("{\"source_asm\":\"%s\",\"replacement_asm\":\"%s\","
-                               "\"source_bytes\":%d,\"replacement_bytes\":%d,"
-                               "\"bytes_saved\":%d,\"cycles_saved\":%d",
-                               src_buf, repl_buf, target_bytes, cand_bytes,
-                               bytes_saved, cycles_saved);
-                        if (dead_flags) printf(",\"dead_flags\":\"0x%02X\"", dead_flags);
-                        printf("}\n");
-                        fflush(stdout);
+                        // Add to GPU ExhaustiveCheck batch
+                        add_exhaust_pair(t_ops, t_imms, 2, c_ops, c_imms, 1, target_bytes, cand_bytes);
                     }
                 }
             }
+            flush_exhaust();
+            found_this_len = total_found - found_before_len;
         } else if (target_len == 3) {
             for (size_t i0 = 0; i0 < all_insts.size(); i0++) {
                 time_t now = time(NULL);
@@ -832,28 +1108,21 @@ int main(int argc, char** argv) {
                             int cand_bytes = byte_size(c_ops[0]);
                             if (cand_bytes >= target_bytes) continue;
                             if (should_prune(c_ops, c_imms, 1)) continue;
-                            total_cpu_checks++;
-                            if (!exhaustive_check(t_ops, t_imms, 3, c_ops, c_imms, 1, dead_flags)) continue;
+                            // MidCheck: 32-vector filter
+                            if (!h_midcheck(t_ops, t_imms, 3, c_ops, c_imms, 1, dead_flags)) {
+                                total_mid_rejected++;
+                                continue;
+                            }
+                            total_mid_passed++;
 
-                            total_found++; found_this_len++;
-                            char s0[64], s1[64], s2[64], r0[64], src_buf[192];
-                            disasm(t_ops[0], t_imms[0], s0, sizeof(s0));
-                            disasm(t_ops[1], t_imms[1], s1, sizeof(s1));
-                            disasm(t_ops[2], t_imms[2], s2, sizeof(s2));
-                            disasm(c_ops[0], c_imms[0], r0, sizeof(r0));
-                            snprintf(src_buf, sizeof(src_buf), "%s : %s : %s", s0, s1, s2);
-                            int bytes_saved = target_bytes - cand_bytes;
-                            int cycles_saved = (tstates(t_ops[0]) + tstates(t_ops[1]) + tstates(t_ops[2])) - tstates(c_ops[0]);
-                            printf("{\"source_asm\":\"%s\",\"replacement_asm\":\"%s\","
-                                   "\"source_bytes\":%d,\"replacement_bytes\":%d,"
-                                   "\"bytes_saved\":%d,\"cycles_saved\":%d",
-                                   src_buf, r0, target_bytes, cand_bytes, bytes_saved, cycles_saved);
-                            if (dead_flags) printf(",\"dead_flags\":\"0x%02X\"", dead_flags);
-                            printf("}\n"); fflush(stdout);
+                            // Add to GPU ExhaustiveCheck batch
+                            add_exhaust_pair(t_ops, t_imms, 3, c_ops, c_imms, 1, target_bytes, cand_bytes);
                         }
                     }
                 }
             }
+            flush_exhaust();
+            found_this_len = total_found - found_before_len;
         }
 
         time_t len_end = time(NULL);
@@ -865,15 +1134,23 @@ int main(int argc, char** argv) {
     time_t end_time = time(NULL);
     fprintf(stderr, "\n=== DONE ===\n");
     fprintf(stderr, "Targets tested:  %lu\n", (unsigned long)total_targets);
-    fprintf(stderr, "GPU QuickCheck:  %lu hits\n", (unsigned long)total_gpu_hits);
-    fprintf(stderr, "CPU Exhaustive:  %lu checks\n", (unsigned long)total_cpu_checks);
+    fprintf(stderr, "GPU QuickCheck:  %lu hits (8 vectors)\n", (unsigned long)total_gpu_hits);
+    fprintf(stderr, "MidCheck pass:   %lu  (32 vectors)\n", (unsigned long)total_mid_passed);
+    fprintf(stderr, "MidCheck reject: %lu  (false positives caught)\n", (unsigned long)total_mid_rejected);
+    fprintf(stderr, "GPU Exhaustive:  %lu checks\n", (unsigned long)total_gpu_exhaust);
     fprintf(stderr, "Results found:   %lu\n", (unsigned long)total_found);
     fprintf(stderr, "Total time:      %lds\n", (long)(end_time - start_time));
 
     free(h_results);
     free(matches);
+    free(h_exhaust_buf);
+    free(h_pair_info);
+    free(h_exhaust_results);
     cudaFree(d_candidates);
     cudaFree(d_results);
     cudaFree(d_target_fp);
+    cudaFree(d_exhaust_buf);
+    cudaFree(d_exhaust_results);
+    if (outf != stdout) fclose(outf);
     return 0;
 }

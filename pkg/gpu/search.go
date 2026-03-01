@@ -139,6 +139,17 @@ func searchLengthGPU(cuda *CUDAProcess, candidates []inst.Instruction, targetLen
 				continue
 			}
 
+			// MidCheck: 32-vector filter to catch false positives
+			if cfg.DeadFlags == search.DeadNone {
+				if !search.MidCheck(target, cand) {
+					continue
+				}
+			} else {
+				if !search.MidCheckMasked(target, cand, cfg.DeadFlags) {
+					continue
+				}
+			}
+
 			cpuVerifies++
 
 			if cfg.DeadFlags == search.DeadNone {
