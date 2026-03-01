@@ -1,13 +1,19 @@
 package main
 
 import (
+	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
+	"runtime"
+	"strconv"
 	"strings"
 
+	"github.com/oisee/z80-optimizer/pkg/gpu"
 	"github.com/oisee/z80-optimizer/pkg/inst"
 	"github.com/oisee/z80-optimizer/pkg/result"
 	"github.com/oisee/z80-optimizer/pkg/search"
+	"github.com/oisee/z80-optimizer/pkg/stoke"
 	"github.com/spf13/cobra"
 )
 
@@ -23,26 +29,55 @@ func main() {
 	var checkpoint string
 	var verbose bool
 	var numWorkers int
+	var deadFlagsStr string
+	var useGPU bool
 
 	enumCmd := &cobra.Command{
 		Use:   "enumerate",
 		Short: "Enumerate all target sequences and find shorter replacements",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			cfg := search.Config{
-				MaxTargetLen: maxTarget,
-				NumWorkers:   numWorkers,
-				Verbose:      verbose,
+			deadFlags, err := parseDeadFlags(deadFlagsStr)
+			if err != nil {
+				return err
 			}
 
 			fmt.Printf("Z80 Superoptimizer\n")
-			fmt.Printf("  Max target length: %d\n", cfg.MaxTargetLen)
+			fmt.Printf("  Max target length: %d\n", maxTarget)
 			fmt.Printf("  Target instructions: %d per position (8-bit only)\n", search.InstructionCount8())
 			fmt.Printf("  Candidate instructions: %d per position (incl. 16-bit)\n", search.InstructionCount())
-			fmt.Printf("  Workers: %d\n", cfg.NumWorkers)
+			if useGPU {
+				fmt.Printf("  Mode: GPU (WebGPU/Vulkan)\n")
+			} else {
+				fmt.Printf("  Workers: %d\n", numWorkers)
+			}
+			if deadFlags != 0 {
+				fmt.Printf("  Dead flags: 0x%02X (%s)\n", deadFlags, result.DeadFlagDesc(deadFlags))
+			}
 			fmt.Println()
 
-			table := search.Run(cfg)
-			rules := table.Rules()
+			var rules []result.Rule
+
+			if useGPU {
+				gpuCfg := gpu.SearchConfig{
+					MaxTargetLen: maxTarget,
+					Verbose:      verbose,
+					DeadFlags:    deadFlags,
+				}
+				table, err := gpu.SearchGPU(gpuCfg)
+				if err != nil {
+					return fmt.Errorf("GPU search failed: %w", err)
+				}
+				rules = table.Rules()
+			} else {
+				cfg := search.Config{
+					MaxTargetLen: maxTarget,
+					NumWorkers:   numWorkers,
+					Verbose:      verbose,
+					DeadFlags:    deadFlags,
+				}
+				table := search.Run(cfg)
+				rules = table.Rules()
+			}
 
 			fmt.Printf("\nFound %d optimizations\n", len(rules))
 
@@ -67,6 +102,8 @@ func main() {
 	enumCmd.Flags().StringVar(&checkpoint, "checkpoint", "", "Checkpoint file for resume")
 	enumCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
 	enumCmd.Flags().IntVar(&numWorkers, "workers", 0, "Number of workers (0 = NumCPU)")
+	enumCmd.Flags().StringVar(&deadFlagsStr, "dead-flags", "none", "Dead flags mask: none, undoc, all, or hex (e.g. 0x13)")
+	enumCmd.Flags().BoolVar(&useGPU, "gpu", false, "Use GPU acceleration (WebGPU/Vulkan)")
 
 	// target command
 	var maxCand int
@@ -163,9 +200,124 @@ func main() {
 	}
 	exportCmd.Flags().StringVarP(&format, "format", "f", "go", "Output format (go)")
 
-	rootCmd.AddCommand(enumCmd, targetCmd, verifyCmd, exportCmd)
+	// stoke command
+	var stokeChains int
+	var stokeIter int
+	var stokeDecay float64
+	var stokeOutput string
+	var stokeVerbose bool
+	var stokeDeadFlagsStr string
+
+	stokeCmd := &cobra.Command{
+		Use:   "stoke",
+		Short: "Run STOKE stochastic superoptimizer on a target sequence",
+		RunE: func(cmd *cobra.Command, args []string) error {
+			targetStr, _ := cmd.Flags().GetString("target")
+			if targetStr == "" {
+				return fmt.Errorf("--target is required")
+			}
+			seq, err := parseAssembly(targetStr)
+			if err != nil {
+				return fmt.Errorf("failed to parse target: %w", err)
+			}
+
+			deadFlags, err := parseDeadFlags(stokeDeadFlagsStr)
+			if err != nil {
+				return err
+			}
+
+			cfg := stoke.Config{
+				Target:     seq,
+				Chains:     stokeChains,
+				Iterations: stokeIter,
+				Decay:      stokeDecay,
+				Verbose:    stokeVerbose,
+				DeadFlags:  deadFlags,
+			}
+
+			results := stoke.Run(cfg)
+			results = stoke.Deduplicate(results)
+
+			fmt.Printf("\n%d unique optimizations found\n", len(results))
+			for i, r := range results {
+				fmt.Printf("  %d. ", i+1)
+				for j, instr := range r.Rule.Replacement {
+					if j > 0 {
+						fmt.Print(" : ")
+					}
+					fmt.Print(inst.Disassemble(instr))
+				}
+				if r.Rule.DeadFlags != 0 {
+					fmt.Printf(" (-%d bytes, -%d cycles, dead flags: %s)\n",
+						r.Rule.BytesSaved, r.Rule.CyclesSaved, result.DeadFlagDesc(r.Rule.DeadFlags))
+				} else {
+					fmt.Printf(" (-%d bytes, -%d cycles)\n",
+						r.Rule.BytesSaved, r.Rule.CyclesSaved)
+				}
+			}
+
+			if stokeOutput != "" && len(results) > 0 {
+				rules := make([]result.Rule, len(results))
+				for i, r := range results {
+					rules[i] = r.Rule
+				}
+				f, err := os.Create(stokeOutput)
+				if err != nil {
+					return err
+				}
+				defer f.Close()
+				if err := result.WriteJSON(f, rules); err != nil {
+					return err
+				}
+				fmt.Printf("Written to %s\n", stokeOutput)
+			}
+			return nil
+		},
+	}
+	stokeCmd.Flags().String("target", "", "Target assembly sequence (colon-separated)")
+	stokeCmd.Flags().IntVar(&stokeChains, "chains", runtime.NumCPU(), "Number of MCMC chains")
+	stokeCmd.Flags().IntVar(&stokeIter, "iterations", 10_000_000, "Iterations per chain")
+	stokeCmd.Flags().Float64Var(&stokeDecay, "decay", 0.9999, "Temperature decay factor")
+	stokeCmd.Flags().StringVar(&stokeOutput, "output", "", "Output JSON file path")
+	stokeCmd.Flags().BoolVarP(&stokeVerbose, "verbose", "v", false, "Verbose output")
+	stokeCmd.Flags().StringVar(&stokeDeadFlagsStr, "dead-flags", "none", "Dead flags mask: none, undoc, all, or hex (e.g. 0xFF)")
+
+	// verify-jsonl command: verify CUDA JSONL output against CPU ExhaustiveCheck
+	var verifyDeadFlagsStr string
+	verifyJSONLCmd := &cobra.Command{
+		Use:   "verify-jsonl [file.jsonl]",
+		Short: "Verify JSONL rules from CUDA search using CPU ExhaustiveCheck",
+		Args:  cobra.ExactArgs(1),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			return verifyJSONL(args[0], verifyDeadFlagsStr, verbose)
+		},
+	}
+	verifyJSONLCmd.Flags().BoolVarP(&verbose, "verbose", "v", false, "Verbose output")
+	verifyJSONLCmd.Flags().StringVar(&verifyDeadFlagsStr, "dead-flags", "none", "Dead flags mask for verification")
+
+	rootCmd.AddCommand(enumCmd, targetCmd, verifyCmd, exportCmd, stokeCmd, verifyJSONLCmd)
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
+	}
+}
+
+// parseDeadFlags parses the --dead-flags flag value.
+func parseDeadFlags(s string) (search.FlagMask, error) {
+	switch strings.ToLower(s) {
+	case "none", "":
+		return search.DeadNone, nil
+	case "undoc":
+		return search.DeadUndoc, nil
+	case "all":
+		return search.DeadAll, nil
+	default:
+		// Try parsing as hex (0xFF or FF)
+		s = strings.TrimPrefix(strings.ToLower(s), "0x")
+		v, err := strconv.ParseUint(s, 16, 8)
+		if err != nil {
+			return 0, fmt.Errorf("invalid --dead-flags value %q: use none, undoc, all, or hex (e.g. 0xFF)", s)
+		}
+		return search.FlagMask(v), nil
 	}
 }
 
@@ -242,6 +394,85 @@ func parseSingleInstruction(text string) (inst.Instruction, error) {
 	}
 
 	return inst.Instruction{}, fmt.Errorf("unknown instruction: %s", text)
+}
+
+func verifyJSONL(path string, deadFlagsStr string, verbose bool) error {
+	deadFlags, err := parseDeadFlags(deadFlagsStr)
+	if err != nil {
+		return err
+	}
+
+	f, err := os.Open(path)
+	if err != nil {
+		return err
+	}
+	defer f.Close()
+
+	scanner := bufio.NewScanner(f)
+	scanner.Buffer(make([]byte, 1024*1024), 1024*1024)
+	total, passed, failed, skipped := 0, 0, 0, 0
+
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
+			continue
+		}
+		total++
+
+		var rule struct {
+			SourceASM      string `json:"source_asm"`
+			ReplacementASM string `json:"replacement_asm"`
+			BytesSaved     int    `json:"bytes_saved"`
+			CyclesSaved    int    `json:"cycles_saved"`
+		}
+		if err := json.Unmarshal([]byte(line), &rule); err != nil {
+			fmt.Fprintf(os.Stderr, "  [%d] JSON parse error: %v\n", total, err)
+			skipped++
+			continue
+		}
+
+		source, err := parseAssembly(rule.SourceASM)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "  [%d] Cannot parse source %q: %v\n", total, rule.SourceASM, err)
+			skipped++
+			continue
+		}
+		replacement, err := parseAssembly(rule.ReplacementASM)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "  [%d] Cannot parse replacement %q: %v\n", total, rule.ReplacementASM, err)
+			skipped++
+			continue
+		}
+
+		var ok bool
+		if deadFlags == search.DeadNone {
+			ok = search.ExhaustiveCheck(source, replacement)
+		} else {
+			ok = search.ExhaustiveCheckMasked(source, replacement, deadFlags)
+		}
+
+		if ok {
+			passed++
+			if verbose {
+				fmt.Printf("  [%d] PASS: %s -> %s\n", total, rule.SourceASM, rule.ReplacementASM)
+			}
+		} else {
+			failed++
+			fmt.Printf("  [%d] FAIL: %s -> %s\n", total, rule.SourceASM, rule.ReplacementASM)
+		}
+
+		if total%10000 == 0 {
+			fmt.Fprintf(os.Stderr, "  Progress: %d verified (%d pass, %d fail, %d skip)\n",
+				total, passed, failed, skipped)
+		}
+	}
+
+	fmt.Printf("\nVerification complete: %d total, %d passed, %d failed, %d skipped\n",
+		total, passed, failed, skipped)
+	if failed > 0 {
+		return fmt.Errorf("%d rules failed verification", failed)
+	}
+	return nil
 }
 
 func parseImmediate(s string) (int, error) {

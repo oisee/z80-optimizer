@@ -18,6 +18,17 @@
 # Search results (too large for git, attached to releases)
 rules*.json
 rules*.json.gz
+results*.json
+results*.jsonl
+*.log
+
+# CUDA compiled binaries
+cuda/z80qc
+cuda/z80search
+cuda/dump_fps
+
+# wgpu-native library
+lib/
 
 # Claude Code
 .claude/

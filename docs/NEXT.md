@@ -306,38 +306,58 @@ This is the **application layer** that turns our brute-force results into a prac
 
 ## Implementation Roadmap
 
-### Phase 1: STOKE on CPU
+### Phase 1: STOKE on CPU — COMPLETE
 
-The fastest to implement — all the infrastructure already exists.
-
-```
-New package: pkg/stoke/
-  mutator.go    — random mutations on instruction sequences
-  cost.go       — cost function (correctness + size + speed)
-  mcmc.go       — Metropolis-Hastings sampler
-  search.go     — multi-chain parallel search
-
-New CLI command: z80opt stoke --target "LD A, n : ADD A, B : AND 0xFF"
-```
-
-We already have: the executor (2.7ns/op), QuickCheck, ExhaustiveCheck, the full instruction catalog. STOKE just needs the mutation operators and the MCMC loop.
-
-**Expected output**: optimizations for length 4-8 sequences that brute force can't reach.
-
-### Phase 2: CUDA Brute Force
-
-Port the Z80 executor to a CUDA kernel for massively parallel QuickCheck.
+Implemented in `pkg/stoke/` with full CLI integration (`z80opt stoke`).
 
 ```
-New package: pkg/gpu/
-  z80_kernel.cu    — Z80 executor in CUDA C
-  dispatch.go      — Go ↔ CUDA interface via cgo
-  batch.go         — batch target processing
+pkg/stoke/
+  mutator.go    — 5 mutation operators (replace, swap, insert, delete, change-imm)
+  cost.go       — cost function: 1000×mismatches + byte_size + cycles/100
+  mcmc.go       — Metropolis-Hastings sampler with simulated annealing
+  search.go     — multi-chain parallel search (1 chain per CPU core)
+```
 
+Results: finds optimizations like `AND 0FFh -> AND A` in seconds with 4 chains.
+
+### Phase 1.5: Dead-Flags Optimization — COMPLETE
+
+Added a second tier of rules tagged with which flag bits must be dead for the rule to be valid. This unlocks the highest-impact class of Z80 optimizations: flag-clobbering replacements like `LD A, 0 -> XOR A`.
+
+```
+pkg/search/verifier.go  — FlagMask type, QuickCheckMasked, ExhaustiveCheckMasked, FlagDiff
+pkg/result/table.go     — Rule.DeadFlags field
+pkg/result/output.go    — JSON dead_flags + dead_flag_desc fields
+pkg/search/worker.go    — masked fallback in brute-force search
+pkg/stoke/cost.go       — CostMasked, MismatchesMasked
+pkg/stoke/search.go     — DeadFlags in Config, masked verification
+cmd/z80opt/main.go      — --dead-flags flag (none/undoc/all/hex)
+```
+
+Usage: `z80opt stoke --target "LD A, 0" --dead-flags all -v`
+
+See [adr/001-dead-flags-optimization-tier.md](adr/001-dead-flags-optimization-tier.md) for the design rationale.
+
+See [adr/002-webgpu-gpu-acceleration.md](adr/002-webgpu-gpu-acceleration.md) for the GPU acceleration design rationale.
+
+### Phase 2: WebGPU Brute Force — IN PROGRESS
+
+Ported the Z80 executor to a WebGPU/WGSL compute shader for massively parallel QuickCheck. Changed from CUDA to WebGPU for portability and zero-CGo builds.
+
+```
+Package: pkg/gpu/
+  shader/z80_quickcheck.wgsl — 1171-line WGSL compute shader (394 opcodes)
+  device.go                  — wgpu device/adapter/queue lifecycle
+  pipeline.go                — compute pipeline (auto-layout from shader)
+  dispatch.go                — buffer management, fingerprint conversion, dispatch
+  search.go                  — GPU search loop
+  gpu_test.go                — unit + integration tests
+
+Library: go-webgpu/webgpu v0.4.0 (zero-CGo, wgpu-native Vulkan backend)
 Target hardware: RTX 4060 Ti (4,352 CUDA cores, 16GB VRAM)
 ```
 
-The CUDA kernel is straightforward — our executor is already a pure function with no side effects. The main engineering challenge is efficient data transfer between host and device.
+The WGSL shader is a complete Z80 executor with all 394 opcodes, 20 ALU helper functions, and dead-flags support. Infrastructure is complete; runtime blocked by wgpu-native ABI issue.
 
 **Expected output**: complete length-3 brute-force results in ~20 minutes.
 

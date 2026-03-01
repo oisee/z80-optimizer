@@ -5,6 +5,16 @@ import (
 	"github.com/oisee/z80-optimizer/pkg/inst"
 )
 
+// FlagMask indicates which flag bits are considered "dead" and can be ignored
+// during equivalence checks. A set bit means that flag bit is dead (ignored).
+type FlagMask = uint8
+
+const (
+	DeadNone  FlagMask = 0x00 // Full equivalence (current behavior)
+	DeadUndoc FlagMask = 0x28 // Undocumented flags (bits 3, 5) — almost always safe
+	DeadAll   FlagMask = 0xFF // All flags dead — registers only
+)
+
 // TestVectors are fixed inputs used for QuickCheck to reject 99.99% of non-matches.
 var TestVectors = []cpu.State{
 	{A: 0x00, F: 0x00, B: 0x00, C: 0x00, D: 0x00, E: 0x00, H: 0x00, L: 0x00, SP: 0x0000},
@@ -441,6 +451,238 @@ func exhaustiveReducedSweep(target, candidate []inst.Instruction, extraRegs []in
 	sweep = func(s cpu.State, regIdx int) bool {
 		if regIdx >= len(extraRegs) {
 			// After 8-bit regs, optionally sweep SP
+			if sweepSP {
+				for _, sp := range repSP {
+					s2 := s
+					s2.SP = sp
+					if !compare(s2) {
+						return false
+					}
+				}
+				return true
+			}
+			return compare(s)
+		}
+		for _, v := range repValues {
+			s2 := s
+			setReg(&s2, extraRegs[regIdx], v)
+			if !sweep(s2, regIdx+1) {
+				return false
+			}
+		}
+		return true
+	}
+
+	for a := 0; a < 256; a++ {
+		for carry := uint8(0); carry <= 1; carry++ {
+			s := cpu.State{A: uint8(a), F: carry}
+			if !sweep(s, 0) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+// statesEqualMasked compares two states, ignoring flag bits set in deadFlags.
+func statesEqualMasked(a, b cpu.State, deadFlags FlagMask) bool {
+	return a.A == b.A &&
+		(a.F &^ deadFlags) == (b.F &^ deadFlags) &&
+		a.B == b.B && a.C == b.C &&
+		a.D == b.D && a.E == b.E &&
+		a.H == b.H && a.L == b.L &&
+		a.SP == b.SP
+}
+
+// QuickCheckMasked tests two sequences against test vectors, ignoring dead flag bits.
+func QuickCheckMasked(target, candidate []inst.Instruction, deadFlags FlagMask) bool {
+	if deadFlags == DeadNone {
+		return QuickCheck(target, candidate)
+	}
+	for i := range TestVectors {
+		tOut := execSeq(TestVectors[i], target)
+		cOut := execSeq(TestVectors[i], candidate)
+		if !statesEqualMasked(tOut, cOut, deadFlags) {
+			return false
+		}
+	}
+	return true
+}
+
+// ExhaustiveCheckMasked verifies equivalence over all possible inputs,
+// ignoring flag bits set in deadFlags.
+func ExhaustiveCheckMasked(target, candidate []inst.Instruction, deadFlags FlagMask) bool {
+	if deadFlags == DeadNone {
+		return ExhaustiveCheck(target, candidate)
+	}
+
+	reads := regsRead(target) | regsRead(candidate)
+
+	if reads&^(regA|regF) == 0 {
+		return exhaustiveAFMasked(target, candidate, deadFlags)
+	}
+
+	return exhaustiveAllMasked(target, candidate, reads, deadFlags)
+}
+
+// FlagDiff runs test vectors and returns a bitmask of which flag bits ever differ.
+// 0 means the sequences always match; nonzero bits indicate those flags must be dead.
+func FlagDiff(target, candidate []inst.Instruction) FlagMask {
+	var diff FlagMask
+	for i := range TestVectors {
+		tOut := execSeq(TestVectors[i], target)
+		cOut := execSeq(TestVectors[i], candidate)
+		// Check non-flag state — if any register differs, return 0 (not a flag-only issue)
+		if tOut.A != cOut.A || tOut.B != cOut.B || tOut.C != cOut.C ||
+			tOut.D != cOut.D || tOut.E != cOut.E ||
+			tOut.H != cOut.H || tOut.L != cOut.L || tOut.SP != cOut.SP {
+			return 0
+		}
+		diff |= tOut.F ^ cOut.F
+	}
+	return diff
+}
+
+func exhaustiveAFMasked(target, candidate []inst.Instruction, deadFlags FlagMask) bool {
+	for a := 0; a < 256; a++ {
+		for carry := uint8(0); carry <= 1; carry++ {
+			s := cpu.State{A: uint8(a), F: carry}
+			tOut := execSeq(s, target)
+			cOut := execSeq(s, candidate)
+			if !statesEqualMasked(tOut, cOut, deadFlags) {
+				return false
+			}
+		}
+	}
+	return true
+}
+
+func exhaustiveAllMasked(target, candidate []inst.Instruction, reads regMask, deadFlags FlagMask) bool {
+	extraRegs := make([]int, 0, 6)
+	if reads&regB != 0 {
+		extraRegs = append(extraRegs, 2)
+	}
+	if reads&regC != 0 {
+		extraRegs = append(extraRegs, 3)
+	}
+	if reads&regD != 0 {
+		extraRegs = append(extraRegs, 4)
+	}
+	if reads&regE != 0 {
+		extraRegs = append(extraRegs, 5)
+	}
+	if reads&regH != 0 {
+		extraRegs = append(extraRegs, 6)
+	}
+	if reads&regL != 0 {
+		extraRegs = append(extraRegs, 7)
+	}
+
+	sweepSP := reads&regSP != 0
+
+	if len(extraRegs) == 0 && !sweepSP {
+		return exhaustiveAFMasked(target, candidate, deadFlags)
+	}
+
+	if len(extraRegs) <= 2 && !sweepSP {
+		return exhaustiveFullSweepMasked(target, candidate, extraRegs, deadFlags)
+	}
+	return exhaustiveReducedSweepMasked(target, candidate, extraRegs, sweepSP, deadFlags)
+}
+
+func exhaustiveFullSweepMasked(target, candidate []inst.Instruction, extraRegs []int, deadFlags FlagMask) bool {
+	setReg := func(s *cpu.State, offset int, val uint8) {
+		switch offset {
+		case 2:
+			s.B = val
+		case 3:
+			s.C = val
+		case 4:
+			s.D = val
+		case 5:
+			s.E = val
+		case 6:
+			s.H = val
+		case 7:
+			s.L = val
+		}
+	}
+
+	if len(extraRegs) == 1 {
+		for a := 0; a < 256; a++ {
+			for carry := uint8(0); carry <= 1; carry++ {
+				for r := 0; r < 256; r++ {
+					s := cpu.State{A: uint8(a), F: carry}
+					setReg(&s, extraRegs[0], uint8(r))
+					tOut := execSeq(s, target)
+					cOut := execSeq(s, candidate)
+					if !statesEqualMasked(tOut, cOut, deadFlags) {
+						return false
+					}
+				}
+			}
+		}
+		return true
+	}
+
+	for a := 0; a < 256; a++ {
+		for carry := uint8(0); carry <= 1; carry++ {
+			for r1 := 0; r1 < 256; r1++ {
+				for r2 := 0; r2 < 256; r2++ {
+					s := cpu.State{A: uint8(a), F: carry}
+					setReg(&s, extraRegs[0], uint8(r1))
+					setReg(&s, extraRegs[1], uint8(r2))
+					tOut := execSeq(s, target)
+					cOut := execSeq(s, candidate)
+					if !statesEqualMasked(tOut, cOut, deadFlags) {
+						return false
+					}
+				}
+			}
+		}
+	}
+	return true
+}
+
+func exhaustiveReducedSweepMasked(target, candidate []inst.Instruction, extraRegs []int, sweepSP bool, deadFlags FlagMask) bool {
+	repValues := []uint8{
+		0x00, 0x01, 0x02, 0x0F, 0x10, 0x1F, 0x20, 0x3F,
+		0x40, 0x55, 0x7E, 0x7F, 0x80, 0x81, 0xAA, 0xBF,
+		0xC0, 0xD5, 0xE0, 0xEF, 0xF0, 0xF7, 0xFE, 0xFF,
+		0x03, 0x07, 0x11, 0x33, 0x77, 0xBB, 0xDD, 0xEE,
+	}
+
+	setReg := func(s *cpu.State, offset int, val uint8) {
+		switch offset {
+		case 2:
+			s.B = val
+		case 3:
+			s.C = val
+		case 4:
+			s.D = val
+		case 5:
+			s.E = val
+		case 6:
+			s.H = val
+		case 7:
+			s.L = val
+		}
+	}
+
+	repSP := []uint16{
+		0x0000, 0x0001, 0x00FF, 0x0100, 0x7FFE, 0x7FFF, 0x8000, 0x8001,
+		0xFFFE, 0xFFFF, 0x1234, 0x5678, 0xABCD, 0xDEAD, 0xBEEF, 0xCAFE,
+	}
+
+	compare := func(s cpu.State) bool {
+		tOut := execSeq(s, target)
+		cOut := execSeq(s, candidate)
+		return statesEqualMasked(tOut, cOut, deadFlags)
+	}
+
+	var sweep func(s cpu.State, regIdx int) bool
+	sweep = func(s cpu.State, regIdx int) bool {
+		if regIdx >= len(extraRegs) {
 			if sweepSP {
 				for _, sp := range repSP {
 					s2 := s

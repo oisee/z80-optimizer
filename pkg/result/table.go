@@ -13,6 +13,7 @@ type Rule struct {
 	Replacement []inst.Instruction
 	BytesSaved  int
 	CyclesSaved int
+	DeadFlags   uint8 // Flag bits that must be dead for this rule to be valid (0 = unconditional)
 }
 
 // Table stores discovered optimization rules.

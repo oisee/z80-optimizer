@@ -11,10 +11,11 @@ import (
 
 // Config holds search configuration.
 type Config struct {
-	MaxTargetLen int  // Maximum target sequence length (2-5)
-	MaxCandLen   int  // Maximum candidate length (defaults to MaxTargetLen-1)
-	NumWorkers   int  // Number of parallel workers (defaults to NumCPU)
-	Verbose      bool // Print progress
+	MaxTargetLen int      // Maximum target sequence length (2-5)
+	MaxCandLen   int      // Maximum candidate length (defaults to MaxTargetLen-1)
+	NumWorkers   int      // Number of parallel workers (defaults to NumCPU)
+	Verbose      bool     // Print progress
+	DeadFlags    FlagMask // If nonzero, also search for flag-relaxed optimizations
 }
 
 // Run executes the superoptimizer search.
@@ -35,7 +36,7 @@ func Run(cfg Config) *result.Table {
 			fmt.Printf("=== Searching target length %d ===\n", targetLen)
 		}
 
-		tasks := collectTasks(targetLen, cfg.MaxCandLen)
+		tasks := collectTasks(targetLen, cfg.MaxCandLen, cfg.DeadFlags)
 		if cfg.Verbose {
 			fmt.Printf("  Generated %d target sequences (after pruning)\n", len(tasks))
 		}
@@ -55,7 +56,7 @@ func Run(cfg Config) *result.Table {
 // collectTasks generates all non-prunable target sequences of the given length.
 // Uses 8-bit-only enumeration for targets to keep the search space feasible.
 // 16-bit immediate ops are still considered as candidate replacements.
-func collectTasks(targetLen, maxCandLen int) []SearchTask {
+func collectTasks(targetLen, maxCandLen int, deadFlags FlagMask) []SearchTask {
 	var tasks []SearchTask
 
 	EnumerateSequences8(targetLen, func(seq []inst.Instruction) bool {
@@ -69,6 +70,7 @@ func collectTasks(targetLen, maxCandLen int) []SearchTask {
 		tasks = append(tasks, SearchTask{
 			Target:     seqCopy,
 			MaxCandLen: maxCandLen,
+			DeadFlags:  deadFlags,
 		})
 		return true
 	})
@@ -82,6 +84,22 @@ func SearchSingle(target []inst.Instruction, maxCandLen int, verbose bool) *resu
 	pool.RunTasks([]SearchTask{{
 		Target:     target,
 		MaxCandLen: maxCandLen,
+	}}, verbose)
+
+	rules := pool.Results.Rules()
+	if len(rules) == 0 {
+		return nil
+	}
+	return &rules[0]
+}
+
+// SearchSingleMasked finds the shortest replacement with dead-flags relaxation.
+func SearchSingleMasked(target []inst.Instruction, maxCandLen int, deadFlags FlagMask, verbose bool) *result.Rule {
+	pool := NewWorkerPool(1)
+	pool.RunTasks([]SearchTask{{
+		Target:     target,
+		MaxCandLen: maxCandLen,
+		DeadFlags:  deadFlags,
 	}}, verbose)
 
 	rules := pool.Results.Rules()

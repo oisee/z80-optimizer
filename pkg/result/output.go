@@ -11,19 +11,21 @@ import (
 
 // JSONRule is the JSON-serializable form of a Rule.
 type JSONRule struct {
-	SourceASM      string `json:"source_asm"`
-	ReplacementASM string `json:"replacement_asm"`
-	SourceBytes    int    `json:"source_bytes"`
-	ReplacementBytes int  `json:"replacement_bytes"`
-	BytesSaved     int    `json:"bytes_saved"`
-	CyclesSaved    int    `json:"cycles_saved"`
+	SourceASM        string `json:"source_asm"`
+	ReplacementASM   string `json:"replacement_asm"`
+	SourceBytes      int    `json:"source_bytes"`
+	ReplacementBytes int    `json:"replacement_bytes"`
+	BytesSaved       int    `json:"bytes_saved"`
+	CyclesSaved      int    `json:"cycles_saved"`
+	DeadFlags        string `json:"dead_flags,omitempty"`
+	DeadFlagDesc     string `json:"dead_flag_desc,omitempty"`
 }
 
 // WriteJSON writes rules as JSON to the writer.
 func WriteJSON(w io.Writer, rules []Rule) error {
 	jsonRules := make([]JSONRule, len(rules))
 	for i, r := range rules {
-		jsonRules[i] = JSONRule{
+		jr := JSONRule{
 			SourceASM:        disasmSeq(r.Source),
 			ReplacementASM:   disasmSeq(r.Replacement),
 			SourceBytes:      inst.SeqByteSize(r.Source),
@@ -31,10 +33,54 @@ func WriteJSON(w io.Writer, rules []Rule) error {
 			BytesSaved:       r.BytesSaved,
 			CyclesSaved:      r.CyclesSaved,
 		}
+		if r.DeadFlags != 0 {
+			jr.DeadFlags = fmt.Sprintf("%02X", r.DeadFlags)
+			jr.DeadFlagDesc = DeadFlagDesc(r.DeadFlags)
+		}
+		jsonRules[i] = jr
 	}
 	enc := json.NewEncoder(w)
 	enc.SetIndent("", "  ")
 	return enc.Encode(jsonRules)
+}
+
+// DeadFlagDesc returns a human-readable description of which flags must be dead.
+func DeadFlagDesc(mask uint8) string {
+	if mask == 0x00 {
+		return ""
+	}
+	if mask == 0xFF {
+		return "all"
+	}
+	if mask == 0x28 {
+		return "undoc"
+	}
+	var parts []string
+	if mask&0x01 != 0 {
+		parts = append(parts, "C")
+	}
+	if mask&0x02 != 0 {
+		parts = append(parts, "N")
+	}
+	if mask&0x04 != 0 {
+		parts = append(parts, "P/V")
+	}
+	if mask&0x08 != 0 {
+		parts = append(parts, "X3")
+	}
+	if mask&0x10 != 0 {
+		parts = append(parts, "H")
+	}
+	if mask&0x20 != 0 {
+		parts = append(parts, "X5")
+	}
+	if mask&0x40 != 0 {
+		parts = append(parts, "Z")
+	}
+	if mask&0x80 != 0 {
+		parts = append(parts, "S")
+	}
+	return strings.Join(parts, ",")
 }
 
 // ReadJSON reads rules from JSON.
@@ -58,11 +104,19 @@ func WriteGoCode(w io.Writer, rules []Rule) error {
 	for _, r := range rules {
 		srcAsm := disasmSeq(r.Source)
 		replAsm := disasmSeq(r.Replacement)
-		fmt.Fprintf(w, "\t// %s -> %s (-%d bytes, -%d cycles)\n",
-			srcAsm, replAsm, r.BytesSaved, r.CyclesSaved)
+		if r.DeadFlags != 0 {
+			fmt.Fprintf(w, "\t// %s -> %s (-%d bytes, -%d cycles) [dead: %s]\n",
+				srcAsm, replAsm, r.BytesSaved, r.CyclesSaved, DeadFlagDesc(r.DeadFlags))
+		} else {
+			fmt.Fprintf(w, "\t// %s -> %s (-%d bytes, -%d cycles)\n",
+				srcAsm, replAsm, r.BytesSaved, r.CyclesSaved)
+		}
 		fmt.Fprintf(w, "\t{\n")
 		fmt.Fprintf(w, "\t\tMatch: []string{%s},\n", goStringSlice(r.Source))
 		fmt.Fprintf(w, "\t\tReplace: []string{%s},\n", goStringSlice(r.Replacement))
+		if r.DeadFlags != 0 {
+			fmt.Fprintf(w, "\t\tDeadFlags: 0x%02X, // %s\n", r.DeadFlags, DeadFlagDesc(r.DeadFlags))
+		}
 		fmt.Fprintf(w, "\t},\n")
 	}
 

@@ -34,8 +34,9 @@ func NewWorkerPool(numWorkers int) *WorkerPool {
 
 // SearchTask represents a unit of work: find a shorter replacement for target.
 type SearchTask struct {
-	Target    []inst.Instruction
+	Target     []inst.Instruction
 	MaxCandLen int
+	DeadFlags  FlagMask // If nonzero, also try masked equivalence when full match fails
 }
 
 // Stats returns search statistics.
@@ -181,6 +182,84 @@ func (wp *WorkerPool) processTask(task SearchTask, verbose bool) {
 		})
 		if found {
 			break // found optimal (shortest) replacement
+		}
+	}
+
+	// If no full match found and dead-flags mode is enabled, try masked equivalence
+	if task.DeadFlags != DeadNone {
+		wp.processTaskMasked(task, verbose)
+	}
+}
+
+// processTaskMasked tries to find replacements that are equivalent when dead flags are ignored.
+func (wp *WorkerPool) processTaskMasked(task SearchTask, verbose bool) {
+	targetBytes := inst.SeqByteSize(task.Target)
+	targetTStates := inst.SeqTStates(task.Target)
+
+	for candLen := 1; candLen <= task.MaxCandLen; candLen++ {
+		found := false
+		EnumerateSequences8(candLen, func(cand []inst.Instruction) bool {
+			wp.checked.Add(1)
+
+			candBytes := inst.SeqByteSize(cand)
+			if candBytes >= targetBytes {
+				return true
+			}
+
+			if ShouldPrune(cand) {
+				return true
+			}
+
+			// Skip if it already matches fully (already found above)
+			if QuickCheck(task.Target, cand) {
+				return true
+			}
+
+			// Try masked QuickCheck
+			if !QuickCheckMasked(task.Target, cand, task.DeadFlags) {
+				return true
+			}
+
+			// Masked exhaustive verification
+			if !ExhaustiveCheckMasked(task.Target, cand, task.DeadFlags) {
+				return true
+			}
+
+			// Determine exactly which flags differ
+			flagDiff := FlagDiff(task.Target, cand)
+			if flagDiff == 0 {
+				// Registers differ — shouldn't happen after masked check, skip
+				return true
+			}
+
+			wp.found.Add(1)
+			candCopy := make([]inst.Instruction, len(cand))
+			copy(candCopy, cand)
+			candTStates := inst.SeqTStates(candCopy)
+
+			rule := result.Rule{
+				Source:      copySeq(task.Target),
+				Replacement: candCopy,
+				BytesSaved:  targetBytes - candBytes,
+				CyclesSaved: targetTStates - candTStates,
+				DeadFlags:   flagDiff,
+			}
+
+			wp.mu.Lock()
+			wp.Results.Add(rule)
+			wp.mu.Unlock()
+
+			if verbose {
+				fmt.Printf("  FOUND (dead flags 0x%02X): %s -> %s (-%d bytes, -%d cycles)\n",
+					flagDiff, disasmSeq(task.Target), disasmSeq(candCopy),
+					rule.BytesSaved, rule.CyclesSaved)
+			}
+
+			found = true
+			return false
+		})
+		if found {
+			break
 		}
 	}
 }

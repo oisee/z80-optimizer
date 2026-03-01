@@ -60,57 +60,65 @@ OS:     Linux
 
 ## Implementation Phases
 
-### Phase 1: STOKE Stochastic Search (CPU)
+### Phase 1: STOKE Stochastic Search (CPU) — COMPLETE
 
-**Goal**: Find optimizations for length 4-10+ sequences that brute force can't reach.
-
-**New package: `pkg/stoke/`**
+Implemented in `pkg/stoke/` with full test coverage and CLI integration.
 
 ```
-mutator.go    — 5 mutation operators (replace instruction, swap, insert, delete, change immediate)
-cost.go       — cost function: 1000×mismatches + byte_size + cycles/100
-mcmc.go       — Metropolis-Hastings sampler with simulated annealing
-search.go     — multi-chain parallel search (1 chain per CPU core)
+pkg/stoke/
+  mutator.go    — 5 mutation operators (replace, swap, insert, delete, change-imm)
+  cost.go       — cost function: 1000×mismatches + byte_size + cycles/100
+  mcmc.go       — Metropolis-Hastings sampler with simulated annealing
+  search.go     — multi-chain parallel search (1 chain per CPU core)
+  stoke_test.go — unit + end-to-end tests
 ```
 
-**New CLI command:**
-```bash
-z80opt stoke --target "LD A, n : ADD A, B : AND 0xFF" --chains 16 --iterations 10M
-```
+CLI: `z80opt stoke --target "AND 0xFF" --chains 8 --iterations 10000000 -v`
 
-**Key design decisions:**
-- Start from the target program (not random) — STOKE paper shows this converges faster
-- Temperature schedule: T=1.0, decay=0.999 per iteration
-- Mutation weights: 40% replace, 20% swap, 20% delete, 10% insert, 10% change-imm
-- Verification: QuickCheck first, ExhaustiveCheck only when cost=0
-- Output: append to rules.json
+### Phase 1.5: Dead-Flags Optimization — COMPLETE
 
-**Estimated effort**: 2-3 days. All infrastructure exists (executor, QuickCheck, ExhaustiveCheck, catalog).
+Added flag-relaxed optimization tier. Rules are tagged with which flag bits must be dead for the rule to be valid. This unlocks the highest-impact optimization class (`LD A, 0 -> XOR A`, etc.).
 
-**What we reuse**: `pkg/cpu/` (executor), `pkg/search/` (QuickCheck, ExhaustiveCheck), `pkg/inst/` (catalog, enumeration), `pkg/result/` (output).
+Key files:
+- `pkg/search/verifier.go` — `FlagMask`, `QuickCheckMasked`, `ExhaustiveCheckMasked`, `FlagDiff`
+- `pkg/result/table.go` — `Rule.DeadFlags` field
+- `pkg/result/output.go` — JSON `dead_flags` + `dead_flag_desc`
+- `pkg/search/worker.go` — masked fallback in brute-force
+- `pkg/stoke/cost.go` — `CostMasked`, `MismatchesMasked`
+- `pkg/stoke/search.go` — `DeadFlags` in Config
+- `cmd/z80opt/main.go` — `--dead-flags` flag (none/undoc/all/hex)
 
-### Phase 2: CUDA Brute Force (GPU)
+CLI: `z80opt stoke --target "LD A, 0" --dead-flags all -v`
+
+See [adr/001-dead-flags-optimization-tier.md](adr/001-dead-flags-optimization-tier.md) for design rationale.
+
+### Phase 2: WebGPU Brute Force (GPU) — IN PROGRESS
 
 **Goal**: Complete length-3 search in ~20 minutes instead of months on CPU.
 
-**New package: `pkg/gpu/`**
+**New package: `pkg/gpu/`** — COMPLETE
 
 ```
-z80_kernel.cu    — Z80 executor in CUDA C (port of pkg/cpu/exec.go)
-dispatch.go      — Go ↔ CUDA interface via cgo + CUDA runtime
-batch.go         — batch target processing, result collection
+device.go            — wgpu device/adapter/queue lifecycle
+pipeline.go          — compute pipeline from embedded WGSL shader (auto-layout)
+dispatch.go          — buffer management, fingerprint conversion, GPU dispatch + readback
+search.go            — GPU search loop: enumerate targets → GPU QuickCheck → CPU verify
+gpu_test.go          — unit tests (packing, encoding) + GPU integration tests
+shader/z80_quickcheck.wgsl — 1171-line WGSL compute shader (full Z80 executor, 394 opcodes)
 ```
 
-**New CLI command:**
+Changed from CUDA to **WebGPU/WGSL** via `go-webgpu/webgpu` v0.4.0 (zero-CGo, wgpu-native Vulkan backend). See [adr/002-webgpu-gpu-acceleration.md](adr/002-webgpu-gpu-acceleration.md) for rationale.
+
+**CLI:**
 ```bash
-z80opt enumerate --max-target 3 --gpu --output rules3.json
+z80opt enumerate --max-target 3 --gpu --output rules3.json -v
 ```
 
-**CUDA kernel design:**
+**Compute shader design:**
 - Each thread handles one candidate sequence
-- Thread reads target fingerprint from constant memory (80 bytes, broadcast)
-- Thread computes candidate fingerprint (execute 8 test vectors)
-- Compare → write 1 bit to results bitmap
+- Thread reads target fingerprint from storage buffer (96 bytes)
+- Thread executes candidate on 8 test vectors, compares with target
+- Match → atomicOr 1 bit in results bitmap
 - Host reads bitmap, runs ExhaustiveCheck on hits (~0.01% of candidates)
 
 **Performance estimate (2× RTX 4060 Ti):**
@@ -123,11 +131,13 @@ Time: 315T / 272B/sec ≈ 19 minutes per GPU, split across 2 GPUs ≈ 10 minutes
 ```
 
 **Build requirements:**
-- CUDA toolkit 12+
-- Go with cgo enabled
-- `nvidia-smi` to verify GPU access
+- wgpu-native v27+ shared library (`./scripts/setup-wgpu.sh`)
+- `CGO_ENABLED=0` (go-webgpu uses goffi, not CGo)
+- `WGPU_NATIVE_PATH=lib/libwgpu_native.so`
 
-**Estimated effort**: 1-2 weeks. Main challenges: CUDA kernel correctness, cgo setup, multi-GPU dispatch.
+**Status:**
+- Phase 2A (infrastructure + shader): COMPLETE — all Go host code, 1171-line WGSL shader, CLI integration, unit tests passing
+- Phase 2B (runtime integration): BLOCKED — wgpu-native v27 SIGSEGV in `RequestAdapter` (ABI compatibility issue with go-webgpu v0.4.0)
 
 ### Phase 3: Reordering Optimizer
 
@@ -209,17 +219,17 @@ z80opt enumerate --max-target 2 --output rules.json -v
 
 ## Key Files for Each Phase
 
-### Phase 1 (STOKE) — Read These First
-- `pkg/cpu/exec.go` — the Z80 executor you'll wrap in MCMC
-- `pkg/search/verifier.go` — QuickCheck and ExhaustiveCheck
-- `pkg/inst/catalog.go` — instruction catalog, enumeration helpers
-- `pkg/inst/instruction.go` — OpCode enum, Instruction struct
+### Phase 1 (STOKE) — COMPLETE
+- `pkg/stoke/` — full implementation with tests
+- `pkg/search/verifier.go` — QuickCheck, ExhaustiveCheck, and masked variants
 
-### Phase 2 (CUDA) — Read These First
-- `pkg/cpu/exec.go` — port this to CUDA C
-- `pkg/cpu/flags.go` — flag lookup tables (copy to constant memory)
-- `pkg/search/fingerprint.go` — fingerprint format to replicate on GPU
-- `pkg/search/worker.go` — the search loop to parallelize
+### Phase 2 (WebGPU) — IN PROGRESS
+- `pkg/gpu/shader/z80_quickcheck.wgsl` — WGSL compute shader (1171 lines, 394 opcodes)
+- `pkg/gpu/device.go` — wgpu device lifecycle
+- `pkg/gpu/pipeline.go` — compute pipeline (auto-layout from shader)
+- `pkg/gpu/dispatch.go` — buffer management, fingerprint conversion, dispatch + readback
+- `pkg/gpu/search.go` — GPU search loop (enumerate targets, dispatch, verify)
+- `pkg/gpu/gpu_test.go` — unit + integration tests
 
 ### Phase 3 (Reorder) — Read These First
 - `pkg/search/pruner.go` — `opReads()`, `opWrites()`, `areIndependent()`
