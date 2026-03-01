@@ -2,9 +2,9 @@
 
 A GPU-accelerated superoptimizer for the Zilog Z80 processor.
 
-Given a sequence of Z80 instructions, it exhaustively searches for a shorter equivalent sequence that produces **identical register and flag state** for all possible inputs. No heuristics, no pattern databases — provably correct by construction.
+Given a sequence of Z80 instructions, it exhaustively searches for a shorter equivalent sequence that produces **identical register, flag, and memory state** for all possible inputs. No heuristics, no pattern databases — provably correct by construction.
 
-**743,309 optimizations found** so far (96% of length-2 search complete), with GPU-accelerated search running **~30x faster** than CPU on a single RTX 4060 Ti.
+**761,621 optimizations found** (length-2 search complete), now with **memory support** — indirect memory access through (HL), (BC), (DE) modeled as a virtual register. GPU-accelerated search runs **~30x faster** than CPU on a single RTX 4060 Ti.
 
 ## Why?
 
@@ -73,7 +73,7 @@ For the ~0-5 candidates that survive both QuickCheck and MidCheck, we prove equi
 
 Pairs are batched (4096 at a time) and dispatched as a single kernel launch. Early termination uses shared memory `atomicOr` — once any thread finds a mismatch, all threads in the block stop.
 
-If the target and candidate produce identical output (all 10 bytes: A, F, B, C, D, E, H, L, SP) for every input state, the optimization is **provably correct**.
+If the target and candidate produce identical output (all 11 bytes: A, F, B, C, D, E, H, L, SP, M) for every input state, the optimization is **provably correct**.
 
 ### 4. Pruning
 
@@ -87,7 +87,7 @@ Pruning uses register dependency bitmasks (`opReads`/`opWrites`) for all 394 opc
 
 ## GPU acceleration (CUDA)
 
-The Z80 executor is an ideal GPU workload: fixed-size 10-byte state, no memory access, pure ALU computation, embarrassingly parallel. Both QuickCheck filtering and ExhaustiveCheck verification run on GPU.
+The Z80 executor is an ideal GPU workload: fixed-size 11-byte state (10 registers + 1 virtual memory byte), pure ALU computation, embarrassingly parallel. Both QuickCheck filtering and ExhaustiveCheck verification run on GPU.
 
 ### Architecture (v2 batched pipeline)
 
@@ -247,7 +247,7 @@ The full results are in [`rules.json`](rules.json) (743K+ rules, search 96% comp
 
 ## Instruction coverage
 
-394 opcodes across 4 implementation waves:
+455 opcodes across 5 implementation waves:
 
 | Wave | Opcodes | What |
 |---|---|---|
@@ -255,9 +255,51 @@ The full results are in [`rules.json`](rules.json) (743K+ rules, search 96% comp
 | Wave 1 | +174 | BIT/RES/SET n,r — all CB-prefix bit manipulation |
 | Wave 2 | +14 | 16-bit pair ops (INC/DEC rr, ADD HL,rr, EX DE,HL) |
 | Wave 4 | +12 | LD rr,nn, ADC/SBC HL,rr (ED prefix) |
+| **Wave 5** | **+61** | **Memory ops: LD r,(HL), LD (HL),r, ALU (HL), INC/DEC (HL), BIT/RES/SET (HL), rotates (HL), LD A,(BC/DE), LD (BC/DE),A** |
 
-Target search space: **4,215 instructions per position** (8-bit ops with immediates).
+Target search space: **4,215 instructions per position** (8-bit register ops with immediates).
 Candidate search space: **266,359 instructions per position** (including 16-bit immediates).
+
+## Memory model (Wave 5)
+
+The Z80 accesses memory through register-pair pointers: `(HL)`, `(BC)`, `(DE)`. Rather than emulating a full 64KB address space, we model memory as a **single virtual byte M** in the state. All indirect memory instructions read/write this same M register:
+
+```
+State: A, F, B, C, D, E, H, L, SP, M   (11 bytes)
+```
+
+| Instruction | Effect |
+|---|---|
+| `LD A, (HL)` | A = M |
+| `LD (HL), A` | M = A |
+| `ADD A, (HL)` | A += M (with flags) |
+| `INC (HL)` | M++ (with flags) |
+| `BIT 3, (HL)` | test bit 3 of M |
+| `LD A, (BC)` | A = M (same address assumption) |
+| `LD (DE), A` | M = A (same address assumption) |
+
+**Prerequisite**: all memory-accessing instructions in a sequence must target the same physical address. The user applying an optimization is responsible for verifying this — the superoptimizer proves correctness under the same-address assumption.
+
+This unlocks optimizations involving memory, e.g., `LD A,(HL) : INC A : LD (HL),A` patterns and memory-register interactions that pure register search cannot find.
+
+### Future extensions
+
+- **MH (high memory byte)**: for 16-bit memory ops (PUSH/POP, LD (nn),HL, EX (SP),HL) — M becomes ML+MH
+- **S0, S1 (stack bytes)**: for PUSH/POP — tracks 2 bytes of stack
+- **Masking**: unused memory fields (MH, S0, S1) are masked out in comparisons, like dead-flags masking. Smaller state = faster search.
+
+## Search cores
+
+Different subsets of the instruction set enable **focused search** with dramatically smaller search spaces:
+
+| Core | Registers | Instructions | Search space (len-3) |
+|---|---|---|---|
+| Full | A,F,B,C,D,E,H,L,SP,M | ~4,500 | 91 billion |
+| Register-only | A,F,B,C,D,E,H,L,SP | ~4,215 | 74.8 billion |
+| AF (accumulator) | A,F | ~80 | 512K |
+| HL+M (pointer) | H,L,M + A,F | ~150 | 3.4 million |
+
+The **AF core** is particularly promising — it covers all accumulator ALU ops, rotates, DAA, NEG, SCF, CCF. With only ~80 instructions, length-5 brute force becomes feasible (~3.3 billion targets), enabling discovery of 5→1 and 5→2 accumulator optimizations that are completely out of reach for full search.
 
 ## Correctness
 
@@ -307,8 +349,8 @@ cuda/z80search --max-target 2 > results.jsonl
 
 ```
 cmd/z80opt/          CLI (enumerate, target, verify, verify-jsonl, export, stoke)
-pkg/cpu/             Z80 state + executor (2.7ns/op, 0 alloc)
-pkg/inst/            Instruction catalog (394 opcodes, encoding, timing)
+pkg/cpu/             Z80 state (11 bytes: regs + M) + executor (2.7ns/op, 0 alloc)
+pkg/inst/            Instruction catalog (455 opcodes, encoding, timing)
 pkg/search/          Verifier, enumerator, pruner, fingerprint map, workers
 pkg/stoke/           STOKE stochastic superoptimizer (MCMC search)
 pkg/gpu/             GPU integration layer (CUDA process, search orchestration)
@@ -334,11 +376,18 @@ Length 5+: combinatorial explosion → STOKE only
 
 ## What's next
 
-### Further goals
+### In progress
 
-- **Complete BIT/SET/RES search** — the last 4% of the length-2 search space (~92 heavy BIT/RES/SET opcodes) where GPU ExhaustiveCheck generates ~2,500 pairs/opcode with 2-4 extra registers. Running at ~60s/opcode on a dedicated GPU. Dual-GPU run in progress.
-- **Length-3 GPU search** — the real prize. 74.8 billion targets, estimated hours on dual RTX 4060 Ti. Will find 3-instruction patterns that reduce to 1-2 instructions.
-- **Reordering optimizer** — apply discovered rules to real Z80 code by proving instruction independence via dependency DAG analysis. Handles interleaved unrelated instructions between optimizable pairs.
+- **Length-3 GPU search** — 74.8 billion targets. `--no-exhaust` mode outputs MidCheck survivors in ~5 hours (dual GPU), with ExhaustiveCheck verification distributed separately. Estimated ~60M candidates from which ~30M confirmed optimizations.
+- **Memory-aware search** — Wave 5 memory ops integrated into CPU executor and verifier. CUDA GPU search and STOKE next.
+
+### Planned
+
+- **Focused search cores** — AF-only core enables length-5 brute force (~3.3B targets). HL+M core enables memory optimization search at manageable scale.
+- **PUSH/POP + 16-bit memory** — Wave 6: add MH, S0, S1 to state with masking. Covers PUSH/POP, EX (SP),HL, LD (nn),HL.
+- **STOKE + memory** — stochastic search for longer sequences (5→3, 8→4) with memory instructions. Feed real Z80 code snippets as targets.
+- **Distributed verification** — split MidCheck candidate JSONL files for parallel CPU verification across machines. Community-distributable.
+- **Reordering optimizer** — apply discovered rules to real Z80 code via dependency DAG analysis. Handles interleaved unrelated instructions.
 
 See [docs/NEXT.md](docs/NEXT.md) for the full roadmap with architecture diagrams and references.
 
@@ -358,7 +407,7 @@ This project builds on five generations of superoptimizer research:
 
 Most prior superoptimizer work targets x86/x86-64 or custom IR. This project combines several ideas that, to our knowledge, haven't been applied together to a retro ISA:
 
-1. **GPU-accelerated search pipeline** — porting the full Z80 executor to CUDA for both QuickCheck (fingerprint filtering) and ExhaustiveCheck (exhaustive verification). Prior work (STOKE, Lens) runs on CPU only. The Z80's small fixed-size state (10 bytes, no memory) makes it unusually GPU-friendly.
+1. **GPU-accelerated search pipeline** — porting the full Z80 executor to CUDA for both QuickCheck (fingerprint filtering) and ExhaustiveCheck (exhaustive verification). Prior work (STOKE, Lens) runs on CPU only. The Z80's small fixed-size state (11 bytes including virtual memory) makes it unusually GPU-friendly.
 
 2. **Three-tier verification** — QuickCheck (8 vectors, GPU) → MidCheck (32 vectors, GPU) → ExhaustiveCheck (full sweep, GPU) — all three stages run on GPU, eliminating false positives progressively. Combined with STOKE for sequences beyond brute-force range.
 
@@ -366,7 +415,9 @@ Most prior superoptimizer work targets x86/x86-64 or custom IR. This project com
 
 4. **Complete Z80 flag accuracy** — including undocumented bits 3 and 5, half-carry lookup tables, and the undocumented SLL instruction. Most Z80 tools skip these; we need them because the superoptimizer must prove *exact* equivalence.
 
-5. **Scale** — 743,309+ provably correct optimizations from a single ISA (est. ~950K when complete), with GPU search enabling complete coverage of length-3 sequences (74.8 billion targets). This is significantly more rules than prior peephole superoptimizer work has produced.
+5. **Memory as virtual register** — modeling indirect memory access `(HL)` as a virtual register M, with same-address assumption. This extends superoptimization to memory-touching instructions without requiring a full memory model, adding 61 opcodes with minimal state growth.
+
+6. **Scale** — 761,621+ provably correct optimizations from a single ISA, with GPU search enabling complete coverage of length-3 sequences (74.8 billion targets). This is significantly more rules than prior peephole superoptimizer work has produced.
 
 Whether this constitutes a publishable contribution depends on the venue — a workshop paper at CGO, CC, or a retro-computing venue like [VCFW](https://www.vcfed.org/) could work. The GPU-accelerated QuickCheck technique generalizes to any small-state ISA (6502, 8080, ARM Thumb subset, RISC-V compressed).
 
