@@ -16,10 +16,16 @@ type Instruction struct {
 func HasImmediate(op OpCode) bool {
 	switch op {
 	case LD_A_N, LD_B_N, LD_C_N, LD_D_N, LD_E_N, LD_H_N, LD_L_N,
-		ADD_A_N, ADC_A_N, SUB_N, SBC_A_N, AND_N, XOR_N, OR_N, CP_N:
+		ADD_A_N, ADC_A_N, SUB_N, SBC_A_N, AND_N, XOR_N, OR_N, CP_N,
+		LD_HLI_N:
 		return true
 	}
 	return HasImm16(op)
+}
+
+// UsesMemory returns true if this opcode accesses the virtual memory byte (State.M).
+func UsesMemory(op OpCode) bool {
+	return op >= LD_A_HLI && op < OpCodeCount
 }
 
 // HasImm16 returns true if this opcode uses a 16-bit immediate operand.
@@ -497,6 +503,93 @@ const (
 	SBC_HL_DE
 	SBC_HL_HL
 	SBC_HL_SP
+
+	// === Wave 5: Memory ops — (HL)/(BC)/(DE) indirect (61 opcodes) ===
+	// All memory-accessing instructions use State.M as the virtual memory byte.
+	// Prerequisite: all memory ops in a sequence must target the same address.
+
+	// LD r, (HL): r = M (7 ops, 7 T-states, 1 byte)
+	LD_A_HLI
+	LD_B_HLI
+	LD_C_HLI
+	LD_D_HLI
+	LD_E_HLI
+	LD_H_HLI
+	LD_L_HLI
+
+	// LD (HL), r: M = r (7 ops, 7 T-states, 1 byte)
+	LD_HLI_A
+	LD_HLI_B
+	LD_HLI_C
+	LD_HLI_D
+	LD_HLI_E
+	LD_HLI_H
+	LD_HLI_L
+
+	// LD (HL), n: M = imm8 (1 op, 10 T-states, 2 bytes)
+	LD_HLI_N
+
+	// LD A, (BC) / LD A, (DE): A = M (2 ops, 7 T-states, 1 byte)
+	LD_A_BCI
+	LD_A_DEI
+
+	// LD (BC), A / LD (DE), A: M = A (2 ops, 7 T-states, 1 byte)
+	LD_BCI_A
+	LD_DEI_A
+
+	// ALU A, (HL): 8 ops, 7 T-states, 1 byte
+	ADD_A_HLI
+	ADC_A_HLI
+	SUB_HLI
+	SBC_A_HLI
+	AND_HLI
+	XOR_HLI
+	OR_HLI
+	CP_HLI
+
+	// INC/DEC (HL): 2 ops, 11 T-states, 1 byte
+	INC_HLI
+	DEC_HLI
+
+	// CB-prefix rotate/shift (HL): 8 ops, 15 T-states, 2 bytes
+	RLC_HLI
+	RRC_HLI
+	RL_HLI
+	RR_HLI
+	SLA_HLI
+	SRA_HLI
+	SRL_HLI
+	SLL_HLI
+
+	// CB-prefix BIT n, (HL): 8 ops, 12 T-states, 2 bytes
+	BIT_0_HLI
+	BIT_1_HLI
+	BIT_2_HLI
+	BIT_3_HLI
+	BIT_4_HLI
+	BIT_5_HLI
+	BIT_6_HLI
+	BIT_7_HLI
+
+	// CB-prefix RES n, (HL): 8 ops, 15 T-states, 2 bytes
+	RES_0_HLI
+	RES_1_HLI
+	RES_2_HLI
+	RES_3_HLI
+	RES_4_HLI
+	RES_5_HLI
+	RES_6_HLI
+	RES_7_HLI
+
+	// CB-prefix SET n, (HL): 8 ops, 15 T-states, 2 bytes
+	SET_0_HLI
+	SET_1_HLI
+	SET_2_HLI
+	SET_3_HLI
+	SET_4_HLI
+	SET_5_HLI
+	SET_6_HLI
+	SET_7_HLI
 
 	OpCodeCount // sentinel
 )

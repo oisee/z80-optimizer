@@ -434,4 +434,129 @@ func init() {
 	Catalog[SBC_HL_DE] = Info{"SBC HL, DE", []uint8{0xED, 0x52}, 15}
 	Catalog[SBC_HL_HL] = Info{"SBC HL, HL", []uint8{0xED, 0x62}, 15}
 	Catalog[SBC_HL_SP] = Info{"SBC HL, SP", []uint8{0xED, 0x72}, 15}
+
+	// === Wave 5: Memory ops — (HL)/(BC)/(DE) indirect (61 opcodes) ===
+
+	// LD r, (HL): 7 T-states, 1 byte
+	memLoads := []struct {
+		op       OpCode
+		mnemonic string
+		enc      uint8
+	}{
+		{LD_A_HLI, "LD A, (HL)", 0x7E},
+		{LD_B_HLI, "LD B, (HL)", 0x46},
+		{LD_C_HLI, "LD C, (HL)", 0x4E},
+		{LD_D_HLI, "LD D, (HL)", 0x56},
+		{LD_E_HLI, "LD E, (HL)", 0x5E},
+		{LD_H_HLI, "LD H, (HL)", 0x66},
+		{LD_L_HLI, "LD L, (HL)", 0x6E},
+	}
+	for _, ml := range memLoads {
+		Catalog[ml.op] = Info{Mnemonic: ml.mnemonic, Bytes: []uint8{ml.enc}, TStates: 7}
+	}
+
+	// LD (HL), r: 7 T-states, 1 byte
+	memStores := []struct {
+		op       OpCode
+		mnemonic string
+		enc      uint8
+	}{
+		{LD_HLI_A, "LD (HL), A", 0x77},
+		{LD_HLI_B, "LD (HL), B", 0x70},
+		{LD_HLI_C, "LD (HL), C", 0x71},
+		{LD_HLI_D, "LD (HL), D", 0x72},
+		{LD_HLI_E, "LD (HL), E", 0x73},
+		{LD_HLI_H, "LD (HL), H", 0x74},
+		{LD_HLI_L, "LD (HL), L", 0x75},
+	}
+	for _, ms := range memStores {
+		Catalog[ms.op] = Info{Mnemonic: ms.mnemonic, Bytes: []uint8{ms.enc}, TStates: 7}
+	}
+
+	// LD (HL), n: 10 T-states, 2 bytes
+	Catalog[LD_HLI_N] = Info{"LD (HL), n", []uint8{0x36}, 10}
+
+	// LD A, (BC)/(DE): 7 T-states, 1 byte
+	Catalog[LD_A_BCI] = Info{"LD A, (BC)", []uint8{0x0A}, 7}
+	Catalog[LD_A_DEI] = Info{"LD A, (DE)", []uint8{0x1A}, 7}
+	Catalog[LD_BCI_A] = Info{"LD (BC), A", []uint8{0x02}, 7}
+	Catalog[LD_DEI_A] = Info{"LD (DE), A", []uint8{0x12}, 7}
+
+	// ALU A, (HL): 7 T-states, 1 byte
+	aluMem := []struct {
+		op       OpCode
+		mnemonic string
+		enc      uint8
+	}{
+		{ADD_A_HLI, "ADD A, (HL)", 0x86},
+		{ADC_A_HLI, "ADC A, (HL)", 0x8E},
+		{SUB_HLI, "SUB (HL)", 0x96},
+		{SBC_A_HLI, "SBC A, (HL)", 0x9E},
+		{AND_HLI, "AND (HL)", 0xA6},
+		{XOR_HLI, "XOR (HL)", 0xAE},
+		{OR_HLI, "OR (HL)", 0xB6},
+		{CP_HLI, "CP (HL)", 0xBE},
+	}
+	for _, am := range aluMem {
+		Catalog[am.op] = Info{Mnemonic: am.mnemonic, Bytes: []uint8{am.enc}, TStates: 7}
+	}
+
+	// INC/DEC (HL): 11 T-states, 1 byte
+	Catalog[INC_HLI] = Info{"INC (HL)", []uint8{0x34}, 11}
+	Catalog[DEC_HLI] = Info{"DEC (HL)", []uint8{0x35}, 11}
+
+	// CB-prefix rotate/shift (HL): 15 T-states, 2 bytes
+	cbMem := []struct {
+		op       OpCode
+		mnemonic string
+		enc      uint8
+	}{
+		{RLC_HLI, "RLC (HL)", 0x06},
+		{RRC_HLI, "RRC (HL)", 0x0E},
+		{RL_HLI, "RL (HL)", 0x16},
+		{RR_HLI, "RR (HL)", 0x1E},
+		{SLA_HLI, "SLA (HL)", 0x26},
+		{SRA_HLI, "SRA (HL)", 0x2E},
+		{SRL_HLI, "SRL (HL)", 0x3E},
+		{SLL_HLI, "SLL (HL)", 0x36},
+	}
+	for _, cm := range cbMem {
+		Catalog[cm.op] = Info{Mnemonic: cm.mnemonic, Bytes: []uint8{0xCB, cm.enc}, TStates: 15}
+	}
+
+	// CB-prefix BIT n, (HL): 12 T-states, 2 bytes
+	// Encoding: CB [01 bbb 110] where bbb=bit number, 110=(HL)
+	for bit := 0; bit < 8; bit++ {
+		op := BIT_0_HLI + OpCode(bit)
+		enc := 0x46 | uint8(bit<<3)
+		Catalog[op] = Info{
+			Mnemonic: "BIT " + string('0'+byte(bit)) + ", (HL)",
+			Bytes:    []uint8{0xCB, enc},
+			TStates:  12,
+		}
+	}
+
+	// CB-prefix RES n, (HL): 15 T-states, 2 bytes
+	// Encoding: CB [10 bbb 110]
+	for bit := 0; bit < 8; bit++ {
+		op := RES_0_HLI + OpCode(bit)
+		enc := 0x86 | uint8(bit<<3)
+		Catalog[op] = Info{
+			Mnemonic: "RES " + string('0'+byte(bit)) + ", (HL)",
+			Bytes:    []uint8{0xCB, enc},
+			TStates:  15,
+		}
+	}
+
+	// CB-prefix SET n, (HL): 15 T-states, 2 bytes
+	// Encoding: CB [11 bbb 110]
+	for bit := 0; bit < 8; bit++ {
+		op := SET_0_HLI + OpCode(bit)
+		enc := 0xC6 | uint8(bit<<3)
+		Catalog[op] = Info{
+			Mnemonic: "SET " + string('0'+byte(bit)) + ", (HL)",
+			Bytes:    []uint8{0xCB, enc},
+			TStates:  15,
+		}
+	}
 }

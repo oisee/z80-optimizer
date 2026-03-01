@@ -880,6 +880,153 @@ func Exec(s *State, op inst.OpCode, imm uint16) int {
 	case inst.NOP:
 		// do nothing
 
+	// === Wave 5: Memory ops — (HL)/(BC)/(DE) indirect ===
+	// All use s.M as the virtual memory byte.
+
+	// LD r, (HL): r = M
+	case inst.LD_A_HLI:
+		s.A = s.M
+	case inst.LD_B_HLI:
+		s.B = s.M
+	case inst.LD_C_HLI:
+		s.C = s.M
+	case inst.LD_D_HLI:
+		s.D = s.M
+	case inst.LD_E_HLI:
+		s.E = s.M
+	case inst.LD_H_HLI:
+		s.H = s.M
+	case inst.LD_L_HLI:
+		s.L = s.M
+
+	// LD (HL), r: M = r
+	case inst.LD_HLI_A:
+		s.M = s.A
+	case inst.LD_HLI_B:
+		s.M = s.B
+	case inst.LD_HLI_C:
+		s.M = s.C
+	case inst.LD_HLI_D:
+		s.M = s.D
+	case inst.LD_HLI_E:
+		s.M = s.E
+	case inst.LD_HLI_H:
+		s.M = s.H
+	case inst.LD_HLI_L:
+		s.M = s.L
+
+	// LD (HL), n: M = imm
+	case inst.LD_HLI_N:
+		s.M = uint8(imm)
+
+	// LD A, (BC)/(DE): A = M (same address assumption)
+	case inst.LD_A_BCI:
+		s.A = s.M
+	case inst.LD_A_DEI:
+		s.A = s.M
+
+	// LD (BC), A / LD (DE), A: M = A
+	case inst.LD_BCI_A:
+		s.M = s.A
+	case inst.LD_DEI_A:
+		s.M = s.A
+
+	// ALU A, (HL)
+	case inst.ADD_A_HLI:
+		execAdd(s, s.M)
+	case inst.ADC_A_HLI:
+		execAdc(s, s.M)
+	case inst.SUB_HLI:
+		execSub(s, s.M)
+	case inst.SBC_A_HLI:
+		execSbc(s, s.M)
+	case inst.AND_HLI:
+		execAnd(s, s.M)
+	case inst.XOR_HLI:
+		execXor(s, s.M)
+	case inst.OR_HLI:
+		execOr(s, s.M)
+	case inst.CP_HLI:
+		execCp(s, s.M)
+
+	// INC/DEC (HL)
+	case inst.INC_HLI:
+		execInc(s, &s.M)
+	case inst.DEC_HLI:
+		execDec(s, &s.M)
+
+	// CB-prefix rotate/shift (HL)
+	case inst.RLC_HLI:
+		s.M = execRlc(s, s.M)
+	case inst.RRC_HLI:
+		s.M = execRrc(s, s.M)
+	case inst.RL_HLI:
+		s.M = execRl(s, s.M)
+	case inst.RR_HLI:
+		s.M = execRr(s, s.M)
+	case inst.SLA_HLI:
+		s.M = execSla(s, s.M)
+	case inst.SRA_HLI:
+		s.M = execSra(s, s.M)
+	case inst.SRL_HLI:
+		s.M = execSrl(s, s.M)
+	case inst.SLL_HLI:
+		s.M = execSll(s, s.M)
+
+	// BIT n, (HL)
+	case inst.BIT_0_HLI:
+		execBit(s, s.M, 0)
+	case inst.BIT_1_HLI:
+		execBit(s, s.M, 1)
+	case inst.BIT_2_HLI:
+		execBit(s, s.M, 2)
+	case inst.BIT_3_HLI:
+		execBit(s, s.M, 3)
+	case inst.BIT_4_HLI:
+		execBit(s, s.M, 4)
+	case inst.BIT_5_HLI:
+		execBit(s, s.M, 5)
+	case inst.BIT_6_HLI:
+		execBit(s, s.M, 6)
+	case inst.BIT_7_HLI:
+		execBit(s, s.M, 7)
+
+	// RES n, (HL)
+	case inst.RES_0_HLI:
+		s.M &^= 1 << 0
+	case inst.RES_1_HLI:
+		s.M &^= 1 << 1
+	case inst.RES_2_HLI:
+		s.M &^= 1 << 2
+	case inst.RES_3_HLI:
+		s.M &^= 1 << 3
+	case inst.RES_4_HLI:
+		s.M &^= 1 << 4
+	case inst.RES_5_HLI:
+		s.M &^= 1 << 5
+	case inst.RES_6_HLI:
+		s.M &^= 1 << 6
+	case inst.RES_7_HLI:
+		s.M &^= 1 << 7
+
+	// SET n, (HL)
+	case inst.SET_0_HLI:
+		s.M |= 1 << 0
+	case inst.SET_1_HLI:
+		s.M |= 1 << 1
+	case inst.SET_2_HLI:
+		s.M |= 1 << 2
+	case inst.SET_3_HLI:
+		s.M |= 1 << 3
+	case inst.SET_4_HLI:
+		s.M |= 1 << 4
+	case inst.SET_5_HLI:
+		s.M |= 1 << 5
+	case inst.SET_6_HLI:
+		s.M |= 1 << 6
+	case inst.SET_7_HLI:
+		s.M |= 1 << 7
+
 	default:
 		panic("unhandled opcode in Exec")
 	}
