@@ -73,7 +73,7 @@ Pruning uses register dependency bitmasks (`opReads`/`opWrites`) for all 394 opc
 
 The Z80 executor is an ideal GPU workload: fixed-size 10-byte state, no memory access, pure ALU computation, embarrassingly parallel. We ported the entire Z80 executor and QuickCheck pipeline to CUDA.
 
-### Architecture
+### Architecture (v1)
 
 ```
                       CUDA Kernel (one thread per candidate)
@@ -88,7 +88,7 @@ The Z80 executor is an ideal GPU workload: fixed-size 10-byte state, no memory a
          +──> upload ──> GPU dispatch (4215+ threads)
                               |
                               v
-                         read back hits
+                         read back hits (~0.01% survive)
                               |
                               v
                       CPU: ExhaustiveCheck survivors
@@ -103,9 +103,16 @@ The Z80 executor is an ideal GPU workload: fixed-size 10-byte state, no memory a
 |----------|-------------|---------|
 | CPU brute force (Apple M2) | 3h 16m | 1x |
 | CPU brute force (i7, projected) | ~6h | 0.5x |
-| **CUDA (RTX 4060 Ti)** | **~14 min** | **~14x** |
+| **CUDA v1 (RTX 4060 Ti)** | **~14 min** | **~14x** |
 
-The CUDA version also includes the full ExhaustiveCheck on CPU, pruning, disassembly, and JSONL output — it's a complete standalone search binary.
+The CUDA version includes the full ExhaustiveCheck on CPU, pruning, disassembly, and JSONL output — a complete standalone search binary.
+
+### Known v1 bottlenecks
+
+- **One kernel launch per target**: ~14M separate GPU dispatches for length-2, each with ~5-20µs launch overhead
+- **27% false positive rate**: QuickCheck's 8 test vectors let through ~27% of candidates that fail ExhaustiveCheck, wasting CPU time
+- **CPU ExhaustiveCheck**: BIT/SET/RES opcodes generate thousands of false positives that each need expensive CPU verification (~16 min per opcode group)
+- **Single GPU**: only uses 1 of 2 available RTX 4060 Ti GPUs
 
 ### Building and running
 
@@ -257,10 +264,11 @@ pkg/stoke/           STOKE stochastic superoptimizer (MCMC search)
 pkg/gpu/             GPU integration layer (CUDA process, search orchestration)
 pkg/gpu/shader/      WGSL compute shader (1171 lines, full Z80 executor)
 pkg/result/          Rule storage, checkpoint, JSON output
-cuda/                CUDA kernels and standalone search binary
+cuda/                CUDA kernels and standalone search binaries
   z80_common.h         Shared Z80 executor, flag tables, test vectors
   z80_quickcheck.cu    GPU QuickCheck kernel (pipe mode for Go interop)
-  z80_search.cu        Standalone GPU search binary (enumerate + QuickCheck + verify)
+  z80_search.cu        v1 standalone GPU search (enumerate + QuickCheck + CPU verify)
+  z80_search_v2.cu     v2 batched pipeline (QuickCheck + MidCheck + GPU ExhaustiveCheck)
 docs/                Research roadmap, ADRs, implementation plan
 ```
 
@@ -268,16 +276,48 @@ docs/                Research roadmap, ADRs, implementation plan
 
 ```
 Length 1:  4,215 targets           → trivial
-Length 2:  4,215^2 = 17.8M targets → 3h CPU, ~14min GPU     DONE
-Length 3:  4,215^3 = 74.8B targets → months CPU, hours GPU   next
+Length 2:  4,215^2 = 17.8M targets → 3h CPU, ~14min GPU v1     DONE
+Length 3:  4,215^3 = 74.8B targets → months CPU, hours GPU v2  next
 Length 4:  4,215^4 = 315T targets  → STOKE only
 Length 5+: combinatorial explosion → STOKE only
 ```
 
 ## What's next
 
+### CUDA v2 — 3-stage batched pipeline (in development)
+
+The v2 search addresses all v1 bottlenecks with a 3-stage GPU pipeline:
+
+```
+CPU: enumerate targets in batches of 512
+         |
+GPU Kernel 1: batched QuickCheck (512 targets × 4215 candidates)
+         |  8 test vectors, bitmap output, one launch per batch
+         |  rejects 99.99% of candidates
+         v
+GPU Kernel 2: MidCheck (survivors only)
+         |  24 additional test vectors, eliminates ~96% of false positives
+         v
+GPU Kernel 3: GPU ExhaustiveCheck (one thread-block per pair)
+         |  256 threads per block, full/reduced sweep
+         |  matches Go verifier logic exactly
+         v
+CPU: output confirmed results as JSONL
+```
+
+Expected improvements:
+
+| Metric | v1 | v2 (projected) |
+|---|---|---|
+| Kernel launches (len-2) | ~14M | ~27K |
+| False positive rate | 27% | <1% |
+| ExhaustiveCheck | CPU | GPU (256 threads/pair) |
+| Total time (len-2, 1 GPU) | ~14 min | ~5-8 min |
+| Dual GPU support | no | yes (--gpu-id) |
+
+### Further goals
+
 - **Length-3 GPU search** — the real prize. 74.8 billion targets, estimated hours on dual RTX 4060 Ti. Will find 3-instruction patterns that reduce to 1-2 instructions.
-- **Batched GPU dispatch** — pack multiple target fingerprints per kernel launch to reduce per-target overhead. Could further speed up search by 10x+.
 - **Reordering optimizer** — apply discovered rules to real Z80 code by proving instruction independence via dependency DAG analysis. Handles interleaved unrelated instructions between optimizable pairs.
 
 See [docs/NEXT.md](docs/NEXT.md) for the full roadmap with architecture diagrams and references.
