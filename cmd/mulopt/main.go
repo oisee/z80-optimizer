@@ -37,16 +37,17 @@ const (
 	OpSbcAB               // SBC A,B (4T)
 	OpSbcAA               // SBC A,A (4T)
 	OpOrA                 // OR A    (4T) — clears carry
+	OpNeg                 // NEG     (8T) — negate A
 	NumOps
 )
 
 var opNames = [NumOps]string{
 	"ADD A,A", "ADD A,B", "SUB B", "LD B,A", "SLA A", "SRL A",
-	"EX AF,AF'", "EXX", "ADC A,B", "ADC A,A", "SBC A,B", "SBC A,A", "OR A",
+	"EX AF,AF'", "EXX", "ADC A,B", "ADC A,A", "SBC A,B", "SBC A,A", "OR A", "NEG",
 }
 
 var opCost = [NumOps]int{
-	4, 4, 4, 4, 8, 8, 4, 4, 4, 4, 4, 4, 4,
+	4, 4, 4, 4, 8, 8, 4, 4, 4, 4, 4, 4, 4, 8,
 }
 
 // CPU state for multiply simulation.
@@ -120,7 +121,9 @@ func exec(op MulOp, s MulState) MulState {
 		s.a = uint8(r)
 	case OpOrA:
 		s.carry = false
-		// OR A doesn't change A, just clears carry and sets flags
+	case OpNeg:
+		s.carry = s.a != 0
+		s.a = -s.a
 	}
 	return s
 }

@@ -15,29 +15,44 @@
 #include <cstring>
 #include <cstdlib>
 
-// Instruction opcodes
+// Instruction opcodes (21 total)
 #define OP_ADD_AA   0   // ADD A,A  (4T)
 #define OP_ADD_AB   1   // ADD A,B  (4T)
 #define OP_SUB_B    2   // SUB B    (4T)
 #define OP_LD_BA    3   // LD B,A   (4T)
-#define OP_SLA_A    4   // SLA A    (8T)
-#define OP_SRL_A    5   // SRL A    (8T)
-#define OP_EX_AF    6   // EX AF,AF'(4T)
-#define OP_EXX      7   // EXX      (4T)
-#define OP_ADC_AB   8   // ADC A,B  (4T)
-#define OP_ADC_AA   9   // ADC A,A  (4T)
-#define OP_SBC_AB  10   // SBC A,B  (4T)
-#define OP_SBC_AA  11   // SBC A,A  (4T)
-#define OP_OR_A    12   // OR A     (4T)
-#define NUM_OPS    13
+#define OP_ADC_AB   4   // ADC A,B  (4T)
+#define OP_ADC_AA   5   // ADC A,A  (4T)
+#define OP_SBC_AB   6   // SBC A,B  (4T)
+#define OP_SBC_AA   7   // SBC A,A  (4T)
+#define OP_SLA_A    8   // SLA A    (8T) — shift left, bit0=0
+#define OP_SRA_A    9   // SRA A    (8T) — arithmetic shift right, bit7 preserved
+#define OP_SRL_A   10   // SRL A    (8T) — logical shift right, bit7=0
+#define OP_RLA     11   // RLA      (4T) — rotate left through carry
+#define OP_RRA     12   // RRA      (4T) — rotate right through carry
+#define OP_RLCA    13   // RLCA     (4T) — rotate left circular
+#define OP_RRCA    14   // RRCA     (4T) — rotate right circular
+#define OP_RLC_A   15   // RLC A    (8T) — rotate left circular (CB prefix)
+#define OP_RRC_A   16   // RRC A    (8T) — rotate right circular (CB prefix)
+#define OP_OR_A    17   // OR A     (4T) — clear carry
+#define OP_NEG     18   // NEG      (8T) — negate A
+#define OP_SCF     19   // SCF      (4T) — set carry flag
+#define OP_EX_AF   20   // EX AF,AF'(4T)
+#define NUM_OPS    21
 
-__constant__ uint8_t opCost[NUM_OPS] = {4,4,4,4,8,8,4,4,4,4,4,4,4};
+__constant__ uint8_t opCost[NUM_OPS] = {
+    4,4,4,4,4,4,4,4,  // ADD/ADC/SBC/LD
+    8,8,8,             // SLA/SRA/SRL
+    4,4,4,4,           // RLA/RRA/RLCA/RRCA
+    8,8,               // RLC A/RRC A
+    4,8,4,4            // OR A/NEG/SCF/EX AF
+};
 
 // Execute one instruction. State: a, b, carry, aS (shadow A), bS (shadow B), carryS
 __device__ void exec_op(uint8_t op, uint8_t &a, uint8_t &b, bool &carry,
-                        uint8_t &aS, uint8_t &bS, bool &carryS) {
+                        uint8_t &aS, bool &carryS) {
     uint16_t r;
     uint16_t c;
+    uint8_t bit;
     switch (op) {
     case OP_ADD_AA:
         r = (uint16_t)a + a;
@@ -50,30 +65,12 @@ __device__ void exec_op(uint8_t op, uint8_t &a, uint8_t &b, bool &carry,
         a = (uint8_t)r;
         break;
     case OP_SUB_B:
-        r = (uint16_t)a - b;
         carry = (a < b);
-        a = (uint8_t)r;
+        a = a - b;
         break;
     case OP_LD_BA:
         b = a;
         break;
-    case OP_SLA_A:
-        carry = (a & 0x80) != 0;
-        a = a << 1;
-        break;
-    case OP_SRL_A:
-        carry = (a & 0x01) != 0;
-        a = a >> 1;
-        break;
-    case OP_EX_AF: {
-        uint8_t ta = a; a = aS; aS = ta;
-        bool tc = carry; carry = carryS; carryS = tc;
-        break;
-    }
-    case OP_EXX: {
-        uint8_t tb = b; b = bS; bS = tb;
-        break;
-    }
     case OP_ADC_AB:
         c = carry ? 1 : 0;
         r = (uint16_t)a + b + c;
@@ -88,28 +85,76 @@ __device__ void exec_op(uint8_t op, uint8_t &a, uint8_t &b, bool &carry,
         break;
     case OP_SBC_AB:
         c = carry ? 1 : 0;
-        r = (uint16_t)a - b - c;
-        carry = (int16_t)((int16_t)a - (int16_t)b - (int16_t)c) < 0;
-        a = (uint8_t)r;
+        carry = ((int16_t)a - (int16_t)b - (int16_t)c) < 0;
+        a = a - b - (uint8_t)c;
         break;
     case OP_SBC_AA:
         c = carry ? 1 : 0;
-        r = (uint16_t)a - a - c;
-        carry = c > 0; // 0-0-c < 0 iff c=1
-        a = (uint8_t)r;
+        carry = c > 0;
+        a = -(uint8_t)c;
+        break;
+    case OP_SLA_A:
+        carry = (a & 0x80) != 0;
+        a = a << 1;
+        break;
+    case OP_SRA_A:
+        carry = (a & 0x01) != 0;
+        a = (uint8_t)((int8_t)a >> 1); // arithmetic: preserves bit 7
+        break;
+    case OP_SRL_A:
+        carry = (a & 0x01) != 0;
+        a = a >> 1;
+        break;
+    case OP_RLA: // rotate left through carry: bit0=old carry, carry=old bit7
+        bit = carry ? 1 : 0;
+        carry = (a & 0x80) != 0;
+        a = (a << 1) | bit;
+        break;
+    case OP_RRA: // rotate right through carry: bit7=old carry, carry=old bit0
+        bit = carry ? 0x80 : 0;
+        carry = (a & 0x01) != 0;
+        a = (a >> 1) | bit;
+        break;
+    case OP_RLCA: // rotate left circular: bit0=old bit7, carry=old bit7
+        carry = (a & 0x80) != 0;
+        a = (a << 1) | (a >> 7);
+        break;
+    case OP_RRCA: // rotate right circular: bit7=old bit0, carry=old bit0
+        carry = (a & 0x01) != 0;
+        a = (a >> 1) | (a << 7);
+        break;
+    case OP_RLC_A: // same as RLCA but CB-prefixed (8T, sets more flags)
+        carry = (a & 0x80) != 0;
+        a = (a << 1) | (a >> 7);
+        break;
+    case OP_RRC_A: // same as RRCA but CB-prefixed (8T, sets more flags)
+        carry = (a & 0x01) != 0;
+        a = (a >> 1) | (a << 7);
         break;
     case OP_OR_A:
         carry = false;
         break;
+    case OP_NEG:
+        carry = (a != 0);
+        a = (uint8_t)(0 - a);
+        break;
+    case OP_SCF:
+        carry = true;
+        break;
+    case OP_EX_AF: {
+        uint8_t ta = a; a = aS; aS = ta;
+        bool tc = carry; carry = carryS; carryS = tc;
+        break;
+    }
     }
 }
 
 // Run a sequence on input, return final A
 __device__ uint8_t run_seq(const uint8_t *ops, int len, uint8_t input) {
-    uint8_t a = input, b = 0, aS = 0, bS = 0;
+    uint8_t a = input, b = 0, aS = 0;
     bool carry = false, carryS = false;
     for (int i = 0; i < len; i++) {
-        exec_op(ops[i], a, b, carry, aS, bS, carryS);
+        exec_op(ops[i], a, b, carry, aS, carryS);
     }
     return a;
 }
@@ -173,13 +218,16 @@ static uint64_t ipow(uint64_t base, int exp) {
 
 static const char *opName(uint8_t op) {
     static const char *names[] = {
-        "ADD A,A", "ADD A,B", "SUB B", "LD B,A", "SLA A", "SRL A",
-        "EX AF,AF'", "EXX", "ADC A,B", "ADC A,A", "SBC A,B", "SBC A,A", "OR A"
+        "ADD A,A", "ADD A,B", "SUB B", "LD B,A",
+        "ADC A,B", "ADC A,A", "SBC A,B", "SBC A,A",
+        "SLA A", "SRA A", "SRL A",
+        "RLA", "RRA", "RLCA", "RRCA", "RLC A", "RRC A",
+        "OR A", "NEG", "SCF", "EX AF,AF'"
     };
     return op < NUM_OPS ? names[op] : "?";
 }
 
-static int hostOpCost[] = {4,4,4,4,8,8,4,4,4,4,4,4,4};
+// opCost is in __constant__ memory on device
 
 struct MulResult {
     int k;
