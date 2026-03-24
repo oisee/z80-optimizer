@@ -34,18 +34,22 @@
 // ============================================================
 #define MAX_VREGS    16     // max virtual registers per function
 #define MAX_OPS      64     // max VIR operations per block
-#define MAX_LOCS     7      // A, B, C, D, E, H, L (8-bit GPR)
+#define MAX_LOCS     11     // A,B,C,D,E,H,L + BC,DE,HL,IXH (8-bit + 16-bit)
 #define MAX_PATTERNS 16     // max patterns per operation
 #define INVALID_COST 0xFFFF // marks infeasible assignment
 
 // Physical register indices (matching VIR z80.go Locs)
-#define LOC_A  0
-#define LOC_B  1
-#define LOC_C  2
-#define LOC_D  3
-#define LOC_E  4
-#define LOC_H  5
-#define LOC_L  6
+#define LOC_A   0
+#define LOC_B   1
+#define LOC_C   2
+#define LOC_D   3
+#define LOC_E   4
+#define LOC_H   5
+#define LOC_L   6
+#define LOC_BC  7
+#define LOC_DE  8
+#define LOC_HL  9
+#define LOC_IXH 10
 
 // ============================================================
 // Function description (uploaded to GPU constant memory)
@@ -53,12 +57,12 @@
 
 // One VIR operation's constraints
 struct OpDesc {
-    int     nPatterns;              // how many patterns match this op
-    uint8_t patDstLocs[MAX_PATTERNS]; // bitmask: which locs can dst be in
-    uint8_t patSrcLocs0[MAX_PATTERNS]; // bitmask: which locs can src0 be in
-    uint8_t patSrcLocs1[MAX_PATTERNS]; // bitmask: which locs can src1 be in
-    uint8_t patCost[MAX_PATTERNS];     // T-state cost of each pattern
-    uint8_t patTiedDstSrc;          // bitmask: which patterns have tied dst=src0
+    int      nPatterns;              // how many patterns match this op
+    uint16_t patDstLocs[MAX_PATTERNS]; // bitmask: which locs can dst be in
+    uint16_t patSrcLocs0[MAX_PATTERNS]; // bitmask: which locs can src0 be in
+    uint16_t patSrcLocs1[MAX_PATTERNS]; // bitmask: which locs can src1 be in
+    uint8_t  patCost[MAX_PATTERNS];     // T-state cost of each pattern
+    uint16_t patTiedDstSrc;          // bitmask: which patterns have tied dst=src0
     int     dstVreg;                // -1 if none
     int     srcVreg0;               // -1 if none
     int     srcVreg1;               // -1 if none
@@ -352,9 +356,9 @@ struct JsonParser {
 
 // Convert an array of location indices to a bitmask.
 // Empty array (or null, which parse_int_array returns as empty) means unconstrained.
-static uint8_t locs_to_bitmask(const std::vector<int> &locs) {
-    if (locs.empty()) return 0x7F; // all 7 GPR valid
-    uint8_t mask = 0;
+static uint16_t locs_to_bitmask(const std::vector<int> &locs) {
+    if (locs.empty()) return (1u << MAX_LOCS) - 1; // all locs valid
+    uint16_t mask = 0;
     for (int loc : locs) {
         if (loc >= 0 && loc < MAX_LOCS) {
             mask |= (1u << loc);
@@ -526,7 +530,7 @@ void print_usage() {
     fprintf(stderr, "  --demo     Run built-in demo (add function)\n");
     fprintf(stderr, "  (default)  Read binary FuncDesc from stdin\n");
     fprintf(stderr, "\n");
-    fprintf(stderr, "Loc indices: A=0, B=1, C=2, D=3, E=4, H=5, L=6\n");
+    fprintf(stderr, "Loc indices: A=0, B=1, C=2, D=3, E=4, H=5, L=6, BC=7, DE=8, HL=9, IXH=10\n");
 }
 
 // Solve one function: upload to GPU, run kernel, return results via output params.
@@ -540,8 +544,8 @@ static bool solve_one(const FuncDesc &func,
     for (int i = 0; i < func.nVregs; i++) {
         outTotal *= MAX_LOCS;
         if (outTotal > 100000000000ULL) {
-            fprintf(stderr, "Search space too large: %d vregs -> 7^%d > 100B\n",
-                    func.nVregs, func.nVregs);
+            fprintf(stderr, "Search space too large: %d vregs -> %d^%d > 100B\n",
+                    func.nVregs, MAX_LOCS, func.nVregs);
             return false;
         }
     }
@@ -562,7 +566,7 @@ static bool solve_one(const FuncDesc &func,
     uint64_t offset = 0;
 
     if (!quiet) {
-        printf("Search space: 7^%d = %llu assignments\n", func.nVregs,
+        printf("Search space: %d^%d = %llu assignments\n", MAX_LOCS, func.nVregs,
                (unsigned long long)outTotal);
         printf("Launching GPU regalloc...\n");
     }
@@ -706,7 +710,7 @@ int main(int argc, char *argv[]) {
         add.nPatterns = 1;
         add.patDstLocs[0] = (1 << LOC_A); // ADD dst must be A
         add.patSrcLocs0[0] = (1 << LOC_A); // ADD src0 must be A (tied)
-        add.patSrcLocs1[0] = 0x7F; // ADD src1 can be any GPR
+        add.patSrcLocs1[0] = (1u << MAX_LOCS) - 1; // ADD src1 can be any GPR
         add.patCost[0] = 4; // ADD A, r = 4T
         add.patTiedDstSrc = 1; // pattern 0 has tied dst=src0
         add.dstVreg = 2;
@@ -766,7 +770,7 @@ int main(int argc, char *argv[]) {
         uint8_t best[MAX_VREGS];
         decode_assignment(bestIdx, func.nVregs, best);
 
-        const char *locNames[] = {"A", "B", "C", "D", "E", "H", "L"};
+        const char *locNames[] = {"A", "B", "C", "D", "E", "H", "L", "BC", "DE", "HL", "IXH"};
         printf("\nOptimal assignment (cost=%u T-states, %llu feasible):\n",
                cost, (unsigned long long)feasible);
         for (int i = 0; i < func.nVregs; i++) {
