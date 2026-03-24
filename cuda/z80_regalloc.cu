@@ -543,8 +543,8 @@ static bool solve_one(const FuncDesc &func,
     outTotal = 1;
     for (int i = 0; i < func.nVregs; i++) {
         outTotal *= MAX_LOCS;
-        if (outTotal > 100000000000ULL) {
-            fprintf(stderr, "Search space too large: %d vregs -> %d^%d > 100B\n",
+        if (outTotal > 500000000000ULL) {
+            fprintf(stderr, "Search space too large: %d vregs -> %d^%d > 500B\n",
                     func.nVregs, MAX_LOCS, func.nVregs);
             return false;
         }
