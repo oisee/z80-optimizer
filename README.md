@@ -389,6 +389,26 @@ Length 5+: combinatorial explosion → STOKE only
 - **Distributed verification** — split MidCheck candidate JSONL files for parallel CPU verification across machines. Community-distributable.
 - **Reordering optimizer** — apply discovered rules to real Z80 code via dependency DAG analysis. Handles interleaved unrelated instructions.
 
+### Bruteforce beyond peephole
+
+We're expanding from instruction-level optimization to **function-level** and **algorithmic-level** bruteforce. See **[BRUTEFORCE_ROADMAP.md](BRUTEFORCE_ROADMAP.md)** for the full plan.
+
+**Already shipped:**
+- **Register allocation table** — 61 entries, provably optimal (CUDA 15-loc search)
+- **Peephole rules** — 602K entries (CUDA length-2 exhaustive)
+
+**In progress:**
+- **Constant multiply ×2..×255** — 4-tier search (basic → +ADC/SBC → +EX AF,AF' → +rotations). Carry-chain patterns: `SLA A / ADC A,B` where the rotation overflow feeds into addition.
+
+**Planned targets:**
+- **Constant division ÷2..÷255** — reciprocal multiplication tricks
+- **ZX Spectrum screen address** — Y→VRAM address, the holy grail of Spectrum programming (complex bit-field shuffle, every game calls it thousands of times)
+- **Sign extend, ABS, MIN/MAX, CLAMP** — common operations with non-obvious optimal sequences
+- **Bit reverse, popcount, BCD conversion** — bit manipulation functions
+- **Approximate sin/cos** — polynomial approximation in minimal Z80 instructions (allow ±2 error)
+
+Philosophy: *"Let the GPU try everything. Ship the winners."*
+
 See [docs/NEXT.md](docs/NEXT.md) for the full roadmap with architecture diagrams and references.
 
 ## Research context
