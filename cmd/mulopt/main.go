@@ -125,15 +125,31 @@ func exec(op MulOp, s MulState) MulState {
 	return s
 }
 
+// execSeq runs a sequence on initial A value, returns final A.
+func execSeq(seq []MulOp, input uint8) uint8 {
+	s := MulState{a: input}
+	for _, op := range seq {
+		s = exec(op, s)
+	}
+	return s.a
+}
+
 // Test if a sequence multiplies A by K for all inputs 0..255.
-// Initial state: A=input, B=0, carry=0, shadows=0.
+// Quick-reject with 3 discriminating inputs before full check.
 func testSequence(seq []MulOp, k uint8) bool {
+	// Quick reject: test 1, 2, 3 first (catches >99% of failures)
+	if execSeq(seq, 1) != k {
+		return false
+	}
+	if execSeq(seq, 2) != 2*k {
+		return false
+	}
+	if execSeq(seq, 3) != 3*k {
+		return false
+	}
+	// Full verification
 	for input := 0; input < 256; input++ {
-		s := MulState{a: uint8(input)}
-		for _, op := range seq {
-			s = exec(op, s)
-		}
-		if s.a != uint8(input)*k {
+		if execSeq(seq, uint8(input)) != uint8(input)*k {
 			return false
 		}
 	}
