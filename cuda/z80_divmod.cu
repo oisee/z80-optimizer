@@ -103,9 +103,12 @@ __device__ void exec_op(uint8_t op, uint8_t &a, uint8_t &b, bool &carry,
     }
 }
 
+// Initial B value (set via --init-b, searched 0-255 by default)
+__constant__ uint8_t d_initB;
+
 // Run sequence, return (A, B) packed as uint16
 __device__ uint16_t run_seq(const uint8_t *ops, int len, uint8_t input) {
-    uint8_t a = input, b = 0, aS = 0;
+    uint8_t a = input, b = d_initB, aS = 0;
     bool carry = false, carryS = false;
     for (int i = 0; i < len; i++) {
         exec_op(ops[i], a, b, carry, aS, carryS);
@@ -195,12 +198,17 @@ struct DivResult {
     int length;
     int tstates;
     uint8_t ops[12];
+    uint8_t initB;
     bool found;
 };
 
-static DivResult solve(int k, int mode, int maxLen) {
+// Solve with a specific initial B value
+static DivResult solve_with_b(int k, int mode, int maxLen, uint8_t bVal) {
     DivResult result;
     result.found = false;
+    result.initB = bVal;
+
+    cudaMemcpyToSymbol(d_initB, &bVal, sizeof(uint8_t));
 
     uint32_t *d_bestScore;
     uint64_t *d_bestIdx;
@@ -213,16 +221,10 @@ static DivResult solve(int k, int mode, int maxLen) {
 
     for (int len = 1; len <= maxLen; len++) {
         uint64_t total = ipow(NUM_OPS, len);
-        if (total > 500000000000ULL) {
-            fprintf(stderr, "  (length %d: %llu > 500B, stopping)\n", len,
-                    (unsigned long long)total);
-            break;
-        }
+        if (total > 500000000000ULL) break;
 
         cudaMemcpy(d_bestScore, &initScore, sizeof(uint32_t), cudaMemcpyHostToDevice);
         cudaMemcpy(d_bestIdx, &initIdx, sizeof(uint64_t), cudaMemcpyHostToDevice);
-
-        fprintf(stderr, "  length %d (%llu sequences)...", len, (unsigned long long)total);
 
         uint64_t batchSize = (uint64_t)blockSize * 65535;
         uint64_t offset = 0;
@@ -250,15 +252,47 @@ static DivResult solve(int k, int mode, int maxLen) {
                 result.ops[i] = (uint8_t)(idx % NUM_OPS);
                 idx /= NUM_OPS;
             }
-            fprintf(stderr, " FOUND!\n");
             break;
         }
-        fprintf(stderr, " not found\n");
     }
 
     cudaFree(d_bestScore);
     cudaFree(d_bestIdx);
     return result;
+}
+
+// Solve: either with fixed B or try all 256 B values
+static DivResult solve(int k, int mode, int maxLen, int fixedB) {
+    if (fixedB >= 0) {
+        fprintf(stderr, "  B=%d fixed\n", fixedB);
+        DivResult r = solve_with_b(k, mode, maxLen, (uint8_t)fixedB);
+        if (r.found) fprintf(stderr, "  FOUND with B=%d!\n", fixedB);
+        else fprintf(stderr, "  not found with B=%d\n", fixedB);
+        return r;
+    }
+
+    // Try all 256 B values, keep best result
+    DivResult best;
+    best.found = false;
+    int bestScore = 0x7FFFFFFF;
+
+    for (int bv = 0; bv < 256; bv++) {
+        if (bv % 16 == 0) fprintf(stderr, "\r  trying B=%d..%d (best so far: %s)  ",
+                                    bv, bv+15, best.found ? "yes" : "none");
+        DivResult r = solve_with_b(k, mode, maxLen, (uint8_t)bv);
+        if (r.found) {
+            // Score: length * 1000 + tstates + 7 (for the LD B,n preamble)
+            int score = r.length * 1000 + r.tstates;
+            if (score < bestScore) {
+                bestScore = score;
+                best = r;
+            }
+        }
+    }
+    if (best.found) fprintf(stderr, "\r  BEST: B=%d, %d insts + LD B,%d, %dT + 7T      \n",
+                             best.initB, best.length, best.initB, best.tstates);
+    else fprintf(stderr, "\r  not found for any B value                    \n");
+    return best;
 }
 
 static void print_result(const char *label, int k, DivResult &r, bool json) {
@@ -269,20 +303,24 @@ static void print_result(const char *label, int k, DivResult &r, bool json) {
             printf("%s %d: NOT FOUND\n", label, k);
         return;
     }
+    int totalInsts = r.length + (r.initB != 0 ? 1 : 0); // +1 for LD B,n
+    int totalT = r.tstates + (r.initB != 0 ? 7 : 0);     // +7T for LD B,n
     if (json) {
-        printf("{\"op\": \"%s\", \"k\": %d, \"ops\": [", label, k);
+        printf("{\"op\": \"%s\", \"k\": %d, \"initB\": %d, \"ops\": [", label, k, r.initB);
+        if (r.initB != 0) printf("\"LD B,%d\", ", r.initB);
         for (int i = 0; i < r.length; i++) {
-            if (i > 0) printf(", ");
+            if (i > 0 || r.initB != 0) printf(", ");
             printf("\"%s\"", opName(r.ops[i]));
         }
-        printf("], \"length\": %d, \"tstates\": %d}\n", r.length, r.tstates);
+        printf("], \"length\": %d, \"tstates\": %d}\n", totalInsts, totalT);
     } else {
         printf("%s %d: ", label, k);
+        if (r.initB != 0) printf("LD B,%d / ", r.initB);
         for (int i = 0; i < r.length; i++) {
             if (i > 0) printf(" / ");
             printf("%s", opName(r.ops[i]));
         }
-        printf("  (%d insts, %dT)\n", r.length, r.tstates);
+        printf("  (%d insts, %dT)\n", totalInsts, totalT);
     }
     fflush(stdout);
 }
@@ -292,6 +330,7 @@ int main(int argc, char *argv[]) {
 
     int maxLen = 8;
     int divK = 0, modK = 0, divmodK = 0;
+    int initB = -1; // -1 = try all 256 values, 0-255 = fixed
     bool jsonMode = false;
 
     for (int i = 1; i < argc; i++) {
@@ -299,6 +338,7 @@ int main(int argc, char *argv[]) {
         else if (strcmp(argv[i], "--div") == 0 && i+1 < argc) divK = atoi(argv[++i]);
         else if (strcmp(argv[i], "--mod") == 0 && i+1 < argc) modK = atoi(argv[++i]);
         else if (strcmp(argv[i], "--divmod") == 0 && i+1 < argc) divmodK = atoi(argv[++i]);
+        else if (strcmp(argv[i], "--init-b") == 0 && i+1 < argc) initB = atoi(argv[++i]);
         else if (strcmp(argv[i], "--json") == 0) jsonMode = true;
         else if (strcmp(argv[i], "--help") == 0) {
             fprintf(stderr, "z80_divmod — GPU brute-force division/modulo by constant\n");
@@ -314,20 +354,20 @@ int main(int argc, char *argv[]) {
 
     if (divK > 0) {
         fprintf(stderr, "Searching for A/%d → A (max length %d, %d ops)\n", divK, maxLen, NUM_OPS);
-        DivResult r = solve(divK, MODE_DIV, maxLen);
+        DivResult r = solve(divK, MODE_DIV, maxLen, initB);
         print_result("div", divK, r, jsonMode);
     }
 
     if (modK > 0) {
         fprintf(stderr, "Searching for A%%%d → A (max length %d, %d ops)\n", modK, maxLen, NUM_OPS);
-        DivResult r = solve(modK, MODE_MOD, maxLen);
+        DivResult r = solve(modK, MODE_MOD, maxLen, initB);
         print_result("mod", modK, r, jsonMode);
     }
 
     if (divmodK > 0) {
         fprintf(stderr, "Searching for divmod %d: A→A/K, B→A%%K (max length %d, %d ops)\n",
                 divmodK, maxLen, NUM_OPS);
-        DivResult r = solve(divmodK, MODE_DIVMOD, maxLen);
+        DivResult r = solve(divmodK, MODE_DIVMOD, maxLen, initB);
         print_result("divmod", divmodK, r, jsonMode);
     }
 
