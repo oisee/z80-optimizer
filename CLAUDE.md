@@ -32,6 +32,22 @@ Virtual memory byte M in State: all indirect ops (HL), (BC), (DE) share one M re
 
 V1 (206) + Wave 1 (+174 BIT/RES/SET) + Wave 2 (+14 16-bit pair ops) + Wave 4 (+12 LD rr,nn, ADC/SBC HL) + Wave 5 (+61 memory ops) = 455 opcodes total.
 
+## Cross-Session Communication (ddll)
+
+Use `ddll` to communicate with other Claude sessions working on related repos:
+
+```bash
+ddll explore                        # list active sessions
+ddll send <session>:main "message"  # send message to a session
+```
+
+Known sibling sessions:
+- `minz` — MinZ compiler
+- `minz-vir` — VIR backend (register allocator, codegen)
+- `z80-optimizer` — this repo
+
+Messages from other sessions appear as `[from:main]` in the conversation. Reply with `ddll send <session_id>:main "text"`.
+
 ## Roadmap
 
 - [docs/NEXT.md](docs/NEXT.md) — Research roadmap: GPU brute force, STOKE stochastic search, reordering optimizer
