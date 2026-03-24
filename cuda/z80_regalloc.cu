@@ -35,7 +35,7 @@
 #define MAX_VREGS    16     // max virtual registers per function
 #define MAX_OPS      64     // max VIR operations per block
 #define MAX_LOCS     7      // A, B, C, D, E, H, L (8-bit GPR)
-#define MAX_PATTERNS 8      // max patterns per operation
+#define MAX_PATTERNS 16     // max patterns per operation
 #define INVALID_COST 0xFFFF // marks infeasible assignment
 
 // Physical register indices (matching VIR z80.go Locs)
@@ -301,8 +301,15 @@ struct JsonParser {
         return false;
     }
 
+    bool try_null() {
+        skip_ws();
+        if (p + 4 <= end && memcmp(p, "null", 4) == 0) { p += 4; return true; }
+        return false;
+    }
+
     std::vector<int> parse_int_array() {
         std::vector<int> result;
+        if (try_null()) return result;
         if (!expect('[')) return result;
         if (peek(']')) { expect(']'); return result; }
         do {
@@ -311,10 +318,42 @@ struct JsonParser {
         expect(']');
         return result;
     }
+
+    // Skip an arbitrary JSON value (string, number, bool, null, array, object)
+    void skip_value() {
+        skip_ws();
+        if (p >= end) return;
+        if (*p == '"') { parse_string(); return; }
+        if (*p == '[') {
+            p++; int depth = 1;
+            while (p < end && depth > 0) {
+                if (*p == '[') depth++;
+                else if (*p == ']') depth--;
+                else if (*p == '"') { parse_string(); continue; }
+                p++;
+            }
+            return;
+        }
+        if (*p == '{') {
+            p++; int depth = 1;
+            while (p < end && depth > 0) {
+                if (*p == '{') depth++;
+                else if (*p == '}') depth--;
+                else if (*p == '"') { parse_string(); continue; }
+                p++;
+            }
+            return;
+        }
+        // number, bool, null — consume until delimiter
+        while (p < end && *p != ',' && *p != '}' && *p != ']' &&
+               *p != ' ' && *p != '\t' && *p != '\n' && *p != '\r') p++;
+    }
 };
 
-// Convert an array of location indices to a bitmask
+// Convert an array of location indices to a bitmask.
+// Empty array (or null, which parse_int_array returns as empty) means unconstrained.
 static uint8_t locs_to_bitmask(const std::vector<int> &locs) {
+    if (locs.empty()) return 0x7F; // all 7 GPR valid
     uint8_t mask = 0;
     for (int loc : locs) {
         if (loc >= 0 && loc < MAX_LOCS) {
@@ -342,6 +381,8 @@ static bool parse_pattern(JsonParser &jp, OpDesc &op, int pi) {
             if (jp.parse_bool()) {
                 op.patTiedDstSrc |= (1u << pi);
             }
+        } else {
+            jp.skip_value();
         }
         jp.expect(','); // optional trailing comma
     }
@@ -369,13 +410,19 @@ static bool parse_op(JsonParser &jp, OpDesc &op) {
         } else if (key == "patterns") {
             jp.expect('[');
             int pi = 0;
-            while (!jp.peek(']') && pi < MAX_PATTERNS) {
-                parse_pattern(jp, op, pi);
-                pi++;
+            while (!jp.peek(']')) {
+                if (pi < MAX_PATTERNS) {
+                    parse_pattern(jp, op, pi);
+                    pi++;
+                } else {
+                    jp.skip_value(); // skip excess patterns
+                }
                 jp.expect(','); // optional
             }
-            op.nPatterns = pi;
+            op.nPatterns = pi < MAX_PATTERNS ? pi : MAX_PATTERNS;
             jp.expect(']');
+        } else {
+            jp.skip_value();
         }
         jp.expect(','); // optional trailing comma
     }
@@ -410,42 +457,48 @@ static bool parse_json(const std::string &input, FuncDesc &func) {
             func.nOps = oi;
             jp.expect(']');
         } else if (key == "interference") {
-            jp.expect('[');
-            int ii = 0;
-            while (!jp.peek(']')) {
-                std::vector<int> pair = jp.parse_int_array();
-                if (pair.size() == 2) {
-                    func.interfA[ii] = (uint8_t)pair[0];
-                    func.interfB[ii] = (uint8_t)pair[1];
-                    ii++;
-                }
-                jp.expect(','); // optional
-            }
-            func.nInterference = ii;
-            jp.expect(']');
-        } else if (key == "paramConstraints") {
-            jp.expect('[');
-            int ci = 0;
-            while (!jp.peek(']')) {
-                jp.expect('{');
-                int vreg = -1, loc = -1;
-                while (!jp.peek('}')) {
-                    std::string ckey = jp.parse_string();
-                    jp.expect(':');
-                    if (ckey == "vreg") vreg = jp.parse_int();
-                    else if (ckey == "loc") loc = jp.parse_int();
+            if (!jp.try_null()) {
+                jp.expect('[');
+                int ii = 0;
+                while (!jp.peek(']')) {
+                    std::vector<int> pair = jp.parse_int_array();
+                    if (pair.size() == 2) {
+                        func.interfA[ii] = (uint8_t)pair[0];
+                        func.interfB[ii] = (uint8_t)pair[1];
+                        ii++;
+                    }
                     jp.expect(','); // optional
                 }
-                jp.expect('}');
-                if (vreg >= 0 && loc >= 0) {
-                    func.paramVreg[ci] = (uint8_t)vreg;
-                    func.paramLoc[ci] = (uint8_t)loc;
-                    ci++;
-                }
-                jp.expect(','); // optional
+                func.nInterference = ii;
+                jp.expect(']');
             }
-            func.nParamConstraints = ci;
-            jp.expect(']');
+        } else if (key == "paramConstraints") {
+            if (!jp.try_null()) {
+                jp.expect('[');
+                int ci = 0;
+                while (!jp.peek(']')) {
+                    jp.expect('{');
+                    int vreg = -1, loc = -1;
+                    while (!jp.peek('}')) {
+                        std::string ckey = jp.parse_string();
+                        jp.expect(':');
+                        if (ckey == "vreg") vreg = jp.parse_int();
+                        else if (ckey == "loc") loc = jp.parse_int();
+                        jp.expect(','); // optional
+                    }
+                    jp.expect('}');
+                    if (vreg >= 0 && loc >= 0) {
+                        func.paramVreg[ci] = (uint8_t)vreg;
+                        func.paramLoc[ci] = (uint8_t)loc;
+                        ci++;
+                    }
+                    jp.expect(','); // optional
+                }
+                func.nParamConstraints = ci;
+                jp.expect(']');
+            }
+        } else {
+            jp.skip_value();
         }
         jp.expect(','); // optional trailing comma
     }
