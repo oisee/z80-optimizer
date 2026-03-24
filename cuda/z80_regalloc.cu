@@ -464,14 +464,161 @@ static bool parse_json(const std::string &input, FuncDesc &func) {
 
 void print_usage() {
     fprintf(stderr, "z80_regalloc — GPU brute-force register allocator\n");
-    fprintf(stderr, "Usage: z80_regalloc [--json | --demo] < input\n");
+    fprintf(stderr, "Usage: z80_regalloc [--json | --server | --demo] < input\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "Modes:\n");
-    fprintf(stderr, "  --json   Read JSON function description from stdin\n");
-    fprintf(stderr, "  --demo   Run built-in demo (add function)\n");
-    fprintf(stderr, "  (default) Read binary FuncDesc from stdin\n");
+    fprintf(stderr, "  --json     Read single JSON function from stdin, write result to stdout\n");
+    fprintf(stderr, "  --server   Long-running: read JSON-per-line from stdin, write results per-line\n");
+    fprintf(stderr, "             CUDA inits once at startup. Exits on EOF. For Go integration.\n");
+    fprintf(stderr, "  --demo     Run built-in demo (add function)\n");
+    fprintf(stderr, "  (default)  Read binary FuncDesc from stdin\n");
     fprintf(stderr, "\n");
     fprintf(stderr, "Loc indices: A=0, B=1, C=2, D=3, E=4, H=5, L=6\n");
+}
+
+// Solve one function: upload to GPU, run kernel, return results via output params.
+// GPU buffers must already be allocated. Resets them before each solve.
+static bool solve_one(const FuncDesc &func,
+                      uint32_t *d_bestCost, uint64_t *d_bestIdx, uint64_t *d_feasibleCount,
+                      uint32_t &outCost, uint64_t &outIdx, uint64_t &outFeasible,
+                      uint64_t &outTotal, bool quiet) {
+    // Compute search space
+    outTotal = 1;
+    for (int i = 0; i < func.nVregs; i++) {
+        outTotal *= MAX_LOCS;
+        if (outTotal > 100000000000ULL) {
+            fprintf(stderr, "Search space too large: %d vregs -> 7^%d > 100B\n",
+                    func.nVregs, func.nVregs);
+            return false;
+        }
+    }
+
+    // Upload function description to constant memory
+    cudaMemcpyToSymbol(d_func, &func, sizeof(FuncDesc));
+
+    // Reset result buffers
+    uint32_t initCost = INVALID_COST;
+    uint64_t initIdx = 0;
+    uint64_t initFeasible = 0;
+    cudaMemcpy(d_bestCost, &initCost, sizeof(uint32_t), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_bestIdx, &initIdx, sizeof(uint64_t), cudaMemcpyHostToDevice);
+    cudaMemcpy(d_feasibleCount, &initFeasible, sizeof(uint64_t), cudaMemcpyHostToDevice);
+
+    int blockSize = 256;
+    uint64_t batchSize = (uint64_t)blockSize * 65535;
+    uint64_t offset = 0;
+
+    if (!quiet) {
+        printf("Search space: 7^%d = %llu assignments\n", func.nVregs,
+               (unsigned long long)outTotal);
+        printf("Launching GPU regalloc...\n");
+    }
+
+    while (offset < outTotal) {
+        uint64_t count = outTotal - offset;
+        if (count > batchSize) count = batchSize;
+
+        uint64_t grid = (count + blockSize - 1) / blockSize;
+        regalloc_kernel<<<(unsigned int)grid, blockSize>>>(offset, count,
+                                                            d_bestCost, d_bestIdx,
+                                                            d_feasibleCount);
+        cudaDeviceSynchronize();
+
+        offset += count;
+        if (!quiet && outTotal > 1000000) {
+            printf("  %.1f%% (%llu / %llu)\n",
+                   (double)offset / outTotal * 100,
+                   (unsigned long long)offset,
+                   (unsigned long long)outTotal);
+        }
+    }
+
+    cudaMemcpy(&outCost, d_bestCost, sizeof(uint32_t), cudaMemcpyDeviceToHost);
+    cudaMemcpy(&outIdx, d_bestIdx, sizeof(uint64_t), cudaMemcpyDeviceToHost);
+    cudaMemcpy(&outFeasible, d_feasibleCount, sizeof(uint64_t), cudaMemcpyDeviceToHost);
+    return true;
+}
+
+// Print JSON result line to stdout
+static void print_json_result(const FuncDesc &func, uint32_t cost, uint64_t bestIdx,
+                               uint64_t totalAssignments, uint64_t feasibleCount) {
+    if (cost == INVALID_COST) {
+        printf("{\"cost\": -1, \"assignment\": [], \"searchSpace\": %llu, \"feasible\": 0}\n",
+               (unsigned long long)totalAssignments);
+    } else {
+        uint8_t best[MAX_VREGS];
+        decode_assignment(bestIdx, func.nVregs, best);
+        printf("{\"cost\": %u, \"assignment\": [", cost);
+        for (int i = 0; i < func.nVregs; i++) {
+            if (i > 0) printf(", ");
+            printf("%d", best[i]);
+        }
+        printf("], \"searchSpace\": %llu, \"feasible\": %llu}\n",
+               (unsigned long long)totalAssignments,
+               (unsigned long long)feasibleCount);
+    }
+    fflush(stdout);
+}
+
+// --server mode: init CUDA once, read JSON-per-line from stdin, write JSON-per-line to stdout
+static int run_server() {
+    // Allocate GPU buffers once
+    uint32_t *d_bestCost;
+    uint64_t *d_bestIdx;
+    uint64_t *d_feasibleCount;
+    cudaMalloc(&d_bestCost, sizeof(uint32_t));
+    cudaMalloc(&d_bestIdx, sizeof(uint64_t));
+    cudaMalloc(&d_feasibleCount, sizeof(uint64_t));
+
+    // Force CUDA context init with a dummy memcpy
+    uint32_t dummy = 0;
+    cudaMemcpy(d_bestCost, &dummy, sizeof(uint32_t), cudaMemcpyHostToDevice);
+    cudaDeviceSynchronize();
+
+    // Signal readiness
+    fprintf(stderr, "regalloc-server: ready\n");
+    fflush(stderr);
+
+    // Read one JSON object per line
+    char buf[65536];
+    int lineNum = 0;
+    while (fgets(buf, sizeof(buf), stdin) != NULL) {
+        lineNum++;
+        // Skip empty lines
+        size_t len = strlen(buf);
+        while (len > 0 && (buf[len-1] == '\n' || buf[len-1] == '\r')) {
+            buf[--len] = '\0';
+        }
+        if (len == 0) continue;
+
+        std::string line(buf, len);
+        FuncDesc func;
+        if (!parse_json(line, func)) {
+            fprintf(stderr, "regalloc-server: parse error on line %d\n", lineNum);
+            // Output error result so Go can still read one line per input
+            printf("{\"cost\": -1, \"assignment\": [], \"searchSpace\": 0, \"feasible\": 0, \"error\": \"parse error\"}\n");
+            fflush(stdout);
+            continue;
+        }
+
+        uint32_t cost;
+        uint64_t bestIdx, feasible, total;
+        if (!solve_one(func, d_bestCost, d_bestIdx, d_feasibleCount,
+                       cost, bestIdx, feasible, total, true)) {
+            printf("{\"cost\": -1, \"assignment\": [], \"searchSpace\": 0, \"feasible\": 0, \"error\": \"search space too large\"}\n");
+            fflush(stdout);
+            continue;
+        }
+
+        print_json_result(func, cost, bestIdx, total, feasible);
+    }
+
+    fprintf(stderr, "regalloc-server: processed %d functions, exiting\n", lineNum);
+
+    cudaFree(d_bestCost);
+    cudaFree(d_bestIdx);
+    cudaFree(d_feasibleCount);
+    return 0;
 }
 
 int main(int argc, char *argv[]) {
@@ -483,6 +630,11 @@ int main(int argc, char *argv[]) {
     if (argc > 1 && strcmp(argv[1], "--help") == 0) {
         print_usage();
         return 0;
+    }
+
+    // --server mode: long-running JSON-per-line protocol
+    if (argc > 1 && strcmp(argv[1], "--server") == 0) {
+        return run_server();
     }
 
     if (argc > 1 && strcmp(argv[1], "--json") == 0) {
@@ -529,26 +681,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // Compute search space
-    uint64_t totalAssignments = 1;
-    for (int i = 0; i < func.nVregs; i++) {
-        totalAssignments *= MAX_LOCS;
-        if (totalAssignments > 100000000000ULL) { // 100B limit
-            fprintf(stderr, "Search space too large: %d vregs -> 7^%d > 100B\n",
-                    func.nVregs, func.nVregs);
-            return 1;
-        }
-    }
-
-    if (!jsonMode) {
-        printf("Search space: 7^%d = %llu assignments\n", func.nVregs,
-               (unsigned long long)totalAssignments);
-    }
-
-    // Upload function description to constant memory
-    cudaMemcpyToSymbol(d_func, &func, sizeof(FuncDesc));
-
-    // Allocate result buffers
+    // Allocate GPU buffers
     uint32_t *d_bestCost;
     uint64_t *d_bestIdx;
     uint64_t *d_feasibleCount;
@@ -556,71 +689,20 @@ int main(int argc, char *argv[]) {
     cudaMalloc(&d_bestIdx, sizeof(uint64_t));
     cudaMalloc(&d_feasibleCount, sizeof(uint64_t));
 
-    uint32_t initCost = INVALID_COST;
-    uint64_t initIdx = 0;
-    uint64_t initFeasible = 0;
-    cudaMemcpy(d_bestCost, &initCost, sizeof(uint32_t), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_bestIdx, &initIdx, sizeof(uint64_t), cudaMemcpyHostToDevice);
-    cudaMemcpy(d_feasibleCount, &initFeasible, sizeof(uint64_t), cudaMemcpyHostToDevice);
-
-    // Launch kernel
-    int blockSize = 256;
-
-    // For very large spaces, launch in batches
-    uint64_t batchSize = (uint64_t)blockSize * 65535; // max grid size per launch
-    uint64_t offset = 0;
-
-    if (!jsonMode) {
-        printf("Launching GPU regalloc...\n");
+    uint32_t cost;
+    uint64_t bestIdx, feasible, total;
+    if (!solve_one(func, d_bestCost, d_bestIdx, d_feasibleCount,
+                   cost, bestIdx, feasible, total, jsonMode)) {
+        cudaFree(d_bestCost);
+        cudaFree(d_bestIdx);
+        cudaFree(d_feasibleCount);
+        return 1;
     }
-
-    while (offset < totalAssignments) {
-        uint64_t count = totalAssignments - offset;
-        if (count > batchSize) count = batchSize;
-
-        uint64_t grid = (count + blockSize - 1) / blockSize;
-        regalloc_kernel<<<(unsigned int)grid, blockSize>>>(offset, count,
-                                                            d_bestCost, d_bestIdx,
-                                                            d_feasibleCount);
-        cudaDeviceSynchronize();
-
-        offset += count;
-        if (!jsonMode && totalAssignments > 1000000) {
-            printf("  %.1f%% (%llu / %llu)\n",
-                   (double)offset / totalAssignments * 100,
-                   (unsigned long long)offset,
-                   (unsigned long long)totalAssignments);
-        }
-    }
-
-    // Read results
-    uint32_t bestCost;
-    uint64_t bestIdx;
-    uint64_t feasibleCount;
-    cudaMemcpy(&bestCost, d_bestCost, sizeof(uint32_t), cudaMemcpyDeviceToHost);
-    cudaMemcpy(&bestIdx, d_bestIdx, sizeof(uint64_t), cudaMemcpyDeviceToHost);
-    cudaMemcpy(&feasibleCount, d_feasibleCount, sizeof(uint64_t), cudaMemcpyDeviceToHost);
 
     if (jsonMode) {
-        // JSON output mode — single line to stdout, nothing else
-        if (bestCost == INVALID_COST) {
-            printf("{\"cost\": -1, \"assignment\": [], \"searchSpace\": %llu, \"feasible\": 0}\n",
-                   (unsigned long long)totalAssignments);
-        } else {
-            uint8_t best[MAX_VREGS];
-            decode_assignment(bestIdx, func.nVregs, best);
-            printf("{\"cost\": %u, \"assignment\": [", bestCost);
-            for (int i = 0; i < func.nVregs; i++) {
-                if (i > 0) printf(", ");
-                printf("%d", best[i]);
-            }
-            printf("], \"searchSpace\": %llu, \"feasible\": %llu}\n",
-                   (unsigned long long)totalAssignments,
-                   (unsigned long long)feasibleCount);
-        }
+        print_json_result(func, cost, bestIdx, total, feasible);
     } else {
-        // Human-readable output mode
-        if (bestCost == INVALID_COST) {
+        if (cost == INVALID_COST) {
             printf("No valid assignment found (all infeasible)\n");
             cudaFree(d_bestCost);
             cudaFree(d_bestIdx);
@@ -633,19 +715,12 @@ int main(int argc, char *argv[]) {
 
         const char *locNames[] = {"A", "B", "C", "D", "E", "H", "L"};
         printf("\nOptimal assignment (cost=%u T-states, %llu feasible):\n",
-               bestCost, (unsigned long long)feasibleCount);
+               cost, (unsigned long long)feasible);
         for (int i = 0; i < func.nVregs; i++) {
             printf("  v%d -> %s\n", i, locNames[best[i]]);
         }
 
-        printf("\n{\"cost\": %u, \"assignment\": [", bestCost);
-        for (int i = 0; i < func.nVregs; i++) {
-            if (i > 0) printf(", ");
-            printf("%d", best[i]);
-        }
-        printf("], \"searchSpace\": %llu, \"feasible\": %llu}\n",
-               (unsigned long long)totalAssignments,
-               (unsigned long long)feasibleCount);
+        print_json_result(func, cost, bestIdx, total, feasible);
     }
 
     cudaFree(d_bestCost);
