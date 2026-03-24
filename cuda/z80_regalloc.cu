@@ -632,6 +632,8 @@ static void print_json_result(const FuncDesc &func, uint32_t cost, uint64_t best
 
 // --server mode: init CUDA once, read JSON-per-line from stdin, write JSON-per-line to stdout
 static int run_server() {
+    cudaSetDeviceFlags(cudaDeviceScheduleBlockingSync);
+
     // Allocate GPU buffers once
     uint32_t *d_bestCost;
     uint64_t *d_bestIdx;
@@ -692,6 +694,8 @@ static int run_server() {
 }
 
 int main(int argc, char *argv[]) {
+    cudaSetDeviceFlags(cudaDeviceScheduleBlockingSync);
+
     FuncDesc func;
     memset(&func, 0, sizeof(func));
 

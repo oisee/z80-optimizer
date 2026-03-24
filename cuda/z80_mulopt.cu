@@ -303,6 +303,9 @@ static MulResult solve_k(int k, int maxLen) {
 }
 
 int main(int argc, char *argv[]) {
+    // Sleep instead of busy-wait on cudaDeviceSynchronize — frees CPU cores
+    cudaSetDeviceFlags(cudaDeviceScheduleBlockingSync);
+
     int maxLen = 8;
     int singleK = 0;
     bool jsonMode = false;
