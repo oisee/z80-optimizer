@@ -1,10 +1,15 @@
-// z80_mulopt16.cu — GPU brute-force optimal u8×K=u16 constant multiplication for Z80
+// z80_mulopt16.cu — GPU brute-force u8×K=u16 constant multiplication for Z80
 //
 // For each constant K (2..255), finds the shortest instruction sequence
 // where HL_out = A_in * K (full 16-bit result).
 //
-// Input: A = multiplicand (u8), B=0, H=0, L=0
-// Output: H:L = full 16-bit product
+// Implicit preamble (not counted): LD L,A / LD H,0
+// So HL starts as (0, input) = input as 16-bit value.
+// Initial state: A=input, B=0, C=0, H=0, L=input, carry=0
+//
+// Key technique: carry-spill multiplication.
+// ADD A,A overflows into carry; RL B/RL H captures carry into high byte.
+// ADD HL,HL doubles the full 16-bit value natively.
 //
 // Build: nvcc -O3 -o z80_mulopt16 z80_mulopt16.cu
 // Usage: z80_mulopt16 [--max-len 10] [--k 42] [--json]
@@ -14,42 +19,51 @@
 #include <cstring>
 #include <cstdlib>
 
-// Instruction opcodes (18 total)
+// 23 instructions
 #define OP_ADD_AA    0   // ADD A,A   (4T)
 #define OP_ADD_AB    1   // ADD A,B   (4T)
-#define OP_SUB_B     2   // SUB B     (4T)
-#define OP_LD_BA     3   // LD B,A    (4T)
-#define OP_LD_HA     4   // LD H,A    (4T)
-#define OP_LD_LA     5   // LD L,A    (4T)
-#define OP_LD_AH     6   // LD A,H    (4T)
-#define OP_LD_AL     7   // LD A,L    (4T)
-#define OP_ADD_HLHL  8   // ADD HL,HL (11T) — 16-bit double
-#define OP_ADC_AA    9   // ADC A,A   (4T)
-#define OP_ADC_AB   10   // ADC A,B   (4T)
-#define OP_SBC_AB   11   // SBC A,B   (4T)
-#define OP_NEG      12   // NEG       (8T)
-#define OP_SLA_A    13   // SLA A     (8T)
-#define OP_SRL_A    14   // SRL A     (8T)
-#define OP_RLA      15   // RLA       (4T)
-#define OP_RLCA     16   // RLCA      (4T)
-#define OP_OR_A     17   // OR A      (4T) — clears carry
-#define NUM_OPS     18
+#define OP_ADD_AC    2   // ADD A,C   (4T)
+#define OP_SUB_B     3   // SUB B     (4T)
+#define OP_SUB_C     4   // SUB C     (4T)
+#define OP_NEG       5   // NEG       (8T)
+#define OP_OR_A      6   // OR A      (4T)
+#define OP_SCF       7   // SCF       (4T)
+#define OP_ADC_AB    8   // ADC A,B   (4T)
+#define OP_ADC_AC    9   // ADC A,C   (4T)
+#define OP_SBC_AB   10   // SBC A,B   (4T)
+#define OP_LD_BA    11   // LD B,A    (4T)
+#define OP_LD_CA    12   // LD C,A    (4T)
+#define OP_LD_LA    13   // LD L,A    (4T)
+#define OP_LD_HA    14   // LD H,A    (4T)
+#define OP_LD_HB    15   // LD H,B    (4T)
+#define OP_RL_B     16   // RL B      (8T) — rotate left through carry
+#define OP_RL_H     17   // RL H      (8T) — rotate left through carry
+#define OP_LD_B0    18   // LD B,0    (7T)
+#define OP_LD_H0    19   // LD H,0    (7T)
+#define OP_ADD_HLHL 20   // ADD HL,HL (11T) — 16-bit double!
+#define OP_ADD_HLBC 21   // ADD HL,BC (11T) — 16-bit add
+#define OP_RLA      22   // RLA       (4T) — rotate A left through carry
+#define NUM_OPS     23
 
 __constant__ uint8_t opCost[NUM_OPS] = {
-    4, 4, 4, 4,     // ADD/SUB/LD B,A
-    4, 4, 4, 4,     // LD H,A / LD L,A / LD A,H / LD A,L
-    11,              // ADD HL,HL
-    4, 4, 4,         // ADC/SBC
-    8, 8, 8,         // NEG/SLA/SRL
-    4, 4, 4          // RLA/RLCA/OR A
+    4, 4, 4, 4, 4,     // ADD/SUB
+    8, 4, 4,            // NEG/OR A/SCF
+    4, 4, 4,            // ADC/SBC
+    4, 4, 4, 4, 4,     // LD r,A / LD H,B
+    8, 8,               // RL B / RL H
+    7, 7,               // LD B,0 / LD H,0
+    11, 11,             // ADD HL,HL / ADD HL,BC
+    4                   // RLA
 };
 
-// State: A, B (scratch), H, L, carry
-__device__ void exec_op(uint8_t op, uint8_t &a, uint8_t &b,
+// State: A, B, C, H, L, carry
+__device__ void exec_op(uint8_t op, uint8_t &a, uint8_t &b, uint8_t &c,
                         uint8_t &h, uint8_t &l, bool &carry) {
-    uint16_t r, hl;
-    uint16_t c;
+    uint16_t r;
+    uint16_t cf;
     uint8_t bit;
+    uint32_t hl32;
+    uint16_t hl;
     switch (op) {
     case OP_ADD_AA:
         r = (uint16_t)a + a;
@@ -61,83 +75,107 @@ __device__ void exec_op(uint8_t op, uint8_t &a, uint8_t &b,
         carry = r > 0xFF;
         a = (uint8_t)r;
         break;
+    case OP_ADD_AC:
+        r = (uint16_t)a + c;
+        carry = r > 0xFF;
+        a = (uint8_t)r;
+        break;
     case OP_SUB_B:
         carry = a < b;
         a = a - b;
         break;
-    case OP_LD_BA:
-        b = a;
-        break;
-    case OP_LD_HA:
-        h = a;
-        break;
-    case OP_LD_LA:
-        l = a;
-        break;
-    case OP_LD_AH:
-        a = h;
-        break;
-    case OP_LD_AL:
-        a = l;
-        break;
-    case OP_ADD_HLHL:
-        hl = ((uint16_t)h << 8) | l;
-        r = (uint32_t)hl + hl;
-        carry = r > 0xFFFF; // actually uint32 but for 16-bit...
-        hl = hl + hl;
-        h = (uint8_t)(hl >> 8);
-        l = (uint8_t)hl;
-        break;
-    case OP_ADC_AA:
-        c = carry ? 1 : 0;
-        r = (uint16_t)a + a + c;
-        carry = r > 0xFF;
-        a = (uint8_t)r;
-        break;
-    case OP_ADC_AB:
-        c = carry ? 1 : 0;
-        r = (uint16_t)a + b + c;
-        carry = r > 0xFF;
-        a = (uint8_t)r;
-        break;
-    case OP_SBC_AB:
-        c = carry ? 1 : 0;
-        carry = ((int16_t)a - (int16_t)b - (int16_t)c) < 0;
-        a = a - b - (uint8_t)c;
+    case OP_SUB_C:
+        carry = a < c;
+        a = a - c;
         break;
     case OP_NEG:
         carry = (a != 0);
         a = (uint8_t)(0 - a);
         break;
-    case OP_SLA_A:
-        carry = (a & 0x80) != 0;
-        a = a << 1;
+    case OP_OR_A:
+        carry = false;
         break;
-    case OP_SRL_A:
-        carry = (a & 0x01) != 0;
-        a = a >> 1;
+    case OP_SCF:
+        carry = true;
+        break;
+    case OP_ADC_AB:
+        cf = carry ? 1 : 0;
+        r = (uint16_t)a + b + cf;
+        carry = r > 0xFF;
+        a = (uint8_t)r;
+        break;
+    case OP_ADC_AC:
+        cf = carry ? 1 : 0;
+        r = (uint16_t)a + c + cf;
+        carry = r > 0xFF;
+        a = (uint8_t)r;
+        break;
+    case OP_SBC_AB:
+        cf = carry ? 1 : 0;
+        carry = ((int16_t)a - (int16_t)b - (int16_t)cf) < 0;
+        a = a - b - (uint8_t)cf;
+        break;
+    case OP_LD_BA:
+        b = a;
+        break;
+    case OP_LD_CA:
+        c = a;
+        break;
+    case OP_LD_LA:
+        l = a;
+        break;
+    case OP_LD_HA:
+        h = a;
+        break;
+    case OP_LD_HB:
+        h = b;
+        break;
+    case OP_RL_B: // rotate B left through carry: bit0=old carry, carry=old bit7
+        bit = carry ? 1 : 0;
+        carry = (b & 0x80) != 0;
+        b = (b << 1) | bit;
+        break;
+    case OP_RL_H:
+        bit = carry ? 1 : 0;
+        carry = (h & 0x80) != 0;
+        h = (h << 1) | bit;
+        break;
+    case OP_LD_B0:
+        b = 0;
+        break;
+    case OP_LD_H0:
+        h = 0;
+        break;
+    case OP_ADD_HLHL:
+        hl = ((uint16_t)h << 8) | l;
+        hl32 = (uint32_t)hl + hl;
+        carry = hl32 > 0xFFFF;
+        hl = (uint16_t)hl32;
+        h = (uint8_t)(hl >> 8);
+        l = (uint8_t)hl;
+        break;
+    case OP_ADD_HLBC:
+        hl = ((uint16_t)h << 8) | l;
+        hl32 = (uint32_t)hl + ((uint16_t)b << 8 | c);
+        carry = hl32 > 0xFFFF;
+        hl = (uint16_t)hl32;
+        h = (uint8_t)(hl >> 8);
+        l = (uint8_t)hl;
         break;
     case OP_RLA:
         bit = carry ? 1 : 0;
         carry = (a & 0x80) != 0;
         a = (a << 1) | bit;
         break;
-    case OP_RLCA:
-        carry = (a & 0x80) != 0;
-        a = (a << 1) | (a >> 7);
-        break;
-    case OP_OR_A:
-        carry = false;
-        break;
     }
 }
 
-// Run sequence, return H:L as uint16
+// Run sequence. Implicit preamble: HL = (0, input), A = input
 __device__ uint16_t run_seq(const uint8_t *ops, int len, uint8_t input) {
-    uint8_t a = input, b = 0, h = 0, l = 0;
+    uint8_t a = input, b = 0, c = 0, h = 0, l = input;
     bool carry = false;
     for (int i = 0; i < len; i++) {
-        exec_op(ops[i], a, b, h, l, carry);
+        exec_op(ops[i], a, b, c, h, l, carry);
     }
     return ((uint16_t)h << 8) | l;
 }
@@ -157,7 +195,6 @@ __device__ uint16_t seq_cost(const uint8_t *ops, int len) {
     return cost;
 }
 
-// Kernel: test one sequence for constant K, verify HL = A_in * K (16-bit)
 __global__ void mulopt16_kernel(uint16_t k, int seqLen, uint64_t offset, uint64_t count,
                                  uint32_t *d_bestScore, uint64_t *d_bestIdx) {
     uint64_t tid = blockIdx.x * (uint64_t)blockDim.x + threadIdx.x;
@@ -167,10 +204,10 @@ __global__ void mulopt16_kernel(uint16_t k, int seqLen, uint64_t offset, uint64_
     uint8_t ops[12];
     decode_seq(seqIdx, seqLen, ops);
 
-    // QuickCheck: test discriminating inputs
+    // QuickCheck
     if (run_seq(ops, seqLen, 1) != (uint16_t)(1 * k)) return;
     if (run_seq(ops, seqLen, 2) != (uint16_t)(2 * k)) return;
-    if (run_seq(ops, seqLen, 127) != (uint16_t)(127 * k)) return;
+    if (run_seq(ops, seqLen, 128) != (uint16_t)(128 * k)) return;
     if (run_seq(ops, seqLen, 255) != (uint16_t)(255 * k)) return;
 
     // Full verification
@@ -195,12 +232,14 @@ static uint64_t ipow(uint64_t base, int exp) {
 
 static const char *opName(uint8_t op) {
     static const char *names[] = {
-        "ADD A,A", "ADD A,B", "SUB B", "LD B,A",
-        "LD H,A", "LD L,A", "LD A,H", "LD A,L",
-        "ADD HL,HL",
-        "ADC A,A", "ADC A,B", "SBC A,B",
-        "NEG", "SLA A", "SRL A",
-        "RLA", "RLCA", "OR A"
+        "ADD A,A", "ADD A,B", "ADD A,C", "SUB B", "SUB C",
+        "NEG", "OR A", "SCF",
+        "ADC A,B", "ADC A,C", "SBC A,B",
+        "LD B,A", "LD C,A", "LD L,A", "LD H,A", "LD H,B",
+        "RL B", "RL H",
+        "LD B,0", "LD H,0",
+        "ADD HL,HL", "ADD HL,BC",
+        "RLA"
     };
     return op < NUM_OPS ? names[op] : "?";
 }
@@ -229,6 +268,7 @@ static MulResult solve_k(int k, int maxLen) {
 
     for (int len = 1; len <= maxLen; len++) {
         uint64_t total = ipow(NUM_OPS, len);
+        if (total > 500000000000ULL) break; // 500B limit per length
 
         cudaMemcpy(d_bestScore, &initScore, sizeof(uint32_t), cudaMemcpyHostToDevice);
         cudaMemcpy(d_bestIdx, &initIdx, sizeof(uint64_t), cudaMemcpyHostToDevice);
@@ -239,7 +279,6 @@ static MulResult solve_k(int k, int maxLen) {
         while (offset < total) {
             uint64_t count = total - offset;
             if (count > batchSize) count = batchSize;
-
             uint64_t grid = (count + blockSize - 1) / blockSize;
             mulopt16_kernel<<<(unsigned int)grid, blockSize>>>(
                 (uint16_t)k, len, offset, count, d_bestScore, d_bestIdx);
@@ -253,7 +292,6 @@ static MulResult solve_k(int k, int maxLen) {
         if (bestScore != 0xFFFFFFFF) {
             uint64_t bestIdx;
             cudaMemcpy(&bestIdx, d_bestIdx, sizeof(uint64_t), cudaMemcpyDeviceToHost);
-
             result.found = true;
             result.length = len;
             result.tstates = bestScore & 0xFFFF;
@@ -272,12 +310,11 @@ static MulResult solve_k(int k, int maxLen) {
 }
 
 int main(int argc, char *argv[]) {
+    cudaSetDeviceFlags(cudaDeviceScheduleBlockingSync);
+
     int maxLen = 10;
     int singleK = 0;
     bool jsonMode = false;
-
-    // Sleep instead of busy-wait on cudaDeviceSynchronize — frees CPU cores
-    cudaSetDeviceFlags(cudaDeviceScheduleBlockingSync);
 
     for (int i = 1; i < argc; i++) {
         if (strcmp(argv[i], "--max-len") == 0 && i+1 < argc) maxLen = atoi(argv[++i]);
@@ -286,16 +323,18 @@ int main(int argc, char *argv[]) {
         else if (strcmp(argv[i], "--help") == 0) {
             fprintf(stderr, "z80_mulopt16 — GPU brute-force u8×K=u16 (result in HL)\n");
             fprintf(stderr, "Usage: z80_mulopt16 [--max-len 10] [--k 42] [--json]\n");
+            fprintf(stderr, "\nImplicit preamble: LD L,A / LD H,0 (HL starts as input)\n");
+            fprintf(stderr, "Initial state: A=input, B=C=H=0, L=input, carry=0\n");
             return 0;
         }
     }
 
     if (singleK > 0) {
-        fprintf(stderr, "Searching for mul16 ×%d (max length %d, %d ops, GPU)...\n",
+        fprintf(stderr, "Searching for mul16 x%d (max length %d, %d ops, GPU)...\n",
                 singleK, maxLen, NUM_OPS);
         MulResult r = solve_k(singleK, maxLen);
         if (!r.found) {
-            fprintf(stderr, "No sequence found for ×%d within length %d\n", singleK, maxLen);
+            fprintf(stderr, "No sequence found for x%d within length %d\n", singleK, maxLen);
             return 1;
         }
         if (jsonMode) {
@@ -306,24 +345,25 @@ int main(int argc, char *argv[]) {
             }
             printf("], \"length\": %d, \"tstates\": %d}\n", r.length, r.tstates);
         } else {
-            printf("×%d (u16):", r.k);
-            for (int i = 0; i < r.length; i++) printf(" %s /", opName(r.ops[i]));
-            printf(" (%d insts, %dT)\n", r.length, r.tstates);
+            printf("x%d (u16): ", r.k);
+            for (int i = 0; i < r.length; i++) {
+                if (i > 0) printf(" / ");
+                printf("%s", opName(r.ops[i]));
+            }
+            printf("  (%d insts, %dT)\n", r.length, r.tstates);
         }
         return 0;
     }
 
-    // Solve all constants 2..255
-    fprintf(stderr, "GPU mulopt16: solving ×2..×255 → HL (max length %d, %d ops)\n", maxLen, NUM_OPS);
+    fprintf(stderr, "GPU mulopt16: x2..x255 -> HL (max len %d, %d ops)\n", maxLen, NUM_OPS);
 
     if (jsonMode) printf("[\n");
     int solved = 0;
     bool firstJson = true;
 
     for (int k = 2; k <= 255; k++) {
-        fprintf(stderr, "\r×%d/255 (%d solved)...", k, solved);
+        fprintf(stderr, "\rx%d/255 (%d solved)...", k, solved);
         MulResult r = solve_k(k, maxLen);
-
         if (r.found) {
             solved++;
             if (jsonMode) {
@@ -336,13 +376,16 @@ int main(int argc, char *argv[]) {
                 }
                 printf("], \"length\": %d, \"tstates\": %d}", r.length, r.tstates);
             } else {
-                printf("×%3d (u16):", r.k);
-                for (int i = 0; i < r.length; i++) printf(" %s /", opName(r.ops[i]));
-                printf(" (%d insts, %dT)\n", r.length, r.tstates);
+                printf("x%3d (u16): ", r.k);
+                for (int i = 0; i < r.length; i++) {
+                    if (i > 0) printf(" / ");
+                    printf("%s", opName(r.ops[i]));
+                }
+                printf("  (%d insts, %dT)\n", r.length, r.tstates);
             }
             fflush(stdout);
         } else if (!jsonMode) {
-            printf("×%3d (u16): NOT FOUND (max %d)\n", k, maxLen);
+            printf("x%3d (u16): NOT FOUND (max %d)\n", k, maxLen);
         }
     }
 
