@@ -34,7 +34,7 @@
 // ============================================================
 #define MAX_VREGS    16     // max virtual registers per function
 #define MAX_OPS      64     // max VIR operations per block
-#define MAX_LOCS     11     // A,B,C,D,E,H,L + BC,DE,HL,IXH (8-bit + 16-bit)
+#define MAX_LOCS     15     // A-L + BC,DE,HL + IXH,IXL,IYH,IYL + mem0
 #define MAX_PATTERNS 16     // max patterns per operation
 #define INVALID_COST 0xFFFF // marks infeasible assignment
 
@@ -50,6 +50,10 @@
 #define LOC_DE  8
 #define LOC_HL  9
 #define LOC_IXH 10
+#define LOC_IXL 11
+#define LOC_IYH 12
+#define LOC_IYL 13
+#define LOC_MEM0 14
 
 // ============================================================
 // Function description (uploaded to GPU constant memory)
@@ -184,13 +188,22 @@ __device__ uint16_t evaluate_cost(const uint8_t *assignment) {
         totalCost += bestCost;
 
         // Add move cost: if a vreg changed location since last use
+        // Cost depends on src/dst location type:
+        //   locs 0-6 (GPR): 4T, locs 7-9 (pairs): 4T,
+        //   locs 10-13 (IX/IY): 8T, loc 14 (mem): 13T
         if (op.srcVreg0 >= 0 && prevLoc[op.srcVreg0] != 0xFF &&
             prevLoc[op.srcVreg0] != assignment[op.srcVreg0]) {
-            totalCost += 4; // LD r, r' = 4 T-states
+            uint8_t from = prevLoc[op.srcVreg0], to = assignment[op.srcVreg0];
+            uint8_t mc = (from == LOC_MEM0 || to == LOC_MEM0) ? 13 :
+                         (from >= LOC_IXH || to >= LOC_IXH) ? 8 : 4;
+            totalCost += mc;
         }
         if (op.srcVreg1 >= 0 && prevLoc[op.srcVreg1] != 0xFF &&
             prevLoc[op.srcVreg1] != assignment[op.srcVreg1]) {
-            totalCost += 4;
+            uint8_t from = prevLoc[op.srcVreg1], to = assignment[op.srcVreg1];
+            uint8_t mc = (from == LOC_MEM0 || to == LOC_MEM0) ? 13 :
+                         (from >= LOC_IXH || to >= LOC_IXH) ? 8 : 4;
+            totalCost += mc;
         }
 
         // Update prevLoc
@@ -530,7 +543,7 @@ void print_usage() {
     fprintf(stderr, "  --demo     Run built-in demo (add function)\n");
     fprintf(stderr, "  (default)  Read binary FuncDesc from stdin\n");
     fprintf(stderr, "\n");
-    fprintf(stderr, "Loc indices: A=0, B=1, C=2, D=3, E=4, H=5, L=6, BC=7, DE=8, HL=9, IXH=10\n");
+    fprintf(stderr, "Loc indices: A=0,B=1,C=2,D=3,E=4,H=5,L=6,BC=7,DE=8,HL=9,IXH=10,IXL=11,IYH=12,IYL=13,mem0=14\n");
 }
 
 // Solve one function: upload to GPU, run kernel, return results via output params.
@@ -543,8 +556,8 @@ static bool solve_one(const FuncDesc &func,
     outTotal = 1;
     for (int i = 0; i < func.nVregs; i++) {
         outTotal *= MAX_LOCS;
-        if (outTotal > 500000000000ULL) {
-            fprintf(stderr, "Search space too large: %d vregs -> %d^%d > 500B\n",
+        if (outTotal > 5000000000000ULL) {
+            fprintf(stderr, "Search space too large: %d vregs -> %d^%d > 5T\n",
                     func.nVregs, MAX_LOCS, func.nVregs);
             return false;
         }
@@ -770,7 +783,7 @@ int main(int argc, char *argv[]) {
         uint8_t best[MAX_VREGS];
         decode_assignment(bestIdx, func.nVregs, best);
 
-        const char *locNames[] = {"A", "B", "C", "D", "E", "H", "L", "BC", "DE", "HL", "IXH"};
+        const char *locNames[] = {"A", "B", "C", "D", "E", "H", "L", "BC", "DE", "HL", "IXH", "IXL", "IYH", "IYL", "mem0"};
         printf("\nOptimal assignment (cost=%u T-states, %llu feasible):\n",
                cost, (unsigned long long)feasible);
         for (int i = 0; i < func.nVregs; i++) {
