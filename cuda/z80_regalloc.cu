@@ -632,6 +632,325 @@ static bool solve_one(const FuncDesc &func,
     return true;
 }
 
+// ============================================================
+// CPU backtracking solver for large search spaces
+// ============================================================
+// Uses interference-aware pruning: for each vreg, only try locations
+// not already assigned to interfering neighbors. This turns L^N brute-force
+// into a constraint-satisfaction search with dramatic pruning.
+
+struct BacktrackState {
+    const FuncDesc *func;
+    uint8_t assignment[MAX_VREGS];
+    uint32_t bestCost;
+    uint8_t bestAssignment[MAX_VREGS];
+    uint64_t feasibleCount;
+    uint64_t nodesExplored;
+
+    // Precomputed: for each vreg, list of interfering vregs
+    int nNeighbors[MAX_VREGS];
+    uint8_t neighbors[MAX_VREGS][MAX_VREGS];
+
+    // Precomputed: valid location mask per vreg (from width constraints)
+    uint16_t validLocs[MAX_VREGS];
+};
+
+// Evaluate cost on CPU (mirrors GPU evaluate_cost)
+static uint16_t cpu_evaluate_cost(const FuncDesc &func, const uint8_t *assignment) {
+    uint16_t totalCost = 0;
+    uint8_t prevLoc[MAX_VREGS];
+    memset(prevLoc, 0xFF, sizeof(prevLoc));
+
+    for (int oi = 0; oi < func.nOps; oi++) {
+        const OpDesc &op = func.ops[oi];
+        uint8_t bestPatCost = 0xFF;
+        bool found = false;
+
+        for (int pi = 0; pi < op.nPatterns; pi++) {
+            bool valid = true;
+            if (op.dstVreg >= 0) {
+                if (!(op.patDstLocs[pi] & (1u << assignment[op.dstVreg]))) valid = false;
+            }
+            if (valid && op.srcVreg0 >= 0) {
+                if (!(op.patSrcLocs0[pi] & (1u << assignment[op.srcVreg0]))) valid = false;
+            }
+            if (valid && op.srcVreg1 >= 0) {
+                if (!(op.patSrcLocs1[pi] & (1u << assignment[op.srcVreg1]))) valid = false;
+            }
+            if (valid && (op.patTiedDstSrc & (1u << pi))) {
+                if (op.dstVreg >= 0 && op.srcVreg0 >= 0) {
+                    if (assignment[op.dstVreg] != assignment[op.srcVreg0]) valid = false;
+                }
+            }
+            if (valid && op.patCost[pi] < bestPatCost) {
+                bestPatCost = op.patCost[pi];
+                found = true;
+            }
+        }
+        if (!found) return INVALID_COST;
+        totalCost += bestPatCost;
+
+        // Move costs
+        if (op.srcVreg0 >= 0 && prevLoc[op.srcVreg0] != 0xFF &&
+            prevLoc[op.srcVreg0] != assignment[op.srcVreg0]) {
+            uint8_t from = prevLoc[op.srcVreg0], to = assignment[op.srcVreg0];
+            uint8_t mc = (from == LOC_MEM0 || to == LOC_MEM0) ? 13 :
+                         (from >= LOC_IXH || to >= LOC_IXH) ? 8 : 4;
+            totalCost += mc;
+        }
+        if (op.srcVreg1 >= 0 && prevLoc[op.srcVreg1] != 0xFF &&
+            prevLoc[op.srcVreg1] != assignment[op.srcVreg1]) {
+            uint8_t from = prevLoc[op.srcVreg1], to = assignment[op.srcVreg1];
+            uint8_t mc = (from == LOC_MEM0 || to == LOC_MEM0) ? 13 :
+                         (from >= LOC_IXH || to >= LOC_IXH) ? 8 : 4;
+            totalCost += mc;
+        }
+
+        if (op.dstVreg >= 0) prevLoc[op.dstVreg] = assignment[op.dstVreg];
+    }
+    return totalCost;
+}
+
+static void backtrack(BacktrackState &st, int depth) {
+    st.nodesExplored++;
+
+    // Progress report every 10B nodes
+    if ((st.nodesExplored & 0x3FFFFFFFFULL) == 0) { // ~17B
+        fprintf(stderr, "  backtrack progress: %lluB nodes, %llu feasible, best=%u\n",
+                (unsigned long long)(st.nodesExplored / 1000000000ULL),
+                (unsigned long long)st.feasibleCount, st.bestCost);
+    }
+
+    if (depth == st.func->nVregs) {
+        // Full assignment — evaluate
+        uint16_t cost = cpu_evaluate_cost(*st.func, st.assignment);
+        if (cost != INVALID_COST) {
+            st.feasibleCount++;
+            if (cost < st.bestCost) {
+                st.bestCost = cost;
+                memcpy(st.bestAssignment, st.assignment, st.func->nVregs);
+            }
+        }
+        return;
+    }
+
+    // Compute available locations: valid locs minus those used by interfering assigned neighbors
+    uint16_t available = st.validLocs[depth];
+    for (int ni = 0; ni < st.nNeighbors[depth]; ni++) {
+        int nbr = st.neighbors[depth][ni];
+        if (nbr < depth) { // already assigned
+            available &= ~(1u << st.assignment[nbr]);
+        }
+    }
+
+    // Also apply param constraints
+    for (int i = 0; i < st.func->nParamConstraints; i++) {
+        if (st.func->paramVreg[i] == depth) {
+            available &= (1u << st.func->paramLoc[i]);
+        }
+    }
+
+    // Try each available location with forward checking
+    for (int loc = 0; loc < MAX_LOCS; loc++) {
+        if (!(available & (1u << loc))) continue;
+        st.assignment[depth] = (uint8_t)loc;
+
+        // Forward check: verify no unassigned neighbor has 0 remaining options
+        bool ok = true;
+        for (int ni = 0; ni < st.nNeighbors[depth]; ni++) {
+            int nbr = st.neighbors[depth][ni];
+            if (nbr > depth) { // unassigned
+                uint16_t nbrAvail = st.validLocs[nbr];
+                // Remove locations used by already-assigned neighbors (including current)
+                for (int nni = 0; nni < st.nNeighbors[nbr]; nni++) {
+                    int nn = st.neighbors[nbr][nni];
+                    if (nn <= depth) { // assigned (including current depth)
+                        nbrAvail &= ~(1u << st.assignment[nn]);
+                    }
+                }
+                if (nbrAvail == 0) {
+                    ok = false;
+                    break;
+                }
+            }
+        }
+        if (!ok) continue;
+
+        backtrack(st, depth + 1);
+    }
+}
+
+// Order vregs by most-constrained first (highest degree in interference graph)
+// This improves pruning by assigning the most constrained vregs early.
+static void compute_vreg_order(const FuncDesc &func, int *order) {
+    int degree[MAX_VREGS] = {};
+    for (int i = 0; i < func.nInterference; i++) {
+        degree[func.interfA[i]]++;
+        degree[func.interfB[i]]++;
+    }
+    // Also boost vregs with param constraints
+    for (int i = 0; i < func.nParamConstraints; i++) {
+        degree[func.paramVreg[i]] += 100;
+    }
+
+    for (int i = 0; i < func.nVregs; i++) order[i] = i;
+    // Sort by descending degree
+    for (int i = 0; i < func.nVregs; i++) {
+        for (int j = i + 1; j < func.nVregs; j++) {
+            if (degree[order[j]] > degree[order[i]]) {
+                int tmp = order[i]; order[i] = order[j]; order[j] = tmp;
+            }
+        }
+    }
+}
+
+// Remap a FuncDesc to use a different vreg ordering
+static void remap_func(const FuncDesc &src, const int *order, FuncDesc &dst) {
+    memcpy(&dst, &src, sizeof(FuncDesc));
+    int inv[MAX_VREGS]; // inverse: inv[old] = new
+    for (int i = 0; i < src.nVregs; i++) inv[order[i]] = i;
+
+    for (int i = 0; i < src.nInterference; i++) {
+        dst.interfA[i] = inv[src.interfA[i]];
+        dst.interfB[i] = inv[src.interfB[i]];
+    }
+    for (int i = 0; i < src.nParamConstraints; i++) {
+        dst.paramVreg[i] = inv[src.paramVreg[i]];
+    }
+    for (int i = 0; i < src.nVregs; i++) {
+        dst.vregWidth[i] = src.vregWidth[order[i]];
+    }
+    for (int oi = 0; oi < src.nOps; oi++) {
+        if (src.ops[oi].dstVreg >= 0) dst.ops[oi].dstVreg = inv[src.ops[oi].dstVreg];
+        if (src.ops[oi].srcVreg0 >= 0) dst.ops[oi].srcVreg0 = inv[src.ops[oi].srcVreg0];
+        if (src.ops[oi].srcVreg1 >= 0) dst.ops[oi].srcVreg1 = inv[src.ops[oi].srcVreg1];
+    }
+}
+
+static bool solve_backtrack(const FuncDesc &func,
+                            uint32_t &outCost, uint8_t *outAssignment,
+                            uint64_t &outFeasible, uint64_t &outNodes) {
+    // Reorder vregs: most constrained first
+    int order[MAX_VREGS];
+    compute_vreg_order(func, order);
+    FuncDesc reordered;
+    remap_func(func, order, reordered);
+
+    BacktrackState st;
+    st.func = &reordered;
+    st.bestCost = INVALID_COST;
+    st.feasibleCount = 0;
+    st.nodesExplored = 0;
+    memset(st.assignment, 0, sizeof(st.assignment));
+    memset(st.bestAssignment, 0, sizeof(st.bestAssignment));
+
+    // Precompute neighbor lists
+    memset(st.nNeighbors, 0, sizeof(st.nNeighbors));
+    for (int i = 0; i < reordered.nInterference; i++) {
+        int a = reordered.interfA[i], b = reordered.interfB[i];
+        st.neighbors[a][st.nNeighbors[a]++] = b;
+        st.neighbors[b][st.nNeighbors[b]++] = a;
+    }
+
+    // Precompute valid location masks from width constraints + pattern analysis
+    for (int i = 0; i < reordered.nVregs; i++) {
+        if (reordered.vregWidth[i] == 16) {
+            // 16-bit: BC(7), DE(8), HL(9), mem0(14)
+            st.validLocs[i] = (1u << LOC_BC) | (1u << LOC_DE) | (1u << LOC_HL) | (1u << LOC_MEM0);
+        } else {
+            st.validLocs[i] = (1u << MAX_LOCS) - 1; // all locations
+        }
+    }
+
+    // Further restrict: intersect with locations actually appearing in patterns
+    // A vreg can only be at a location that some pattern allows for it
+    uint16_t patternLocs[MAX_VREGS];
+    memset(patternLocs, 0, sizeof(patternLocs));
+    bool vregUsed[MAX_VREGS] = {};
+    for (int oi = 0; oi < reordered.nOps; oi++) {
+        const OpDesc &op = reordered.ops[oi];
+        for (int pi = 0; pi < op.nPatterns; pi++) {
+            if (op.dstVreg >= 0) {
+                patternLocs[op.dstVreg] |= op.patDstLocs[pi];
+                vregUsed[op.dstVreg] = true;
+            }
+            if (op.srcVreg0 >= 0) {
+                patternLocs[op.srcVreg0] |= op.patSrcLocs0[pi];
+                vregUsed[op.srcVreg0] = true;
+            }
+            if (op.srcVreg1 >= 0) {
+                patternLocs[op.srcVreg1] |= op.patSrcLocs1[pi];
+                vregUsed[op.srcVreg1] = true;
+            }
+        }
+    }
+    for (int i = 0; i < reordered.nVregs; i++) {
+        if (vregUsed[i]) {
+            st.validLocs[i] &= patternLocs[i];
+        }
+    }
+
+    // Constraint propagation: if a vreg has 1 valid loc, fix it and remove from neighbors
+    bool changed = true;
+    while (changed) {
+        changed = false;
+        for (int i = 0; i < reordered.nVregs; i++) {
+            int cnt = __builtin_popcount(st.validLocs[i]);
+            if (cnt == 1) {
+                int loc = __builtin_ctz(st.validLocs[i]); // find the single loc
+                // Remove this loc from all interfering neighbors
+                for (int ni = 0; ni < st.nNeighbors[i]; ni++) {
+                    int nbr = st.neighbors[i][ni];
+                    if (st.validLocs[nbr] & (1u << loc)) {
+                        st.validLocs[nbr] &= ~(1u << loc);
+                        changed = true;
+                        if (st.validLocs[nbr] == 0) {
+                            fprintf(stderr, "Backtrack: constraint propagation made v%d infeasible!\n", nbr);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    // Report effective search space
+    {
+        double logSpace = 0;
+        for (int i = 0; i < reordered.nVregs; i++) {
+            int cnt = __builtin_popcount(st.validLocs[i]);
+            logSpace += log10(cnt > 0 ? cnt : 1);
+        }
+        fprintf(stderr, "Backtrack: per-vreg locs = [");
+        for (int i = 0; i < reordered.nVregs; i++) {
+            if (i > 0) fprintf(stderr, ",");
+            fprintf(stderr, "%d", __builtin_popcount(st.validLocs[i]));
+        }
+        fprintf(stderr, "] (10^%.1f effective)\n", logSpace);
+    }
+
+    fprintf(stderr, "Backtrack: %dv, %d intf, %d ops...\n",
+            reordered.nVregs, reordered.nInterference, reordered.nOps);
+
+    backtrack(st, 0);
+
+    fprintf(stderr, "Backtrack done: explored %llu nodes, %llu feasible, best=%u\n",
+            (unsigned long long)st.nodesExplored,
+            (unsigned long long)st.feasibleCount,
+            st.bestCost);
+
+    outCost = st.bestCost;
+    outFeasible = st.feasibleCount;
+    outNodes = st.nodesExplored;
+
+    // Unmap assignment back to original vreg order
+    if (st.bestCost != INVALID_COST) {
+        for (int i = 0; i < func.nVregs; i++) {
+            outAssignment[order[i]] = st.bestAssignment[i];
+        }
+    }
+    return true;
+}
+
 // Print JSON result line to stdout
 static void print_json_result(const FuncDesc &func, uint32_t cost, uint64_t bestIdx,
                                uint64_t totalAssignments, uint64_t feasibleCount) {
@@ -700,7 +1019,24 @@ static int run_server() {
         uint64_t bestIdx, feasible, total;
         if (!solve_one(func, d_bestCost, d_bestIdx, d_feasibleCount,
                        cost, bestIdx, feasible, total, true)) {
-            printf("{\"cost\": -1, \"assignment\": [], \"searchSpace\": 0, \"feasible\": 0, \"error\": \"search space too large\"}\n");
+            // GPU search space too large — fall back to CPU backtracking
+            uint8_t btAssignment[MAX_VREGS];
+            uint64_t btNodes;
+            solve_backtrack(func, cost, btAssignment, feasible, btNodes);
+
+            if (cost == INVALID_COST) {
+                printf("{\"cost\": -1, \"assignment\": [], \"searchSpace\": %llu, \"feasible\": 0, \"solver\": \"backtrack\"}\n",
+                       (unsigned long long)btNodes);
+            } else {
+                printf("{\"cost\": %u, \"assignment\": [", cost);
+                for (int i = 0; i < func.nVregs; i++) {
+                    if (i > 0) printf(", ");
+                    printf("%d", btAssignment[i]);
+                }
+                printf("], \"searchSpace\": %llu, \"feasible\": %llu, \"solver\": \"backtrack\"}\n",
+                       (unsigned long long)btNodes,
+                       (unsigned long long)feasible);
+            }
             fflush(stdout);
             continue;
         }

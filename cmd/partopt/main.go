@@ -69,7 +69,9 @@ const callRetCost = 27       // CALL nn (17T) + RET (10T)
 func main() {
 	callgraphFile := flag.String("callgraph", "", "call graph JSON file")
 	tableFile := flag.String("table", "", "GPU allocation table JSON file")
+	mergedFile := flag.String("merged-costs", "", "merged pair GPU costs JSON file (name→cost)")
 	maxVregs := flag.Int("max-vregs", 8, "max vregs for table lookup (K)")
+	estimate := flag.Bool("estimate", false, "estimate costs from nVregs (no table needed)")
 	demo := flag.Bool("demo", false, "run built-in demo")
 	flag.Parse()
 
@@ -78,37 +80,63 @@ func main() {
 		return
 	}
 
-	if *callgraphFile == "" || *tableFile == "" {
+	if *callgraphFile == "" || (*tableFile == "" && !*estimate) {
 		fmt.Fprintf(os.Stderr, "Usage: partopt --callgraph graph.json --table table.json\n")
+		fmt.Fprintf(os.Stderr, "       partopt --callgraph graph.json --estimate\n")
 		fmt.Fprintf(os.Stderr, "       partopt --demo\n")
 		os.Exit(1)
 	}
 
-	// Load call graph
+	// Load call graph (supports both {"functions":[...]} and flat [...] array)
 	cgData, err := os.ReadFile(*callgraphFile)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error reading call graph: %v\n", err)
 		os.Exit(1)
 	}
 	var cg CallGraph
-	if err := json.Unmarshal(cgData, &cg); err != nil {
-		fmt.Fprintf(os.Stderr, "Error parsing call graph: %v\n", err)
-		os.Exit(1)
+	if err := json.Unmarshal(cgData, &cg); err != nil || len(cg.Functions) == 0 {
+		// Try flat array format (VIR output)
+		var funcs []Function
+		if err2 := json.Unmarshal(cgData, &funcs); err2 != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing call graph: %v\n", err)
+			os.Exit(1)
+		}
+		cg.Functions = funcs
 	}
 
-	// Load table
-	tblData, err := os.ReadFile(*tableFile)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error reading table: %v\n", err)
-		os.Exit(1)
-	}
 	var table map[string]TableEntry
-	if err := json.Unmarshal(tblData, &table); err != nil {
-		fmt.Fprintf(os.Stderr, "Error parsing table: %v\n", err)
-		os.Exit(1)
+	if *estimate {
+		// Generate estimated costs: ~4T per vreg (typical Z80 register pressure cost)
+		table = estimateCosts(cg)
+		fmt.Fprintf(os.Stderr, "Using estimated costs for %d functions (%d unique sigs)\n", len(cg.Functions), len(table))
+	} else {
+		tblData, err := os.ReadFile(*tableFile)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error reading table: %v\n", err)
+			os.Exit(1)
+		}
+		if err := json.Unmarshal(tblData, &table); err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing table: %v\n", err)
+			os.Exit(1)
+		}
 	}
 
-	result := solve(cg, table, *maxVregs)
+	// Load merged costs if provided
+	mergedCosts := make(map[string]int) // "parent+callee1+callee2" → cost
+	if *mergedFile != "" {
+		mcData, err := os.ReadFile(*mergedFile)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error reading merged costs: %v\n", err)
+			os.Exit(1)
+		}
+		if err := json.Unmarshal(mcData, &mergedCosts); err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing merged costs: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Fprintf(os.Stderr, "Loaded %d merged costs\n", len(mergedCosts))
+	}
+
+	result := solve(cg, table, mergedCosts, *maxVregs)
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
 	enc.Encode(result)
@@ -160,7 +188,7 @@ func runDemo(maxVregs int) {
 	fmt.Fprintf(os.Stderr, "           → print(2v)\n")
 	fmt.Fprintf(os.Stderr, "  Max vregs for table: %d\n\n", maxVregs)
 
-	result := solve(cg, table, maxVregs)
+	result := solve(cg, table, nil, maxVregs)
 
 	fmt.Fprintf(os.Stderr, "=== Optimal Partition ===\n")
 	for _, d := range result.Decisions {
@@ -180,7 +208,9 @@ func runDemo(maxVregs int) {
 }
 
 // solve runs the bottom-up DP partition algorithm
-func solve(cg CallGraph, table map[string]TableEntry, maxVregs int) PartitionResult {
+// mergedCosts maps "parent+callee1+callee2" (sorted) to GPU-optimal cost.
+// Falls back to buildMergedSig table lookup if not in mergedCosts.
+func solve(cg CallGraph, table map[string]TableEntry, mergedCosts map[string]int, maxVregs int) PartitionResult {
 	// Build adjacency + index
 	funcMap := make(map[string]*Function)
 	for i := range cg.Functions {
@@ -245,11 +275,20 @@ func solve(cg CallGraph, table map[string]TableEntry, maxVregs int) PartitionRes
 				continue
 			}
 
-			// Cost of merged island
-			mergedSig := buildMergedSig(f.Name, merged)
-			mergedCost := lookupCost(mergedSig, table)
+			// Cost of merged island — check GPU merged costs first, then table
+			mergedKey := buildMergedKey(name, merged)
+			mergedCost := -1
+			if mergedCosts != nil {
+				if c, ok := mergedCosts[mergedKey]; ok {
+					mergedCost = c
+				}
+			}
 			if mergedCost < 0 {
-				// Not in table — estimate as sum of parts (no benefit)
+				mergedSig := buildMergedSig(name, merged)
+				mergedCost = lookupCost(mergedSig, table)
+			}
+			if mergedCost < 0 {
+				// Not in table — skip this merge
 				continue
 			}
 
@@ -376,11 +415,75 @@ func solve(cg CallGraph, table map[string]TableEntry, maxVregs int) PartitionRes
 	}
 }
 
+// estimateCosts generates synthetic table entries from nVregs.
+// Cost model: base 4T + 4T per vreg + 2T per vreg^2/8 (spill pressure).
+// Also generates merged entries for all caller+callee combinations.
+func estimateCosts(cg CallGraph) map[string]TableEntry {
+	table := make(map[string]TableEntry)
+	funcMap := make(map[string]*Function)
+	for i := range cg.Functions {
+		f := &cg.Functions[i]
+		funcMap[f.Name] = f
+		cost := estimateVregCost(f.NVregs)
+		table[f.Sig] = TableEntry{Cost: cost}
+		// Also add by buildMergedSig with no merges (sig_name format)
+		table[buildMergedSig(f.Name, nil)] = TableEntry{Cost: cost}
+	}
+	// Generate merged entries for each function + its callee subsets
+	for i := range cg.Functions {
+		f := &cg.Functions[i]
+		if len(f.Callees) == 0 {
+			continue
+		}
+		nCallees := len(f.Callees)
+		for mask := 1; mask < (1 << nCallees); mask++ {
+			mergedVregs := f.NVregs
+			var merged []string
+			for j := 0; j < nCallees; j++ {
+				if mask&(1<<j) != 0 {
+					callee := f.Callees[j]
+					if cf, ok := funcMap[callee]; ok {
+						mergedVregs += cf.NVregs
+					}
+					merged = append(merged, callee)
+				}
+			}
+			sig := buildMergedSig(f.Name, merged)
+			cost := estimateVregCost(mergedVregs)
+			table[sig] = TableEntry{Cost: cost}
+		}
+	}
+	return table
+}
+
+func estimateVregCost(nVregs int) int {
+	if nVregs <= 0 {
+		return 4
+	}
+	// Base + linear + quadratic spill pressure
+	return 4 + 4*nVregs + 2*nVregs*nVregs/8
+}
+
 func lookupCost(sig string, table map[string]TableEntry) int {
 	if entry, ok := table[sig]; ok {
 		return entry.Cost
 	}
 	return -1
+}
+
+// buildMergedKey creates a lookup key for merged costs: "parent+callee1+callee2" (callees sorted)
+func buildMergedKey(parent string, merged []string) string {
+	if len(merged) == 0 {
+		return parent
+	}
+	key := parent
+	sorted := make([]string, len(merged))
+	copy(sorted, merged)
+	sort.Strings(sorted)
+	for _, m := range sorted {
+		key += "+" + m
+	}
+	return key
 }
 
 func buildMergedSig(parent string, merged []string) string {
