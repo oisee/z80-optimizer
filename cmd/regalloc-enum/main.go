@@ -1,11 +1,13 @@
-// regalloc-enum — enumerate all possible regalloc constraint patterns
-// and pipe them through the GPU solver for exhaustive table generation.
+// regalloc-enum — enumerate realistic regalloc constraint patterns
 //
-// Enumerates: all (nVregs, widths, interference, paramConstraints) combos
-// for 2-4 vregs. Generates minimal FuncDesc JSON (1 dummy op per vreg)
-// and outputs one JSON per line for the GPU --server.
+// Uses actual Z80 per-vreg allowed-loc sets (not all combos):
+//   8-bit:  {A}, {C}, {any GPR8}, {any GPR8 except A}
+//   16-bit: {HL}, {DE}, {any pair}
 //
-// Usage: regalloc-enum [--max-vregs 4] | z80_regalloc --server > results.jsonl
+// Enumerates all (nVregs, locSets, widths, interference) combos.
+// Generates FuncDesc JSON with ops whose patterns match the loc sets.
+//
+// Usage: regalloc-enum [--max-vregs 5] | z80_regalloc --server > results.jsonl
 package main
 
 import (
@@ -15,45 +17,18 @@ import (
 	"os"
 )
 
-// Loc indices matching the CUDA kernel
-const (
-	LocA   = 0
-	LocB   = 1
-	LocC   = 2
-	LocD   = 3
-	LocE   = 4
-	LocH   = 5
-	LocL   = 6
-	LocBC  = 7
-	LocDE  = 8
-	LocHL  = 9
-	LocIXH = 10
-	LocIXL = 11
-	LocIYH = 12
-	LocIYL = 13
-	LocMem = 14
-)
-
-var locs8 = []int{LocA, LocB, LocC, LocD, LocE, LocH, LocL}
-var locs16 = []int{LocBC, LocDE, LocHL}
-
-// Pin options: -1 = free (unconstrained), or specific loc
-func pinOptions(width int) []int {
-	opts := []int{-1} // free
-	if width == 8 {
-		opts = append(opts, locs8...)
-	} else {
-		opts = append(opts, locs16...)
-	}
-	return opts
+// Realistic per-vreg allowed loc sets from actual Z80 patterns
+var locSets8 = [][]int{
+	{0},             // must be A (ALU dst, IN, OUT)
+	{2},             // must be C (PFCCO 2nd param)
+	{0, 1, 2, 3, 4, 5, 6}, // any GPR8 (LD r,n)
+	{1, 2, 3, 4, 5, 6},    // any GPR8 except A (non-accumulator)
 }
 
-// All possible locs for a given width
-func allLocs(width int) []int {
-	if width == 16 {
-		return locs16
-	}
-	return locs8
+var locSets16 = [][]int{
+	{9},       // must be HL (ADD HL,rr, CALL handle)
+	{8},       // must be DE (PFCCO 2nd param ptr)
+	{7, 8, 9}, // any pair (LD rr,nn)
 }
 
 type Pattern struct {
@@ -84,52 +59,52 @@ type FuncDesc struct {
 }
 
 func main() {
-	maxVregs := flag.Int("max-vregs", 4, "max vregs to enumerate (2-4)")
+	maxVregs := flag.Int("max-vregs", 5, "max vregs to enumerate (2-6)")
 	flag.Parse()
 
 	enc := json.NewEncoder(os.Stdout)
 	total := 0
 
 	for nv := 2; nv <= *maxVregs; nv++ {
-		// Number of possible interference edges
 		nEdges := nv * (nv - 1) / 2
-
-		// Enumerate all width combinations
-		nWidthCombos := 1 << nv // 2^nv (each vreg is 8 or 16)
+		nWidthCombos := 1 << nv
 
 		for wc := 0; wc < nWidthCombos; wc++ {
 			widths := make([]int, nv)
+			locSetOptions := make([][][]int, nv)
 			for i := 0; i < nv; i++ {
 				if wc&(1<<i) != 0 {
 					widths[i] = 16
+					locSetOptions[i] = locSets16
 				} else {
 					widths[i] = 8
+					locSetOptions[i] = locSets8
 				}
 			}
 
-			// Build pin options per vreg
-			pinOpts := make([][]int, nv)
+			// Number of loc-set combos
+			nLocCombos := 1
 			for i := 0; i < nv; i++ {
-				pinOpts[i] = pinOptions(widths[i])
+				nLocCombos *= len(locSetOptions[i])
 			}
 
-			// Enumerate all pin combinations (cartesian product)
-			pinCombos := 1
-			for i := 0; i < nv; i++ {
-				pinCombos *= len(pinOpts[i])
-			}
-
-			for pc := 0; pc < pinCombos; pc++ {
-				pins := make([]int, nv)
-				rem := pc
+			for lc := 0; lc < nLocCombos; lc++ {
+				// Decode loc set indices
+				locSetIdx := make([]int, nv)
+				rem := lc
 				for i := nv - 1; i >= 0; i-- {
-					pins[i] = pinOpts[i][rem%len(pinOpts[i])]
-					rem /= len(pinOpts[i])
+					locSetIdx[i] = rem % len(locSetOptions[i])
+					rem /= len(locSetOptions[i])
+				}
+
+				// Get actual loc sets
+				vregLocs := make([][]int, nv)
+				for i := 0; i < nv; i++ {
+					vregLocs[i] = locSetOptions[i][locSetIdx[i]]
 				}
 
 				// Enumerate all interference graphs
 				for ig := 0; ig < (1 << nEdges); ig++ {
-					// Build interference pairs
 					var interf [][]int
 					edgeIdx := 0
 					for i := 0; i < nv; i++ {
@@ -141,16 +116,7 @@ func main() {
 						}
 					}
 
-					// Build param constraints from pins
-					var params []ParamConstraint
-					for i, pin := range pins {
-						if pin >= 0 {
-							params = append(params, ParamConstraint{Vreg: i, Loc: pin})
-						}
-					}
-
-					// Build a minimal op set: one op per vreg as dst
-					// Each op: dst=vreg, src0=-1, src1=-1, pattern allows all valid locs
+					// Build ops: one op per vreg as dst, pattern uses vreg's loc set
 					var ops []Op
 					for i := 0; i < nv; i++ {
 						ops = append(ops, Op{
@@ -158,7 +124,7 @@ func main() {
 							Src0: -1,
 							Src1: -1,
 							Patterns: []Pattern{{
-								DstLocs:  allLocs(widths[i]),
+								DstLocs:  vregLocs[i],
 								SrcLocs0: []int{},
 								SrcLocs1: []int{},
 								Cost:     4,
@@ -166,12 +132,34 @@ func main() {
 						})
 					}
 
+					// Add cross-vreg ops for pairs that interfere
+					// (simulates real ALU ops: dst=vi, src=vj)
+					edgeIdx = 0
+					for i := 0; i < nv; i++ {
+						for j := i + 1; j < nv; j++ {
+							if ig&(1<<edgeIdx) != 0 && len(ops) < 64 {
+								ops = append(ops, Op{
+									Dst:  i,
+									Src0: j,
+									Src1: -1,
+									Patterns: []Pattern{{
+										DstLocs:  vregLocs[i],
+										SrcLocs0: vregLocs[j],
+										SrcLocs1: []int{},
+										Cost:     4,
+									}},
+								})
+							}
+							edgeIdx++
+						}
+					}
+
 					fd := FuncDesc{
 						NVregs:           nv,
 						Widths:           widths,
 						Ops:              ops,
 						Interference:     interf,
-						ParamConstraints: params,
+						ParamConstraints: nil,
 					}
 
 					enc.Encode(fd)
