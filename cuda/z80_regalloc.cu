@@ -84,6 +84,8 @@ struct FuncDesc {
     int     nParamConstraints;
     uint8_t paramVreg[MAX_VREGS];
     uint8_t paramLoc[MAX_VREGS];
+    // Vreg widths: 8 or 16. 16-bit vregs restricted to pair/mem locs.
+    uint8_t vregWidth[MAX_VREGS];   // 0 or 8 = 8-bit (any loc), 16 = 16-bit (pairs only)
 };
 
 // Constant memory — shared by all threads, cached
@@ -121,6 +123,19 @@ __device__ bool check_params(const uint8_t *assignment) {
         int loc  = d_func.paramLoc[i];
         if (assignment[vreg] != loc) {
             return false;
+        }
+    }
+    return true;
+}
+
+// Check vreg widths: 16-bit vregs must be in pair/mem locs (7-9, 14)
+__device__ bool check_widths(const uint8_t *assignment) {
+    for (int i = 0; i < d_func.nVregs; i++) {
+        if (d_func.vregWidth[i] == 16) {
+            uint8_t loc = assignment[i];
+            // 16-bit vregs: only BC(7), DE(8), HL(9), mem0(14)
+            if (loc < LOC_BC && loc != LOC_MEM0) return false;
+            if (loc > LOC_HL && loc != LOC_MEM0) return false;
         }
     }
     return true;
@@ -231,6 +246,9 @@ __global__ void regalloc_kernel(uint64_t offset, uint64_t count,
 
     // Quick reject: param constraints
     if (!check_params(assignment)) return;
+
+    // Quick reject: vreg width constraints
+    if (!check_widths(assignment)) return;
 
     // Evaluate full cost
     uint16_t cost = evaluate_cost(assignment);
@@ -513,6 +531,11 @@ static bool parse_json(const std::string &input, FuncDesc &func) {
                 }
                 func.nParamConstraints = ci;
                 jp.expect(']');
+            }
+        } else if (key == "widths") {
+            std::vector<int> w = jp.parse_int_array();
+            for (int i = 0; i < (int)w.size() && i < MAX_VREGS; i++) {
+                func.vregWidth[i] = (uint8_t)w[i];
             }
         } else {
             jp.skip_value();
