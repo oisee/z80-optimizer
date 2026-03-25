@@ -136,3 +136,24 @@ If the tableability of these passes is high (as it is for register allocation), 
 ### The Strongest Angle
 
 Not GPU speed, not dual GPUs, not CUDA engineering — but the empirical discovery that **real programs occupy a tiny, recurring fraction of theoretical backend decision spaces**, making offline precomputation practical. GPU is merely the instrument that made this visible.
+
+---
+
+## Phase Diagram Results (Empirical)
+
+### Table 1: Theoretical max solvable vregs (5min timeout, RTX 4060 Ti)
+
+| Locations | Architecture | Max vregs | Corpus coverage |
+|-----------|-------------|-----------|-----------------|
+| 3 | 6502 (A,X,Y) | 19 | ~100% |
+| 7 | Z80 GPR only | 11 | ~95% |
+| 8 | GameBoy LR35902 | 10 | ~93% |
+| 15 | Z80 full | 8 | 81% |
+| 16 | ARM Thumb | 7 | ~70% |
+| 32 | RISC-V RV32 | 6 | ~50% |
+| 64 | RISC-V RV64 | 5 | ~30% |
+
+### Key Finding
+Phase transition at ~16 register locations. Below 16: exhaustive GPU tables cover the majority of real functions. Above 16: only small functions (≤5-6 vregs) are tractable via brute-force; island decomposition or heuristics needed for the rest.
+
+Z80 at 15 locations sits at the sweet spot — just below the cliff.
