@@ -15,16 +15,42 @@
 
 static int NUM_OPS = 14;
 #define MAX_LEN 12
+#define MAX_OPS 128
 
-static const char *opNames[] = {
+// Default op names (z80_mul 14-op pool). Overridden by --ops-file.
+static const char *defaultOpNames[] = {
     "ADD A,A", "ADD A,B", "SUB B", "LD B,A",
     "ADC A,B", "ADC A,A", "SBC A,B", "SBC A,A",
     "SRL A", "RLA", "RRA", "RLCA", "RRCA", "NEG"
 };
 
-static const uint8_t opCosts[] = {
-    4,4,4,4,4,4,4,4, 8, 4,4,4,4, 8
-};
+static const char *dynOpNames[MAX_OPS];
+static const char **opNames = defaultOpNames;
+static int opNamesCount = 14;
+
+// Load op names from text file (one name per line)
+static void loadOpNames(const char *path) {
+    static char buf[8192];
+    static char *ptrs[MAX_OPS];
+    FILE *f = fopen(path, "r");
+    if (!f) { fprintf(stderr, "Cannot open ops file: %s\n", path); return; }
+    int n = 0;
+    char *p = buf;
+    while (n < MAX_OPS && fgets(p, (int)(buf + sizeof(buf) - p), f)) {
+        size_t len = strlen(p);
+        if (len > 0 && p[len-1] == '\n') p[len-1] = 0;
+        if (p[0] == 0) continue;
+        ptrs[n] = p;
+        dynOpNames[n] = p;
+        p += strlen(p) + 1;
+        n++;
+    }
+    fclose(f);
+    opNames = dynOpNames;
+    opNamesCount = n;
+    NUM_OPS = n;
+    fprintf(stderr, "Loaded %d op names from %s\n", n, path);
+}
 
 typedef struct __attribute__((packed)) {
     uint32_t k;
@@ -90,6 +116,7 @@ int main(int argc, char *argv[]) {
             else if (!strcmp(argv[i], "--skip") && i+1 < argc) skipFile = argv[++i];
             else if (!strcmp(argv[i], "--num-ops") && i+1 < argc) NUM_OPS = atoi(argv[++i]);
             else if (!strcmp(argv[i], "--no-verify")) skipCpuVerify = 1;
+            else if (!strcmp(argv[i], "--ops-file") && i+1 < argc) loadOpNames(argv[++i]);
         }
 
         // Load skip set (already-solved constants from previous JSON)
@@ -240,12 +267,12 @@ int main(int argc, char *argv[]) {
                 if (jsonMode) {
                     printf("  {\"k\": %d, \"ops\": [", k);
                     for (int i = 0; i < result.length; i++)
-                        printf("%s\"%s\"", i ? "," : "", (result.ops[i] < (int)(sizeof(opNames)/sizeof(opNames[0])) ? opNames[result.ops[i]] : "?"));
+                        printf("%s\"%s\"", i ? "," : "", (result.ops[i] < opNamesCount ? opNames[result.ops[i]] : "?"));
                     printf("], \"length\": %d, \"tstates\": %d}%s\n",
                            result.length, result.tstates, (k < endK) ? "," : "");
                 } else {
                     printf("x%d:", k);
-                    for (int i = 0; i < result.length; i++) printf(" %s", (result.ops[i] < (int)(sizeof(opNames)/sizeof(opNames[0])) ? opNames[result.ops[i]] : "?"));
+                    for (int i = 0; i < result.length; i++) printf(" %s", (result.ops[i] < opNamesCount ? opNames[result.ops[i]] : "?"));
                     printf(" (%d insts, %dT)\n", result.length, result.tstates);
                 }
             }

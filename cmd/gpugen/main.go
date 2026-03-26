@@ -37,14 +37,19 @@ var extensions = map[gpugen.Backend]string{
 
 func main() {
 	isaName := flag.String("isa", "z80", "ISA: z80, 6502")
-	backendName := flag.String("backend", "metal", "Backend: cuda, metal, opencl, vulkan, all")
+	backendName := flag.String("backend", "metal", "Backend: cuda, metal, opencl, vulkan, all, host-header")
 	outDir := flag.String("out", "", "Output directory (for -backend all)")
 	flag.Parse()
 
 	isa, ok := isas[*isaName]
 	if !ok {
-		fmt.Fprintf(os.Stderr, "Unknown ISA: %s (available: z80, 6502)\n", *isaName)
+		fmt.Fprintf(os.Stderr, "Unknown ISA: %s (available: z80, z80_arith16, 6502)\n", *isaName)
 		os.Exit(1)
+	}
+
+	if *backendName == "host-header" {
+		fmt.Print(gpugen.EmitHostHeader(isa))
+		return
 	}
 
 	if *backendName == "all" {
