@@ -1,0 +1,3502 @@
+[
+  {
+    "source": "SLA A : RR A",
+    "replacement": "OR A",
+    "cycles_saved": 12,
+    "bytes_saved": 3,
+    "category": "shift_simplify"
+  },
+  {
+    "source": "SRL A : RL A",
+    "replacement": "OR A",
+    "cycles_saved": 12,
+    "bytes_saved": 3,
+    "category": "shift_simplify"
+  },
+  {
+    "source": "LD A, 0x00 : NEG",
+    "replacement": "SUB A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "LD A, 0x00 : RLC A",
+    "replacement": "XOR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "LD A, 0x00 : RRC A",
+    "replacement": "XOR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "LD A, 0x00 : SLA A",
+    "replacement": "XOR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "LD A, 0x00 : SRA A",
+    "replacement": "XOR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "LD A, 0x00 : SRL A",
+    "replacement": "XOR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "AND 0x00 : NEG",
+    "replacement": "SUB A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "AND 0x00 : RLC A",
+    "replacement": "XOR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "AND 0x00 : RRC A",
+    "replacement": "XOR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "AND 0x00 : RL A",
+    "replacement": "XOR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "AND 0x00 : RR A",
+    "replacement": "XOR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "AND 0x00 : SLA A",
+    "replacement": "XOR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "AND 0x00 : SRA A",
+    "replacement": "XOR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "AND 0x00 : SRL A",
+    "replacement": "XOR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "BIT 0, A : AND 0xFF",
+    "replacement": "AND A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "BIT 0, A : XOR 0x00",
+    "replacement": "OR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "BIT 0, A : OR 0x00",
+    "replacement": "OR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "BIT 0, B : AND 0xFF",
+    "replacement": "AND A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "BIT 0, B : XOR 0x00",
+    "replacement": "OR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "BIT 0, B : OR 0x00",
+    "replacement": "OR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "BIT 0, C : AND 0xFF",
+    "replacement": "AND A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "BIT 0, C : XOR 0x00",
+    "replacement": "OR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "BIT 0, C : OR 0x00",
+    "replacement": "OR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "BIT 0, D : AND 0xFF",
+    "replacement": "AND A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "BIT 0, D : XOR 0x00",
+    "replacement": "OR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "BIT 0, D : OR 0x00",
+    "replacement": "OR A",
+    "cycles_saved": 11,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "LD A, 0x00 : SUB 0x00",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "LD A, 0x00 : SBC A, 0x00",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "LD A, 0x00 : XOR 0x00",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "LD A, 0x00 : OR 0x00",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "LD A, 0x00 : CP 0x00",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "constant_fold"
+  },
+  {
+    "source": "LD A, 0x01 : SUB 0x01",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x01 : SBC A, 0x01",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x01 : XOR 0x01",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x02 : SUB 0x02",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x02 : SBC A, 0x02",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x02 : XOR 0x02",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x03 : SUB 0x03",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x03 : SBC A, 0x03",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x03 : XOR 0x03",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x04 : SUB 0x04",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x04 : SBC A, 0x04",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x04 : XOR 0x04",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x05 : SUB 0x05",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x05 : SBC A, 0x05",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x05 : XOR 0x05",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x06 : SUB 0x06",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x06 : SBC A, 0x06",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x06 : XOR 0x06",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x07 : SUB 0x07",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x07 : SBC A, 0x07",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x07 : XOR 0x07",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x08 : SUB 0x08",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x08 : SBC A, 0x08",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x08 : XOR 0x08",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x09 : SUB 0x09",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x09 : SBC A, 0x09",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x09 : XOR 0x09",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x0A : SUB 0x0A",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x0A : SBC A, 0x0A",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x0A : XOR 0x0A",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x0B : SUB 0x0B",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x0B : SBC A, 0x0B",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x0B : XOR 0x0B",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x0C : SUB 0x0C",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x0C : SBC A, 0x0C",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x0C : XOR 0x0C",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x0D : SUB 0x0D",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x0D : SBC A, 0x0D",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x0D : XOR 0x0D",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x0E : SUB 0x0E",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x0E : SBC A, 0x0E",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x0E : XOR 0x0E",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x0F : SUB 0x0F",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x0F : SBC A, 0x0F",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x0F : XOR 0x0F",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x10 : SUB 0x10",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x10 : SBC A, 0x10",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x10 : XOR 0x10",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x11 : SUB 0x11",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x11 : SBC A, 0x11",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x11 : XOR 0x11",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x12 : SUB 0x12",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x12 : SBC A, 0x12",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x12 : XOR 0x12",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x13 : SUB 0x13",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x13 : SBC A, 0x13",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x13 : XOR 0x13",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x14 : SUB 0x14",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x14 : SBC A, 0x14",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x14 : XOR 0x14",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x15 : SUB 0x15",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x15 : SBC A, 0x15",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x15 : XOR 0x15",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x16 : SUB 0x16",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x16 : SBC A, 0x16",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x16 : XOR 0x16",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x17 : SUB 0x17",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x17 : SBC A, 0x17",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x17 : XOR 0x17",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x18 : SUB 0x18",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x18 : SBC A, 0x18",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x18 : XOR 0x18",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x19 : SUB 0x19",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x19 : SBC A, 0x19",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x19 : XOR 0x19",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x1A : SUB 0x1A",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x1A : SBC A, 0x1A",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x1A : XOR 0x1A",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x1B : SUB 0x1B",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x1B : SBC A, 0x1B",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x1B : XOR 0x1B",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x1C : SUB 0x1C",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x1C : SBC A, 0x1C",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x1C : XOR 0x1C",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x1D : SUB 0x1D",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x1D : SBC A, 0x1D",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x1D : XOR 0x1D",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x1E : SUB 0x1E",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x1E : SBC A, 0x1E",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x1E : XOR 0x1E",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x1F : SUB 0x1F",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x1F : SBC A, 0x1F",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x1F : XOR 0x1F",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x20 : SUB 0x20",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x20 : SBC A, 0x20",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x20 : XOR 0x20",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x21 : SUB 0x21",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x21 : SBC A, 0x21",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x21 : XOR 0x21",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x22 : SUB 0x22",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x22 : SBC A, 0x22",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x22 : XOR 0x22",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x23 : SUB 0x23",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x23 : SBC A, 0x23",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x23 : XOR 0x23",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x24 : SUB 0x24",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x24 : SBC A, 0x24",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x24 : XOR 0x24",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x25 : SUB 0x25",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x25 : SBC A, 0x25",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x25 : XOR 0x25",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x26 : SUB 0x26",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x26 : SBC A, 0x26",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x26 : XOR 0x26",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x27 : SUB 0x27",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x27 : SBC A, 0x27",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x27 : XOR 0x27",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x28 : SUB 0x28",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x28 : SBC A, 0x28",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x28 : XOR 0x28",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x29 : SUB 0x29",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x29 : SBC A, 0x29",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x29 : XOR 0x29",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x2A : SUB 0x2A",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x2A : SBC A, 0x2A",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x2A : XOR 0x2A",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x2B : SUB 0x2B",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x2B : SBC A, 0x2B",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x2B : XOR 0x2B",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x2C : SUB 0x2C",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x2C : SBC A, 0x2C",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x2C : XOR 0x2C",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x2D : SUB 0x2D",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x2D : SBC A, 0x2D",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x2D : XOR 0x2D",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x2E : SUB 0x2E",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x2E : SBC A, 0x2E",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x2E : XOR 0x2E",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x2F : SUB 0x2F",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x2F : SBC A, 0x2F",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x2F : XOR 0x2F",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x30 : SUB 0x30",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x30 : SBC A, 0x30",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x30 : XOR 0x30",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x31 : SUB 0x31",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x31 : SBC A, 0x31",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x31 : XOR 0x31",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x32 : SUB 0x32",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x32 : SBC A, 0x32",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x32 : XOR 0x32",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x33 : SUB 0x33",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x33 : SBC A, 0x33",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x33 : XOR 0x33",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x34 : SUB 0x34",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x34 : SBC A, 0x34",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x34 : XOR 0x34",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x35 : SUB 0x35",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x35 : SBC A, 0x35",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x35 : XOR 0x35",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x36 : SUB 0x36",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x36 : SBC A, 0x36",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x36 : XOR 0x36",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x37 : SUB 0x37",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x37 : SBC A, 0x37",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x37 : XOR 0x37",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x38 : SUB 0x38",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x38 : SBC A, 0x38",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x38 : XOR 0x38",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x39 : SUB 0x39",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x39 : SBC A, 0x39",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x39 : XOR 0x39",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x3A : SUB 0x3A",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x3A : SBC A, 0x3A",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x3A : XOR 0x3A",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x3B : SUB 0x3B",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x3B : SBC A, 0x3B",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x3B : XOR 0x3B",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x3C : SUB 0x3C",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x3C : SBC A, 0x3C",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x3C : XOR 0x3C",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x3D : SUB 0x3D",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x3D : SBC A, 0x3D",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x3D : XOR 0x3D",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x3E : SUB 0x3E",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x3E : SBC A, 0x3E",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x3E : XOR 0x3E",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x3F : SUB 0x3F",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x3F : SBC A, 0x3F",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x3F : XOR 0x3F",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x40 : SUB 0x40",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x40 : SBC A, 0x40",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x40 : XOR 0x40",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x41 : SUB 0x41",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x41 : SBC A, 0x41",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x41 : XOR 0x41",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x42 : SUB 0x42",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x42 : SBC A, 0x42",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x42 : XOR 0x42",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x43 : SUB 0x43",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x43 : SBC A, 0x43",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x43 : XOR 0x43",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x44 : SUB 0x44",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x44 : SBC A, 0x44",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x44 : XOR 0x44",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x45 : SUB 0x45",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x45 : SBC A, 0x45",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x45 : XOR 0x45",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x46 : SUB 0x46",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x46 : SBC A, 0x46",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x46 : XOR 0x46",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x47 : SUB 0x47",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x47 : SBC A, 0x47",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x47 : XOR 0x47",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x48 : SUB 0x48",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x48 : SBC A, 0x48",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x48 : XOR 0x48",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x49 : SUB 0x49",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x49 : SBC A, 0x49",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x49 : XOR 0x49",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x4A : SUB 0x4A",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x4A : SBC A, 0x4A",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x4A : XOR 0x4A",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x4B : SUB 0x4B",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x4B : SBC A, 0x4B",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x4B : XOR 0x4B",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x4C : SUB 0x4C",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x4C : SBC A, 0x4C",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x4C : XOR 0x4C",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x4D : SUB 0x4D",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x4D : SBC A, 0x4D",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x4D : XOR 0x4D",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x4E : SUB 0x4E",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x4E : SBC A, 0x4E",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x4E : XOR 0x4E",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x4F : SUB 0x4F",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x4F : SBC A, 0x4F",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x4F : XOR 0x4F",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x50 : SUB 0x50",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x50 : SBC A, 0x50",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x50 : XOR 0x50",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x51 : SUB 0x51",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x51 : SBC A, 0x51",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x51 : XOR 0x51",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x52 : SUB 0x52",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x52 : SBC A, 0x52",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x52 : XOR 0x52",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x53 : SUB 0x53",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x53 : SBC A, 0x53",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x53 : XOR 0x53",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x54 : SUB 0x54",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x54 : SBC A, 0x54",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x54 : XOR 0x54",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x55 : SUB 0x55",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x55 : SBC A, 0x55",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x55 : XOR 0x55",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x56 : SUB 0x56",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x56 : SBC A, 0x56",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x56 : XOR 0x56",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x57 : SUB 0x57",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x57 : SBC A, 0x57",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x57 : XOR 0x57",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x58 : SUB 0x58",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x58 : SBC A, 0x58",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x58 : XOR 0x58",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x59 : SUB 0x59",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x59 : SBC A, 0x59",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x59 : XOR 0x59",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x5A : SUB 0x5A",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x5A : SBC A, 0x5A",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x5A : XOR 0x5A",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x5B : SUB 0x5B",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x5B : SBC A, 0x5B",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x5B : XOR 0x5B",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x5C : SUB 0x5C",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x5C : SBC A, 0x5C",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x5C : XOR 0x5C",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x5D : SUB 0x5D",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x5D : SBC A, 0x5D",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x5D : XOR 0x5D",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x5E : SUB 0x5E",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x5E : SBC A, 0x5E",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x5E : XOR 0x5E",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x5F : SUB 0x5F",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x5F : SBC A, 0x5F",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x5F : XOR 0x5F",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x60 : SUB 0x60",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x60 : SBC A, 0x60",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x60 : XOR 0x60",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x61 : SUB 0x61",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x61 : SBC A, 0x61",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x61 : XOR 0x61",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x62 : SUB 0x62",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x62 : SBC A, 0x62",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x62 : XOR 0x62",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x63 : SUB 0x63",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x63 : SBC A, 0x63",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x63 : XOR 0x63",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x64 : SUB 0x64",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x64 : SBC A, 0x64",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x64 : XOR 0x64",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x65 : SUB 0x65",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x65 : SBC A, 0x65",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x65 : XOR 0x65",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x66 : SUB 0x66",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x66 : SBC A, 0x66",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x66 : XOR 0x66",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x67 : SUB 0x67",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x67 : SBC A, 0x67",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x67 : XOR 0x67",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x68 : SUB 0x68",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x68 : SBC A, 0x68",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x68 : XOR 0x68",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x69 : SUB 0x69",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x69 : SBC A, 0x69",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x69 : XOR 0x69",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x6A : SUB 0x6A",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x6A : SBC A, 0x6A",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x6A : XOR 0x6A",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x6B : SUB 0x6B",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x6B : SBC A, 0x6B",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x6B : XOR 0x6B",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x6C : SUB 0x6C",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x6C : SBC A, 0x6C",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x6C : XOR 0x6C",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x6D : SUB 0x6D",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x6D : SBC A, 0x6D",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x6D : XOR 0x6D",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x6E : SUB 0x6E",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x6E : SBC A, 0x6E",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x6E : XOR 0x6E",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x6F : SUB 0x6F",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x6F : SBC A, 0x6F",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x6F : XOR 0x6F",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x70 : SUB 0x70",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x70 : SBC A, 0x70",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x70 : XOR 0x70",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x71 : SUB 0x71",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x71 : SBC A, 0x71",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x71 : XOR 0x71",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x72 : SUB 0x72",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x72 : SBC A, 0x72",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x72 : XOR 0x72",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x73 : SUB 0x73",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x73 : SBC A, 0x73",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x73 : XOR 0x73",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x74 : SUB 0x74",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x74 : SBC A, 0x74",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x74 : XOR 0x74",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x75 : SUB 0x75",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x75 : SBC A, 0x75",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x75 : XOR 0x75",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x76 : SUB 0x76",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x76 : SBC A, 0x76",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x76 : XOR 0x76",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x77 : SUB 0x77",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x77 : SBC A, 0x77",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x77 : XOR 0x77",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x78 : SUB 0x78",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x78 : SBC A, 0x78",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x78 : XOR 0x78",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x79 : SUB 0x79",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x79 : SBC A, 0x79",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x79 : XOR 0x79",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x7A : SUB 0x7A",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x7A : SBC A, 0x7A",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x7A : XOR 0x7A",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x7B : SUB 0x7B",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x7B : SBC A, 0x7B",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x7B : XOR 0x7B",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x7C : SUB 0x7C",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x7C : SBC A, 0x7C",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x7C : XOR 0x7C",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x7D : SUB 0x7D",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x7D : SBC A, 0x7D",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x7D : XOR 0x7D",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x7E : SUB 0x7E",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x7E : SBC A, 0x7E",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x7E : XOR 0x7E",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x7F : SUB 0x7F",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x7F : SBC A, 0x7F",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x7F : XOR 0x7F",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x80 : SUB 0x80",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x80 : SBC A, 0x80",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x80 : XOR 0x80",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x81 : SUB 0x81",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x81 : SBC A, 0x81",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x81 : XOR 0x81",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x82 : SUB 0x82",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x82 : SBC A, 0x82",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x82 : XOR 0x82",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x83 : SUB 0x83",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x83 : SBC A, 0x83",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x83 : XOR 0x83",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x84 : SUB 0x84",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x84 : SBC A, 0x84",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x84 : XOR 0x84",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x85 : SUB 0x85",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x85 : SBC A, 0x85",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x85 : XOR 0x85",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x86 : SUB 0x86",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x86 : SBC A, 0x86",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x86 : XOR 0x86",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x87 : SUB 0x87",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x87 : SBC A, 0x87",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x87 : XOR 0x87",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x88 : SUB 0x88",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x88 : SBC A, 0x88",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x88 : XOR 0x88",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x89 : SUB 0x89",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x89 : SBC A, 0x89",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x89 : XOR 0x89",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x8A : SUB 0x8A",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x8A : SBC A, 0x8A",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x8A : XOR 0x8A",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x8B : SUB 0x8B",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x8B : SBC A, 0x8B",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x8B : XOR 0x8B",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x8C : SUB 0x8C",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x8C : SBC A, 0x8C",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x8C : XOR 0x8C",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x8D : SUB 0x8D",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x8D : SBC A, 0x8D",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x8D : XOR 0x8D",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x8E : SUB 0x8E",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x8E : SBC A, 0x8E",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x8E : XOR 0x8E",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x8F : SUB 0x8F",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x8F : SBC A, 0x8F",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x8F : XOR 0x8F",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x90 : SUB 0x90",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x90 : SBC A, 0x90",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x90 : XOR 0x90",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x91 : SUB 0x91",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x91 : SBC A, 0x91",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x91 : XOR 0x91",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x92 : SUB 0x92",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x92 : SBC A, 0x92",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x92 : XOR 0x92",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x93 : SUB 0x93",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x93 : SBC A, 0x93",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x93 : XOR 0x93",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x94 : SUB 0x94",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x94 : SBC A, 0x94",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x94 : XOR 0x94",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x95 : SUB 0x95",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x95 : SBC A, 0x95",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x95 : XOR 0x95",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x96 : SUB 0x96",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x96 : SBC A, 0x96",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x96 : XOR 0x96",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x97 : SUB 0x97",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x97 : SBC A, 0x97",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x97 : XOR 0x97",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x98 : SUB 0x98",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x98 : SBC A, 0x98",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x98 : XOR 0x98",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x99 : SUB 0x99",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x99 : SBC A, 0x99",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x99 : XOR 0x99",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x9A : SUB 0x9A",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x9A : SBC A, 0x9A",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x9A : XOR 0x9A",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x9B : SUB 0x9B",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x9B : SBC A, 0x9B",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x9B : XOR 0x9B",
+    "replacement": "XOR A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "flag_redundancy"
+  },
+  {
+    "source": "LD A, 0x9C : SUB 0x9C",
+    "replacement": "SUB A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  },
+  {
+    "source": "LD A, 0x9C : SBC A, 0x9C",
+    "replacement": "SBC A, A",
+    "cycles_saved": 10,
+    "bytes_saved": 3,
+    "category": "arith_simplify"
+  }
+]
