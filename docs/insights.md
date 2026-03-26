@@ -265,3 +265,44 @@ The byte swap trick is one of the most well-known Z80 optimizations but
 was never systematically applied to constant multiplication before.
 Our brute-force search rediscovered it independently — and proved it
 optimal via exhaustive verification.
+
+---
+
+## 2026-03-26: Solver Configuration Taxonomy
+
+**Tags:** mulopt, architecture, compiler-integration
+
+**Complete list of useful multiply solver configurations:**
+
+| Config | In→Out | Temps | Use case | Status |
+|--------|--------|-------|----------|--------|
+| mul8 | A→A | B,carry | Pixel math, counters | 164/254 at len≤9 |
+| mul16 | A→HL | BC,DE | Address calc, pointers | **254/254 DONE** |
+| mul16_de | A→DE | HL,BC | LDIR dest, stack | = mul16 + EX DE,HL |
+| mul16_bc | A→BC | HL,DE | LDIR count, ports | = mul16 + push/pop |
+| mul16x16 | HL→HL | BC,DE | Struct offset, scaling | New solver needed |
+| muladd | A→HL | BC,DE | Screen addr (Y*32+X) | New solver needed |
+| divmod | A→A,B | carry | BCD, wrapping, hash | Running on i5 |
+
+**Key insight from GPT-5.4:** HL→HL (input already 16-bit) is critical for
+chaining multiplications and struct array indexing. Currently not covered.
+
+**Key insight:** mul16_de and mul16_bc don't need separate solvers — they're
+mul16 + a final register move (EX DE,HL or LD B,H/LD C,L). The clobber-aware
+table handles this: if DE is the target, pick the mul16 solution that doesn't
+use DE, then EX DE,HL at the end.
+
+**Virtual op pools per config:**
+
+| Config | Core ops | Extended ops | Pool size |
+|--------|----------|-------------|-----------|
+| mul8 | ADD A,A + ADD A,B + LD B,A | +RLA, RLCA, RRCA, NEG, SBC | 14 |
+| mul16 | ADD HL,HL + ADD HL,BC + LD C,A | +SWAP, SUB, EX DE, ADD/SUB HL,DE | 8 |
+| mul16x16 | ADD HL,HL + ADD HL,BC | +EX DE, LD C,L, LD B,H | ~8 |
+| muladd | mul16 ops + ADD HL,nn | +immediate offset as op | ~10 |
+
+**Validated op usage across pools:**
+- 3-op core (mul16): ALL 254 solved — sufficient but not shortest
+- 5-op (+SWAP+SUB): 88 improved, 0 regressions — the sweet spot
+- 8-op (+DE arith): 30 more improved — marginal gains, larger clobber
+- All 8 ops appear in solutions — none are dead
