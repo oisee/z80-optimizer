@@ -4,7 +4,7 @@ A GPU-accelerated superoptimizer for the Zilog Z80 processor.
 
 Given a sequence of Z80 instructions, it exhaustively searches for a shorter equivalent sequence that produces **identical register, flag, and memory state** for all possible inputs. No heuristics, no pattern databases — provably correct by construction.
 
-**761,621 optimizations found** (length-2 search complete), now with **memory support** — indirect memory access through (HL), (BC), (DE) modeled as a virtual register. GPU-accelerated search runs **~30x faster** than CPU on a single RTX 4060 Ti.
+**739K+ peephole optimizations**, **17.4M provably optimal register allocations**, **164 optimal multiply sequences** — all found by exhaustive GPU search. Three GPUs across three machines (NVIDIA CUDA + AMD ROCm). No heuristics — every result is provably correct by construction.
 
 ## Why?
 
@@ -444,6 +444,103 @@ Whether this constitutes a publishable contribution depends on the venue — a w
 ### Is it patentable?
 
 Superoptimization itself is well-established (1987+), and GPU compute is standard. The specific combination — GPU-parallel QuickCheck with dead-flags tagging for retro ISAs — is likely too incremental for a utility patent. More importantly, keeping it open source under MIT maximizes impact. Anyone optimizing Z80/6502/8080 code can use the technique and the 743K+ rules directly.
+
+## Beyond Peephole: Register Allocation, Multiply, Division
+
+The project has expanded from instruction-level peephole optimization to three additional exhaustive search domains:
+
+### Exhaustive Register Allocation Tables
+
+GPU brute-force over all possible register allocation constraint shapes. For each combination of virtual register count, widths, location sets, and interference graph, find the **provably optimal** physical register assignment — or prove that no valid assignment exists.
+
+| Level | Shapes | GPU time | Feasible |
+|-------|--------|----------|----------|
+| ≤4 vregs | 156,506 | 40 sec | 78.9% |
+| ≤5 vregs | 17,366,874 | 20 min | 67.7% |
+| 6 vregs (dense, tw≥4) | 66,118,738 | ~6 hours | TBD |
+
+**Key findings:**
+
+- **Feasibility phase transition**: 95.9% feasible at 2 vregs → 0.9% at 6 vregs. The Z80 register file "fills up" — 99.1% of all possible 6-vreg constraint shapes have no valid assignment.
+- **Treewidth analysis**: 99.5% of random interference graphs have treewidth ≤3 (classically tractable). But compiler-generated graphs are denser — 53.7% of real-world dense functions have treewidth ≥4.
+- **Composition verification**: Splitting 5-vreg shapes at cut vertices and composing from the 4-vreg table works with max 12 T-state overhead. Verified on 13.2M shapes with zero misses.
+- **Five-level pipeline**: Table lookup (O(1)) → graph decomposition → GPU brute-force → CPU backtracking (1000-4000x pruning) → island decomposition + Z3. Every function hits one of these levels.
+
+Tables are in `data/` as compact binary + zstd compression (8.5MB for ≤5v). See `data/README.md` for the binary format spec and reader examples.
+
+```bash
+# Generate all possible constraint shapes for ≤5 virtual registers
+./regalloc-enum --max-vregs 5 > shapes.jsonl
+
+# GPU-solve each shape (finds optimal assignment or proves infeasible)
+cat shapes.jsonl | cuda/z80_regalloc --server > results.jsonl
+
+# For 6v: only enumerate dense shapes (treewidth ≥ 4) — 1.7% of 6v space
+./regalloc-enum --max-vregs 6 --only-nv 6 --dense-masks dense_6v_masks.txt > shapes_6v.jsonl
+```
+
+### Optimal Constant Multiplication
+
+GPU search for the shortest Z80 instruction sequence that computes `A × K` for each constant K (2-255).
+
+| Search depth | Constants solved | Pool | GPU time |
+|-------------|-----------------|------|----------|
+| ≤8 instructions | 103 / 254 | 21 ops | ~30 sec |
+| ≤9 instructions | 164 / 254 | 14 ops (reduced) | ~3 min |
+| ≤10 instructions | est. ~220 / 254 | 14 ops | ~15 hours |
+
+**Instruction pool reduction**: Analysis of which instructions appear in optimal solutions revealed that 7 of 21 candidate ops are never used. Removing them shrinks the search space by **38x** at length 9 (21^9 → 14^9). The removed ops are strictly dominated (e.g., `SLA A` = `ADD A,A` but costs 8T instead of 4T) or never contribute to optimal sequences (`OR A`, `SCF`, `EX AF,AF'`).
+
+Notable results:
+- `×255 = NEG` (1 instruction, 8T) — negate is multiply by -1 (mod 256)
+- `×252 = RLA : NEG : ADD A,A` (3 instructions, 16T)
+- `×127 = RRCA : LD B,A : ADC A,B : NEG : RRA : SUB B` (6 instructions, 28T)
+
+```bash
+# Find optimal multiply for all constants (14-op reduced pool)
+cuda/z80_mulopt_fast --max-len 9 --json > mulopt_results.json
+
+# Search for a specific constant
+cuda/z80_mulopt_fast --k 42 --max-len 10
+```
+
+### Division and Modulo Search
+
+GPU search for optimal division/modulo by constant. Parametric B register (preloaded with a constant to enable reciprocal multiplication tricks).
+
+- **div10 lower bound ≥13**: GPU exhaustive search proves that no sequence of ≤12 instructions from the 21-op pool computes integer division by 10. This is a **search certificate** — a proven negative result.
+- **Best known div10**: 27 instructions, 124-135 T-states. Hand-crafted using Hacker's Delight reciprocal approximation with RRA+AND optimization. Verified correct for all 256 input values.
+- **Gap**: 14 instructions between the lower bound (13) and best known solution (27). Closing this gap is an open problem.
+
+Division by powers of 2 is trivial (`SRL A` repeated). Modulo by powers of 2 is trivial (`AND mask`). The interesting targets are non-power-of-2 divisors: 3, 5, 7, 10, etc.
+
+```bash
+# Search for division by constant
+cuda/z80_divmod_fast --div 10 --max-len 10 --json
+
+# Search for modulo by constant
+cuda/z80_divmod_fast --mod 7 --max-len 10 --json
+
+# Search for both quotient and remainder
+cuda/z80_divmod_fast --divmod 10 --max-len 10 --json
+```
+
+### Hardware Cluster
+
+Three GPUs across three machines, running searches in parallel:
+
+| Machine | GPU | VRAM | API | Use |
+|---------|-----|------|-----|-----|
+| main | 2× RTX 4060 Ti | 16GB each | CUDA | Regalloc tables, peephole search |
+| i5 (ubullama) | RTX 2070 | 8GB | CUDA | Mulopt, divmod search |
+| i3 (macaron) | Radeon RX 580 | 8GB | ROCm/HIP | (setup complete, pending reboot) |
+
+### Research Documents
+
+- `docs/glossary.md` — Complete glossary of all terms and abbreviations used in the project
+- `docs/paper_seed_superopt.md` — Paper/book seed: instruction pool reduction, register expansion analysis, meet-in-the-middle strategies, cross-architecture transfer, phase transitions
+- `docs/research_statement.md` — Research framing with phase diagram data
+- `data/README.md` — Binary table format spec with Python/Go reader examples
 
 ## References
 
