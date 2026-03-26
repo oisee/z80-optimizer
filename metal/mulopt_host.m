@@ -13,7 +13,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-#define NUM_OPS 14
+static int NUM_OPS = 14;
 #define MAX_LEN 12
 
 static const char *opNames[] = {
@@ -80,7 +80,7 @@ typedef struct {
 
 int main(int argc, char *argv[]) {
     @autoreleasepool {
-        int maxLen = 8, minLen = 1, singleK = 0, jsonMode = 0;
+        int maxLen = 8, minLen = 1, singleK = 0, jsonMode = 0, skipCpuVerify = 0;
         const char *skipFile = NULL;
         for (int i = 1; i < argc; i++) {
             if (!strcmp(argv[i], "--max-len") && i+1 < argc) maxLen = atoi(argv[++i]);
@@ -88,6 +88,8 @@ int main(int argc, char *argv[]) {
             else if (!strcmp(argv[i], "--k") && i+1 < argc) singleK = atoi(argv[++i]);
             else if (!strcmp(argv[i], "--json")) jsonMode = 1;
             else if (!strcmp(argv[i], "--skip") && i+1 < argc) skipFile = argv[++i];
+            else if (!strcmp(argv[i], "--num-ops") && i+1 < argc) NUM_OPS = atoi(argv[++i]);
+            else if (!strcmp(argv[i], "--no-verify")) skipCpuVerify = 1;
         }
 
         // Load skip set (already-solved constants from previous JSON)
@@ -125,8 +127,9 @@ int main(int argc, char *argv[]) {
             return 1;
         }
 
-        // Try generated kernel name first, fall back to hand-written
-        id<MTLFunction> function = [library newFunctionWithName:@"z80_mulopt_kernel"];
+        // Try kernel names: generated arith16, generated mulopt, hand-written
+        id<MTLFunction> function = [library newFunctionWithName:@"z80_arith16_kernel"];
+        if (!function) function = [library newFunctionWithName:@"z80_mulopt_kernel"];
         if (!function) function = [library newFunctionWithName:@"mulopt_kernel"];
         if (!function) { fprintf(stderr, "Kernel not found\n"); return 1; }
 
@@ -215,16 +218,18 @@ int main(int argc, char *argv[]) {
                     result.tstates = bestScore & 0xFFFF;
                     decode_seq(bestIdx, len, result.ops);
 
-                    // CPU verify
-                    int ok = 1;
-                    for (int inp = 0; inp < 256 && ok; inp++) {
-                        if (cpu_run_seq(result.ops, len, (uint8_t)inp) != (uint8_t)(inp * k))
-                            ok = 0;
-                    }
-                    if (!ok) {
-                        fprintf(stderr, "WARNING: GPU result for x%d failed CPU verify!\n", k);
-                        result.found = 0;
-                        continue;
+                    // CPU verify (only for default 14-op z80_mul pool)
+                    if (!skipCpuVerify) {
+                        int ok = 1;
+                        for (int inp = 0; inp < 256 && ok; inp++) {
+                            if (cpu_run_seq(result.ops, len, (uint8_t)inp) != (uint8_t)(inp * k))
+                                ok = 0;
+                        }
+                        if (!ok) {
+                            fprintf(stderr, "WARNING: GPU result for x%d failed CPU verify!\n", k);
+                            result.found = 0;
+                            continue;
+                        }
                     }
                     break;
                 }
@@ -235,12 +240,12 @@ int main(int argc, char *argv[]) {
                 if (jsonMode) {
                     printf("  {\"k\": %d, \"ops\": [", k);
                     for (int i = 0; i < result.length; i++)
-                        printf("%s\"%s\"", i ? "," : "", opNames[result.ops[i]]);
+                        printf("%s\"%s\"", i ? "," : "", (result.ops[i] < 14 ? opNames[result.ops[i]] : "?"));
                     printf("], \"length\": %d, \"tstates\": %d}%s\n",
                            result.length, result.tstates, (k < endK) ? "," : "");
                 } else {
                     printf("x%d:", k);
-                    for (int i = 0; i < result.length; i++) printf(" %s", opNames[result.ops[i]]);
+                    for (int i = 0; i < result.length; i++) printf(" %s", (result.ops[i] < 14 ? opNames[result.ops[i]] : "?"));
                     printf(" (%d insts, %dT)\n", result.length, result.tstates);
                 }
             }
