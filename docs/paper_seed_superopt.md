@@ -10,7 +10,7 @@
 | Dead-flags peephole | 1.4M+ (partial) | GPU with flag masking | running |
 | Constant multiply (u8) | **254/254** | GPU + composition | hours |
 | Constant multiply (u16) | **254/254** | 3-op GPU (30 sec!) | seconds |
-| Constant division (u8) | **245/247** | Guided brute-force | 11 sec each |
+| Constant division (u8) | **246/247** | Guided brute-force | 11 sec each |
 | Branchless idioms | **15** | 37-op GPU | 2 sec |
 | 16-bit idioms | **7** | 33-op GPU | 6 sec |
 | Register allocations | **83.6M** | GPU exhaustive | 6 hours |
@@ -124,12 +124,12 @@ only 14 matter → 38× faster → go deeper.
 Key discovery: only 3 ops needed for 16-bit multiply (ADD HL,HL + ADD HL,BC + LD C,A).
 This is the minimal basis. 13,600× speedup from pool reduction.
 
-### Act III: Division (245/247)
+### Act III: Division (246/247)
 Division is HARD — no Z80 hardware divide. But abstract chains predict:
 `n / K = (n × M) >> S`. GPU searches the 6-op materialization space.
 
 div10 = 124T matches Hacker's Delight. Found automatically in 11 seconds.
-245 divisors found total. Only 2 remaining (div43, div129).
+245 divisors found total. Only div129 remaining.
 
 ### Act IV: Register Allocation (83.6M + 97.7% infeasibility)
 Enumerate ALL possible constraint shapes. GPU solves each exhaustively.

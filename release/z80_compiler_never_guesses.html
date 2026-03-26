@@ -4,7 +4,6 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <meta name="author" content="Alice Vinogradova &amp; Claude" />
   <title>The Z80 Compiler That Never Guesses</title>
   <style>
     code{white-space: pre-wrap;}
@@ -92,7 +91,6 @@
 <body>
 <header id="title-block-header">
 <h1 class="title">The Z80 Compiler That Never Guesses</h1>
-<p class="author">Alice Vinogradova &amp; Claude</p>
 </header>
 <nav id="TOC" role="doc-toc">
 <ul>
@@ -282,7 +280,7 @@ shift. The technique is well-known from Hacker’s Delight.</p>
 (running on CPU, 8 seconds for all 254 constants) finds the shortest
 multiply-then-shift pattern. Then a focused GPU kernel — with only 6 ops
 instead of 37 — searches the Z80-specific materialization.</p>
-<p>The result: <strong>245 of 247 non-power-of-2 divisors</strong> found
+<p>The result: <strong>246 of 247 non-power-of-2 divisors</strong> found
 in 11 seconds each. The GPU’s div10 sequence (14 instructions, 124
 T-states) exactly matches the hand-optimized Hacker’s Delight solution.
 But the GPU found it automatically.</p>

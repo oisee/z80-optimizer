@@ -81,7 +81,7 @@ Division by a constant K uses the identity `n/K = (n × M) >> S` where M ≈ 2^S
 
 What's new: we automate the entire process. An abstract chain solver (running on CPU, 8 seconds for all 254 constants) finds the shortest multiply-then-shift pattern. Then a focused GPU kernel — with only 6 ops instead of 37 — searches the Z80-specific materialization.
 
-The result: **245 of 247 non-power-of-2 divisors** found in 11 seconds each. The GPU's div10 sequence (14 instructions, 124 T-states) exactly matches the hand-optimized Hacker's Delight solution. But the GPU found it automatically.
+The result: **246 of 247 non-power-of-2 divisors** found in 11 seconds each. The GPU's div10 sequence (14 instructions, 124 T-states) exactly matches the hand-optimized Hacker's Delight solution. But the GPU found it automatically.
 
 The fastest: `÷171 = 4 instructions, 27 T-states`. The most useful: `÷10 = 124T, ÷100 = 105T, ÷3 = 130T`.
 
