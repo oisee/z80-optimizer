@@ -183,6 +183,16 @@ static void gen_target(const char *name, uint16_t *tgt) {
         else if (!strcmp(name, "x256")) tgt[i] = hl << 8;
         else if (!strcmp(name, "abs"))  tgt[i] = (hl & 0x8000) ? (-hl) & 0xFFFF : hl;
         else if (!strcmp(name, "sqr"))  tgt[i] = (hl * hl) & 0xFFFF;
+        else if (!strcmp(name, "not_hl"))  tgt[i] = (~hl) & 0xFFFF;
+        else if (!strcmp(name, "shr8"))    tgt[i] = hl >> 8;
+        else if (!strcmp(name, "mul3_hl")) tgt[i] = (hl * 3) & 0xFFFF;
+        else if (!strcmp(name, "mul5_hl")) tgt[i] = (hl * 5) & 0xFFFF;
+        else if (!strcmp(name, "mul10_hl"))tgt[i] = (hl * 10) & 0xFFFF;
+        else if (!strcmp(name, "inc_hl"))  tgt[i] = (hl + 1) & 0xFFFF;
+        else if (!strcmp(name, "dec_hl"))  tgt[i] = (hl - 1) & 0xFFFF;
+        else if (!strcmp(name, "and_7f"))  tgt[i] = hl & 0x007F;
+        else if (!strcmp(name, "or_80"))   tgt[i] = hl | 0x0080;
+        else if (!strcmp(name, "hi_byte")) tgt[i] = (hl >> 8) & 0xFF;
         else if (!strcmp(name, "byteswap")) tgt[i] = (l_in << 8) | 0; // H=L, L=0 — same as x256
         else if (!strcmp(name, "realswap")) { // true swap: H↔L (when H≠0 too)
             // Input HL: H=0, L=input. Output: H=input, L=0. Same as x256 for 8-bit input.
@@ -234,7 +244,7 @@ int main(int argc, char *argv[]) {
     cudaMemcpy(d_best, &dummy, 4, cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
     
-    const char *all[] = {"neg","shr1","shr4","shl4","swap","x256","sext","clamp127","hl_ne_0","neg8_in_hl","sqr",NULL};
+    const char *all[] = {"neg","shr1","shr4","shl4","swap","x256","sext","clamp127","hl_ne_0","neg8_in_hl","not_hl","shr8","mul3_hl","mul5_hl","mul10_hl","inc_hl","dec_hl",NULL};
     
     for (int ii = 0; all[ii]; ii++) {
         if (!runAll && strcmp(idiom, all[ii]) != 0) continue;
