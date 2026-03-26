@@ -306,3 +306,76 @@ use DE, then EX DE,HL at the end.
 - 5-op (+SWAP+SUB): 88 improved, 0 regressions — the sweet spot
 - 8-op (+DE arith): 30 more improved — marginal gains, larger clobber
 - All 8 ops appear in solutions — none are dead
+
+---
+
+## 2026-03-26: Pre-Calculable Tables Roadmap
+
+**Tags:** roadmap, compiler, tables
+
+### Tables we have
+- Regalloc ≤6v (83.6M shapes, 32MB compressed)
+- mul8 A*K→A (164/254, clobber-annotated)
+- mul16 A*K→HL (254/254, complete, 3-op basis)
+- Peephole len-2 (739K rules)
+- div10 lower bound ≥13 (search certificate)
+
+### What to pre-calculate next (by priority)
+
+**#1 Common Idiom Table** (hours, high compiler impact)
+- Zero-extend A→HL: LD L,A / LD H,0 (2 insts, 11T)
+- Sign-extend A→HL: LD L,A / RLA / SBC A,A / LD H,A (4 insts, 16T)
+- ABS(A), MIN(A,B), MAX(A,B), CLAMP(A,lo,hi)
+- Swap A,B: LD C,A / LD A,B / LD B,C (3 insts, 12T)
+- BCD output: divmod10 → two ASCII digits
+- Each as brute-force target with clobber annotation
+
+**#2 16-bit Arithmetic Library** (hours, direct compiler help)
+- ADD HL,nn (not native on Z80)
+- SUB HL,nn (OR A + SBC HL,rr)
+- CP HL,nn (16-bit compare)
+- NEG HL (we found 5-inst optimal: NEG/LD L,A/NEG/SBC A,B/LD H,A = 28T)
+- MUL HL,K (struct array indexing)
+- Each with clobber annotation for register allocator
+
+**#3 Peephole len-3** (days, dual GPU, huge impact)
+- 74.9B targets, 37M found (0.05%)
+- 3→1 rules: save 2 instructions per match
+- 3→2 rules: save 1 instruction per match
+- Dual 4060 Ti: ~days for complete sweep
+
+**#4 Composition Table** (CPU hours)
+- For each decomposable 5v/6v shape: optimal split point + costs
+- Already verified on 13.2M shapes (max 12T overhead, 0 misses)
+- Output: split_vertex, cost_A, cost_B, boundary_cost
+
+**#5 Spectrum Screen Address** (fun + publishable)
+- Y→VRAM address: the holy grail of Spectrum programming
+- Brute-force optimal Y*32+X, pixel row calculation
+- Every Spectrum game calls this thousands of times
+
+**#6 Island Templates** (needs VIR liveness data)
+- Pre-solved split patterns for 7-15v corpus functions
+- ~50-100 templates cover most real programs
+- Uses liveness bottleneck detection from earlier session
+
+**#7 Calling Convention Optimization** (needs VIR ABI data)
+- For each function signature: optimal arg register assignment
+- Regalloc applied to function boundaries
+- Minimize argument shuffle cost at call sites
+
+**#8 Memory Access Patterns** (brute-force, hours)
+- LD A,(HL) : op : LD (HL),A read-modify-write sequences
+- Pre-compute best instruction for each ALU op on memory
+- INC (HL), DEC (HL), SET n,(HL) — when are direct ops better?
+
+**#9 Shift-Add Chain Database** (theoretical, publishable)
+- Shortest addition chain for each number 1-65535
+- Generalizes mulopt to ANY ISA (not Z80-specific)
+- Existing tables for small numbers, none exhaustive for 16-bit
+
+### Hardware for computation
+- main (i7): 2× RTX 4060 Ti — peephole len-3, idiom search
+- i5: RTX 2070 — mul8 len-10 (running), then idioms
+- i3: RX 580 OpenCL — mul8 len-9 (running), then 6502 port
+- M2 MacBook: Metal/CPU — 6502 mulopt, meet-in-the-middle
