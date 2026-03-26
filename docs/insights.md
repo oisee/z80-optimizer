@@ -702,3 +702,33 @@ then runs at full speed forever. Zero dispatch overhead after first call.
 **Total: ~2KB packed cassette = provably optimal arithmetic for Z80.**
 Every operation 2-8× faster than general loops. For ZX Spectrum (48KB):
 just 4% of RAM. For ROM systems: fits in any EPROM alongside the program.
+
+---
+
+## 2026-03-26: 7v+ Regalloc Pipeline — What's Needed
+
+**Tags:** regalloc, composition, islands, next-session
+
+**For 7v+ functions, the pipeline is:**
+1. Check ≤6v table (83.6M entries) → O(1) if ≤6v
+2. Find cut vertex → split into ≤6v sub-problems → compose
+3. If 2-connected (no cut vertex): backtracking solver (≤15v, <1 sec)
+4. If >15v: island decomposition at liveness bottlenecks → solve each island
+
+**What we HAVE:**
+- ≤6v complete table (83.6M)
+- Backtracking solver with 1000-4000× pruning
+- Island decomposition algorithm (tested on ZSQL)
+- 5v→4v composition verified (13.2M shapes, max 12T overhead, 0 misses)
+
+**What we NEED (from VIR):**
+- Fixed island sub-problems for _prow (28v) and _sel_rows (37v)
+- 7v+ corpus shapes (from 315 signatures) for on-demand solving
+- Liveness data for new corpus functions
+
+**What we CAN pre-compute:**
+- Register shuffle optimal sequences (for island stitching)
+- Composition table: for each decomposable shape, best split + costs
+
+**Dead-flags peephole running** (Layer 2: ~2-5M rules when flags dead).
+**mul8 len-10 overnight on i5** (90 unsolved constants).
