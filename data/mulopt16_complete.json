@@ -2,97 +2,97 @@
  {"k": 2, "ops": ["ADD HL,HL"], "length": 1, "tstates": 11}
 , {"k": 3, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC"], "length": 3, "tstates": 26}
 , {"k": 4, "ops": ["ADD HL,HL","ADD HL,HL"], "length": 2, "tstates": 22}
-, {"k": 5, "ops": ["ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC"], "length": 4, "tstates": 37}
+, {"k": 5, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 4, "tstates": 37}
 , {"k": 6, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL"], "length": 4, "tstates": 37}
 , {"k": 7, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 5, "tstates": 48}
 , {"k": 8, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 3, "tstates": 33}
-, {"k": 9, "ops": ["ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC"], "length": 5, "tstates": 48}
-, {"k": 10, "ops": ["ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 5, "tstates": 48}
+, {"k": 9, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 5, "tstates": 48}
+, {"k": 10, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 5, "tstates": 48}
 , {"k": 11, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 6, "tstates": 59}
-, {"k": 12, "ops": ["ADD HL,HL","LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 5, "tstates": 48}
-, {"k": 13, "ops": ["ADD HL,HL","LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 6, "tstates": 59}
-, {"k": 14, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 6, "tstates": 59}
-, {"k": 15, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 7, "tstates": 70}
+, {"k": 12, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 5, "tstates": 48}
+, {"k": 13, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 6, "tstates": 59}
+, {"k": 14, "ops": ["LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 6, "tstates": 59}
+, {"k": 15, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 6, "tstates": 63}
 , {"k": 16, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 4, "tstates": 44}
-, {"k": 17, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC"], "length": 6, "tstates": 59}
-, {"k": 18, "ops": ["ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 6, "tstates": 59}
-, {"k": 19, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 7, "tstates": 70}
-, {"k": 20, "ops": ["ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 6, "tstates": 59}
+, {"k": 17, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 6, "tstates": 59}
+, {"k": 18, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 6, "tstates": 59}
+, {"k": 19, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 7, "tstates": 70}
+, {"k": 20, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 6, "tstates": 59}
 , {"k": 21, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 7, "tstates": 70}
 , {"k": 22, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 7, "tstates": 70}
-, {"k": 23, "ops": ["ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 8, "tstates": 81}
-, {"k": 24, "ops": ["ADD HL,HL","LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 6, "tstates": 59}
+, {"k": 23, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 7, "tstates": 74}
+, {"k": 24, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 6, "tstates": 59}
 , {"k": 25, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 7, "tstates": 70}
-, {"k": 26, "ops": ["ADD HL,HL","LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 7, "tstates": 70}
+, {"k": 26, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 7, "tstates": 70}
 , {"k": 27, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 8, "tstates": 81}
 , {"k": 28, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 7, "tstates": 70}
 , {"k": 29, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 8, "tstates": 81}
-, {"k": 30, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 8, "tstates": 81}
-, {"k": 31, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
+, {"k": 30, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 7, "tstates": 74}
+, {"k": 31, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 7, "tstates": 74}
 , {"k": 32, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 5, "tstates": 55}
-, {"k": 33, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC"], "length": 7, "tstates": 70}
-, {"k": 34, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 7, "tstates": 70}
+, {"k": 33, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 7, "tstates": 70}
+, {"k": 34, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 7, "tstates": 70}
 , {"k": 35, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 8, "tstates": 81}
-, {"k": 36, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 7, "tstates": 70}
+, {"k": 36, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 7, "tstates": 70}
 , {"k": 37, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 8, "tstates": 81}
 , {"k": 38, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 8, "tstates": 81}
-, {"k": 39, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
+, {"k": 39, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 8, "tstates": 85}
 , {"k": 40, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 7, "tstates": 70}
-, {"k": 41, "ops": ["LD C,A","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 8, "tstates": 81}
+, {"k": 41, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 8, "tstates": 81}
 , {"k": 42, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 8, "tstates": 81}
 , {"k": 43, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
-, {"k": 44, "ops": ["ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 8, "tstates": 81}
+, {"k": 44, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 8, "tstates": 81}
 , {"k": 45, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
-, {"k": 46, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 9, "tstates": 92}
-, {"k": 47, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
+, {"k": 46, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 8, "tstates": 85}
+, {"k": 47, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 8, "tstates": 85}
 , {"k": 48, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 7, "tstates": 70}
 , {"k": 49, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 8, "tstates": 81}
 , {"k": 50, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 8, "tstates": 81}
 , {"k": 51, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
-, {"k": 52, "ops": ["ADD HL,HL","LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 8, "tstates": 81}
+, {"k": 52, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 8, "tstates": 81}
 , {"k": 53, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
 , {"k": 54, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 9, "tstates": 92}
-, {"k": 55, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
+, {"k": 55, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 9, "tstates": 96}
 , {"k": 56, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 8, "tstates": 81}
 , {"k": 57, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
 , {"k": 58, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 9, "tstates": 92}
-, {"k": 59, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
-, {"k": 60, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
-, {"k": 61, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
-, {"k": 62, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 10, "tstates": 103}
-, {"k": 63, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
+, {"k": 59, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 9, "tstates": 100}
+, {"k": 60, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL"], "length": 8, "tstates": 85}
+, {"k": 61, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 96}
+, {"k": 62, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 8, "tstates": 85}
+, {"k": 63, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 8, "tstates": 85}
 , {"k": 64, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 6, "tstates": 66}
-, {"k": 65, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC"], "length": 8, "tstates": 81}
-, {"k": 66, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 8, "tstates": 81}
-, {"k": 67, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
-, {"k": 68, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 8, "tstates": 81}
-, {"k": 69, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
+, {"k": 65, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 8, "tstates": 81}
+, {"k": 66, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 8, "tstates": 81}
+, {"k": 67, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
+, {"k": 68, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 8, "tstates": 81}
+, {"k": 69, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
 , {"k": 70, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 9, "tstates": 92}
-, {"k": 71, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
+, {"k": 71, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 9, "tstates": 96}
 , {"k": 72, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 8, "tstates": 81}
-, {"k": 73, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
+, {"k": 73, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
 , {"k": 74, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 9, "tstates": 92}
 , {"k": 75, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
-, {"k": 76, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
+, {"k": 76, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
 , {"k": 77, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
-, {"k": 78, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 10, "tstates": 103}
-, {"k": 79, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
-, {"k": 80, "ops": ["LD C,A","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 8, "tstates": 81}
+, {"k": 78, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 9, "tstates": 96}
+, {"k": 79, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 9, "tstates": 96}
+, {"k": 80, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 8, "tstates": 81}
 , {"k": 81, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
 , {"k": 82, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 9, "tstates": 92}
 , {"k": 83, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
 , {"k": 84, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
 , {"k": 85, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
 , {"k": 86, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 10, "tstates": 103}
-, {"k": 87, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
+, {"k": 87, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 10, "tstates": 107}
 , {"k": 88, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
 , {"k": 89, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
 , {"k": 90, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 10, "tstates": 103}
-, {"k": 91, "ops": ["ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
-, {"k": 92, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 103}
-, {"k": 93, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
-, {"k": 94, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 114}
-, {"k": 95, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
+, {"k": 91, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 10, "tstates": 111}
+, {"k": 92, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 96}
+, {"k": 93, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 107}
+, {"k": 94, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 9, "tstates": 96}
+, {"k": 95, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 9, "tstates": 96}
 , {"k": 96, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 8, "tstates": 81}
 , {"k": 97, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
 , {"k": 98, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 9, "tstates": 92}
@@ -100,63 +100,63 @@
 , {"k": 100, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
 , {"k": 101, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
 , {"k": 102, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 10, "tstates": 103}
-, {"k": 103, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
+, {"k": 103, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 10, "tstates": 107}
 , {"k": 104, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
 , {"k": 105, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
 , {"k": 106, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 10, "tstates": 103}
 , {"k": 107, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
 , {"k": 108, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 103}
 , {"k": 109, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
-, {"k": 110, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 114}
-, {"k": 111, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
+, {"k": 110, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 10, "tstates": 107}
+, {"k": 111, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 10, "tstates": 107}
 , {"k": 112, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
 , {"k": 113, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
 , {"k": 114, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 10, "tstates": 103}
 , {"k": 115, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
 , {"k": 116, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 103}
 , {"k": 117, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
-, {"k": 118, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 114}
-, {"k": 119, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
-, {"k": 120, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 103}
-, {"k": 121, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
-, {"k": 122, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 114}
-, {"k": 123, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
-, {"k": 124, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 114}
-, {"k": 125, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
-, {"k": 126, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 127, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
+, {"k": 118, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 10, "tstates": 111}
+, {"k": 119, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 10, "tstates": 111}
+, {"k": 120, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 96}
+, {"k": 121, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 107}
+, {"k": 122, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 10, "tstates": 107}
+, {"k": 123, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 10, "tstates": 111}
+, {"k": 124, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 96}
+, {"k": 125, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 107}
+, {"k": 126, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 9, "tstates": 96}
+, {"k": 127, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 9, "tstates": 96}
 , {"k": 128, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 7, "tstates": 77}
-, {"k": 129, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
-, {"k": 130, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 9, "tstates": 92}
+, {"k": 129, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 9, "tstates": 92}
+, {"k": 130, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 9, "tstates": 92}
 , {"k": 131, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
-, {"k": 132, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
+, {"k": 132, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
 , {"k": 133, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
-, {"k": 134, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 10, "tstates": 103}
-, {"k": 135, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
-, {"k": 136, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
+, {"k": 134, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 10, "tstates": 103}
+, {"k": 135, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 10, "tstates": 107}
+, {"k": 136, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
 , {"k": 137, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
 , {"k": 138, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 10, "tstates": 103}
-, {"k": 139, "ops": ["ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
+, {"k": 139, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
 , {"k": 140, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 103}
 , {"k": 141, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
-, {"k": 142, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 114}
-, {"k": 143, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
-, {"k": 144, "ops": ["ADD HL,HL","ADD HL,HL","ADD HL,HL","LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
+, {"k": 142, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 10, "tstates": 107}
+, {"k": 143, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 10, "tstates": 107}
+, {"k": 144, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
 , {"k": 145, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
 , {"k": 146, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 10, "tstates": 103}
 , {"k": 147, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
 , {"k": 148, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 103}
 , {"k": 149, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
 , {"k": 150, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 114}
-, {"k": 151, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
+, {"k": 151, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 11, "tstates": 118}
 , {"k": 152, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 103}
 , {"k": 153, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
 , {"k": 154, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 114}
-, {"k": 155, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
-, {"k": 156, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 114}
-, {"k": 157, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
-, {"k": 158, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 159, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
+, {"k": 155, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 11, "tstates": 122}
+, {"k": 156, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 107}
+, {"k": 157, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 118}
+, {"k": 158, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 10, "tstates": 107}
+, {"k": 159, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 10, "tstates": 107}
 , {"k": 160, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
 , {"k": 161, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
 , {"k": 162, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 10, "tstates": 103}
@@ -164,31 +164,31 @@
 , {"k": 164, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 103}
 , {"k": 165, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
 , {"k": 166, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 114}
-, {"k": 167, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
+, {"k": 167, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 11, "tstates": 118}
 , {"k": 168, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 103}
-, {"k": 169, "ops": ["LD C,A","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
+, {"k": 169, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
 , {"k": 170, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 114}
 , {"k": 171, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
 , {"k": 172, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 114}
 , {"k": 173, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
-, {"k": 174, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 175, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
+, {"k": 174, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 11, "tstates": 118}
+, {"k": 175, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 11, "tstates": 118}
 , {"k": 176, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 103}
-, {"k": 177, "ops": ["ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
+, {"k": 177, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
 , {"k": 178, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 114}
 , {"k": 179, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
-, {"k": 180, "ops": ["ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 114}
+, {"k": 180, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 114}
 , {"k": 181, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
-, {"k": 182, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 183, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
-, {"k": 184, "ops": ["ADD HL,HL","LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 114}
-, {"k": 185, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
-, {"k": 186, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 187, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
-, {"k": 188, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 189, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
-, {"k": 190, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 13, "tstates": 136}
-, {"k": 191, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 14, "tstates": 147}
+, {"k": 182, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 11, "tstates": 122}
+, {"k": 183, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 11, "tstates": 122}
+, {"k": 184, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 107}
+, {"k": 185, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 118}
+, {"k": 186, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 118}
+, {"k": 187, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 11, "tstates": 122}
+, {"k": 188, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 107}
+, {"k": 189, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 118}
+, {"k": 190, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 10, "tstates": 107}
+, {"k": 191, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 10, "tstates": 107}
 , {"k": 192, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 9, "tstates": 92}
 , {"k": 193, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 10, "tstates": 103}
 , {"k": 194, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 10, "tstates": 103}
@@ -196,61 +196,61 @@
 , {"k": 196, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 103}
 , {"k": 197, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
 , {"k": 198, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 114}
-, {"k": 199, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
+, {"k": 199, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 11, "tstates": 118}
 , {"k": 200, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 103}
 , {"k": 201, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
 , {"k": 202, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 114}
 , {"k": 203, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
 , {"k": 204, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 114}
 , {"k": 205, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
-, {"k": 206, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 207, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
+, {"k": 206, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 11, "tstates": 118}
+, {"k": 207, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 11, "tstates": 118}
 , {"k": 208, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 103}
 , {"k": 209, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
 , {"k": 210, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 114}
 , {"k": 211, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
-, {"k": 212, "ops": ["LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 114}
+, {"k": 212, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 114}
 , {"k": 213, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
 , {"k": 214, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 215, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
+, {"k": 215, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 12, "tstates": 129}
 , {"k": 216, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 114}
 , {"k": 217, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
 , {"k": 218, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 219, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
-, {"k": 220, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 221, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
-, {"k": 222, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 13, "tstates": 136}
-, {"k": 223, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 14, "tstates": 147}
+, {"k": 219, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 12, "tstates": 133}
+, {"k": 220, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 118}
+, {"k": 221, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 129}
+, {"k": 222, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 11, "tstates": 118}
+, {"k": 223, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 11, "tstates": 118}
 , {"k": 224, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 103}
-, {"k": 225, "ops": ["LD C,A","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
+, {"k": 225, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 114}
 , {"k": 226, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 114}
 , {"k": 227, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
 , {"k": 228, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 114}
 , {"k": 229, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
 , {"k": 230, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 231, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
+, {"k": 231, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 12, "tstates": 129}
 , {"k": 232, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 114}
 , {"k": 233, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
 , {"k": 234, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 235, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
-, {"k": 236, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 237, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
-, {"k": 238, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 13, "tstates": 136}
-, {"k": 239, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 14, "tstates": 147}
-, {"k": 240, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 114}
-, {"k": 241, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 125}
-, {"k": 242, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 243, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
-, {"k": 244, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 245, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
-, {"k": 246, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 13, "tstates": 136}
-, {"k": 247, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 14, "tstates": 147}
-, {"k": 248, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 12, "tstates": 125}
-, {"k": 249, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 13, "tstates": 136}
-, {"k": 250, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 13, "tstates": 136}
-, {"k": 251, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 14, "tstates": 147}
-, {"k": 252, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 13, "tstates": 136}
-, {"k": 253, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 14, "tstates": 147}
-, {"k": 254, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 14, "tstates": 147}
-, {"k": 255, "ops": ["LD C,A","ADD HL,BC","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 15, "tstates": 158}
+, {"k": 235, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 12, "tstates": 137}
+, {"k": 236, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 122}
+, {"k": 237, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 133}
+, {"k": 238, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 11, "tstates": 122}
+, {"k": 239, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 11, "tstates": 122}
+, {"k": 240, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 107}
+, {"k": 241, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 11, "tstates": 118}
+, {"k": 242, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL"], "length": 11, "tstates": 118}
+, {"k": 243, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 129}
+, {"k": 244, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL"], "length": 11, "tstates": 118}
+, {"k": 245, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,BC"], "length": 12, "tstates": 129}
+, {"k": 246, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL"], "length": 11, "tstates": 122}
+, {"k": 247, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC"], "length": 11, "tstates": 122}
+, {"k": 248, "ops": ["LD C,A","ADD HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL","ADD HL,HL","SUB HL,BC","ADD HL,HL","ADD HL,HL","ADD HL,HL"], "length": 10, "tstates": 107}
+, {"k": 249, "ops": ["SWAP_HL","LD C,A","SUB HL,BC","SUB HL,BC","SUB HL,BC","SUB HL,BC","SUB HL,BC","SUB HL,BC","SUB HL,BC"], "length": 9, "tstates": 120}
+, {"k": 250, "ops": ["SWAP_HL","LD C,A","SUB HL,BC","SUB HL,BC","SUB HL,BC","SUB HL,BC","SUB HL,BC","SUB HL,BC"], "length": 8, "tstates": 105}
+, {"k": 251, "ops": ["SWAP_HL","LD C,A","SUB HL,BC","SUB HL,BC","SUB HL,BC","SUB HL,BC","SUB HL,BC"], "length": 7, "tstates": 90}
+, {"k": 252, "ops": ["SWAP_HL","LD C,A","SUB HL,BC","SUB HL,BC","SUB HL,BC","SUB HL,BC"], "length": 6, "tstates": 75}
+, {"k": 253, "ops": ["LD C,A","SWAP_HL","SUB HL,BC","SUB HL,BC","SUB HL,BC"], "length": 5, "tstates": 60}
+, {"k": 254, "ops": ["SWAP_HL","LD C,A","SUB HL,BC","SUB HL,BC"], "length": 4, "tstates": 45}
+, {"k": 255, "ops": ["SWAP_HL","LD C,A","SUB HL,BC"], "length": 3, "tstates": 30}
 ]
