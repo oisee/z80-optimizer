@@ -555,3 +555,30 @@ else → emit double_composition                  // 4 constants, ~50T
 - General shift-and-add: 280T average
 - Our table: 35T average
 - Speedup: **8× for ALL 254 constants, zero fallback**
+
+---
+
+## 2026-03-26: Division via Reciprocal Multiply — 86 Divisors, Zero New Search
+
+**Tags:** division, reciprocal, mul16, publishable
+
+**Method:** div_K(n) = H byte of mul16_M(n), then SRL A × (S-8)
+where M = round(2^S / K) is the magic reciprocal constant.
+
+**Key trick:** instead of shifting full 16-bit HL right by S bits (expensive!),
+read H directly (= already shifted by 8), then shift A by only S-8 bits.
+SRL A = 8T vs SRL H + RR L = 16T per bit. Saves 50% on shift phase.
+
+**Results:** 86 non-power-of-2 divisors (3-127) solved via EXISTING mul16 table.
+Average 2.0× faster than general division loop. Best: div57 = 4.7× (60T).
+No new GPU brute-force needed — purely derived from mul16 results.
+
+**For compiler:** division by constant K →
+  1. Look up reciprocal: (M, S) = reciprocal_table[K]
+  2. Emit: mul16_M sequence (from mul16 table)
+  3. Emit: LD A,H
+  4. Emit: SRL A × (S-8)
+  5. Result in A = n / K
+
+Total library: mul16 table (~500 bytes) + reciprocal constants (128 bytes)
+= ~630 bytes covers multiply AND divide for all 8-bit constants.
