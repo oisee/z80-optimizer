@@ -379,3 +379,66 @@ use DE, then EX DE,HL at the end.
 - i5: RTX 2070 — mul8 len-10 (running), then idioms
 - i3: RX 580 OpenCL — mul8 len-9 (running), then 6502 port
 - M2 MacBook: Metal/CPU — 6502 mulopt, meet-in-the-middle
+
+---
+
+## 2026-03-26: Universal Computation Chains (Key Architecture Insight)
+
+**Tags:** architecture, chains, cross-ISA, division, multiplication
+
+**The Big Idea:** Separate the SEARCH from the ISA.
+
+Three layers:
+1. **Abstract chain** — sequence of {dbl, add, sub, save, restore, shr, mask}
+2. **Materialization** — map each abstract op to ISA-specific instructions
+3. **Cost model** — T-states (Z80), cycles (6502), or whatever
+
+The abstract chain is ISA-independent. Search ONCE, deploy EVERYWHERE.
+
+**Why this helps for division:**
+Division by constant K uses reciprocal multiplication:
+  n/K ≈ n * (1/K) = n * (2^M / K) >> M
+This is a shift-add chain followed by a right-shift:
+  1. Multiply by reciprocal (chain of dbl/add/sub)
+  2. Shift right to get quotient (chain of shr)
+  3. Back-multiply to get remainder: r = n - q*K
+
+Each step is an abstract chain. Brute-force the CHAIN, not the assembly.
+
+**Search space comparison:**
+- Z80 assembly: 14^12 = 56.7T (limited by ISA details)
+- Abstract chain: ~10^7 at depth 12 (only meaningful operations)
+- Speedup: ~8,000,000× by searching in abstract space
+
+**Then materialize:**
+  Z80:   dbl → ADD A,A (4T), add → ADD A,B (4T), save → LD B,A (4T)
+  6502:  dbl → ASL A (2cy), add → CLC/ADC zp (5cy), save → TAX (2cy)
+  RISC-V: dbl → SLLI rd,rs,1 (1cy), add → ADD rd,rd,rs (1cy)
+  ARM:   dbl → LSL rd,rs,#1 (1cy), add → ADD rd,rd,rs (1cy)
+
+**The abstract ops (7 total):**
+  dbl     — double current value
+  add(i)  — add saved value #i
+  sub(i)  — subtract saved value #i
+  save    — checkpoint current value (push to save stack)
+  shr(n)  — shift right by n bits
+  mask(m) — AND with constant mask
+  neg     — negate current value
+
+With 2 save slots and these 7 ops:
+  7^15 = 4.7B — exhaustive to depth 15 in seconds
+
+**For division:**
+  div10 in abstract chain:
+    save(input) → dbl^4 → add(input) → dbl → save(approx) → shr^3 → mask →
+    save(quotient) → dbl → dbl → add(quotient) → dbl → sub(input) → neg
+  Then materialize per-ISA and verify against all 256/65536 inputs.
+
+**This means:**
+  1. Compute abstract chains for mul/div/mod for all constants 1-255
+  2. Materialize to Z80, 6502, RISC-V, ARM in one step
+  3. Verify each materialization per-ISA (different overflow, carry, flags)
+  4. Result: optimal multiply/divide tables for EVERY retro ISA from ONE search
+
+**Publication potential:** "Universal Computation Chains: ISA-Independent 
+Optimal Arithmetic via Exhaustive Search" — standalone paper.
