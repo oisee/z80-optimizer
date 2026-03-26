@@ -88,13 +88,15 @@ static uint32_t *readSPV(const char *path, size_t *size) {
 }
 
 int main(int argc, char *argv[]) {
-    int maxLen = 8, singleK = 0, jsonMode = 0;
+    int maxLen = 8, singleK = 0, jsonMode = 0, skipCpuVerify = 0, numOps = 0;
     const char *spvPath = "gen_z80.spv";
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--max-len") && i+1 < argc) maxLen = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--k") && i+1 < argc) singleK = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--json")) jsonMode = 1;
         else if (!strcmp(argv[i], "--spv") && i+1 < argc) spvPath = argv[++i];
+        else if (!strcmp(argv[i], "--no-verify")) skipCpuVerify = 1;
+        else if (!strcmp(argv[i], "--num-ops") && i+1 < argc) { numOps = atoi(argv[++i]); NUM_OPS = numOps; }
     }
 
     // Create instance
@@ -302,15 +304,17 @@ int main(int argc, char *argv[]) {
                 foundCost = bestScore & 0xFFFF;
                 decode_seq(bestIdx, len, foundOps);
 
-                // CPU verify
-                int ok = 1;
-                for (int inp = 0; inp < 256 && ok; inp++) {
-                    if (cpu_run_seq(foundOps, len, (uint8_t)inp) != (uint8_t)(inp * k))
-                        ok = 0;
-                }
-                if (!ok) {
-                    fprintf(stderr, "WARNING: Vulkan result for x%d failed CPU verify!\n", k);
-                    found = 0;
+                // CPU verify (only for 14-op z80_mul, skip for other ISAs)
+                if (!skipCpuVerify && NUM_OPS <= 14) {
+                    int ok = 1;
+                    for (int inp = 0; inp < 256 && ok; inp++) {
+                        if (cpu_run_seq(foundOps, len, (uint8_t)inp) != (uint8_t)(inp * k))
+                            ok = 0;
+                    }
+                    if (!ok) {
+                        fprintf(stderr, "WARNING: Vulkan result for x%d failed CPU verify!\n", k);
+                        found = 0;
+                    }
                 }
             }
         }
