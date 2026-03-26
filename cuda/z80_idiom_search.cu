@@ -139,6 +139,17 @@ static void gen_target(const char *name, uint8_t *tgt) {
             int k = atoi(name + 3);
             tgt[i] = (k > 0) ? a % k : 0;
         }
+        else if (!strcmp(name, "lsb"))       tgt[i] = a & ((uint8_t)(-(int8_t)a));
+        else if (!strcmp(name, "is_pow2"))    tgt[i] = (a != 0 && (a & (a-1)) == 0) ? 1 : 0;
+        else if (!strcmp(name, "is_zero"))    tgt[i] = (a == 0) ? 1 : 0;
+        else if (!strcmp(name, "is_neg"))     tgt[i] = (a >= 128) ? 1 : 0;
+        else if (!strcmp(name, "max_0"))      tgt[i] = (a >= 128) ? 0 : a;
+        else if (!strcmp(name, "double_sat")) tgt[i] = (a > 127) ? 255 : a * 2;
+        else if (!strcmp(name, "half"))       tgt[i] = a >> 1;
+        else if (!strcmp(name, "complement")) tgt[i] = a ^ 0xFF;
+        else if (!strcmp(name, "lo_nib"))     tgt[i] = a & 0x0F;
+        else if (!strcmp(name, "hi_nib"))     tgt[i] = (a >> 4) & 0x0F;
+        else if (!strcmp(name, "mirror4"))    { uint8_t r=0; for(int b=0;b<4;b++) if(a&(1<<b)) r|=(1<<(3-b)); tgt[i]=r; }
         else tgt[i] = a; // identity
     }
 }
@@ -162,7 +173,7 @@ int main(int argc, char *argv[]) {
     cudaMemcpy(d_best, &dummy, 4, cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
     
-    const char *all_idioms[] = {"bool","sign","nibswap","abs","not","div3","div5","div7","div10","mod3","mod5","mod10",NULL};
+    const char *all_idioms[] = {"bool","sign","nibswap","abs","not","is_zero","is_neg","max_0","double_sat","half","complement","lo_nib","hi_nib","lsb","mirror4","div3","mod3","mod10",NULL};
     
     for (int ii = 0; all_idioms[ii]; ii++) {
         if (!runAll && strcmp(idiom, all_idioms[ii]) != 0) continue;
