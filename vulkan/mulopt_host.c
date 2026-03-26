@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <vulkan/vulkan.h>
 
-#define NUM_OPS 14
+static int NUM_OPS = 14;
 #define MAX_LEN 12
 
 static const char *opNames[] = {

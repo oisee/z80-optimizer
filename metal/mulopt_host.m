@@ -240,12 +240,12 @@ int main(int argc, char *argv[]) {
                 if (jsonMode) {
                     printf("  {\"k\": %d, \"ops\": [", k);
                     for (int i = 0; i < result.length; i++)
-                        printf("%s\"%s\"", i ? "," : "", (result.ops[i] < 14 ? opNames[result.ops[i]] : "?"));
+                        printf("%s\"%s\"", i ? "," : "", (result.ops[i] < (int)(sizeof(opNames)/sizeof(opNames[0])) ? opNames[result.ops[i]] : "?"));
                     printf("], \"length\": %d, \"tstates\": %d}%s\n",
                            result.length, result.tstates, (k < endK) ? "," : "");
                 } else {
                     printf("x%d:", k);
-                    for (int i = 0; i < result.length; i++) printf(" %s", (result.ops[i] < 14 ? opNames[result.ops[i]] : "?"));
+                    for (int i = 0; i < result.length; i++) printf(" %s", (result.ops[i] < (int)(sizeof(opNames)/sizeof(opNames[0])) ? opNames[result.ops[i]] : "?"));
                     printf(" (%d insts, %dT)\n", result.length, result.tstates);
                 }
             }
