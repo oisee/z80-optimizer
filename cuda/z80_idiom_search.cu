@@ -8,7 +8,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#define NUM_OPS 33
+#define NUM_OPS 37
 
 // Same executor as mulopt_fast
 __device__ void exec_op(uint8_t op, uint8_t &a, uint8_t &b, bool &carry) {
@@ -48,6 +48,18 @@ __device__ void exec_op(uint8_t op, uint8_t &a, uint8_t &b, bool &carry) {
     case 30: /* AND imm 0x1F */ a&=0x1F; carry=false; break;
     case 31: /* OR imm 0x01 */ a|=0x01; carry=false; break;
     case 32: /* RLCA */ carry=(a&0x80)!=0; a=(a<<1)|(a>>7); break;
+    case 33: /* CPL */ a=a^0xFF; break;  // 4T, no flags except H,N
+    case 34: /* SCF */ carry=true; break;  // 4T, set carry
+    case 35: /* CCF */ carry=!carry; break;  // 4T, complement carry
+    case 36: /* DAA */ {  // 4T, decimal adjust accumulator
+        // Simplified DAA: adjust after ADD/SUB for BCD
+        // Full DAA depends on N and H flags which we don't track
+        // For search: implement the ADD case (most useful)
+        uint8_t corr = 0;
+        if ((a & 0x0F) > 9) corr |= 0x06;
+        if (a > 0x99 || carry) { corr |= 0x60; carry = true; } else { carry = false; }
+        a = a + corr;
+    } break;
     }
 }
 
@@ -61,7 +73,7 @@ __device__ uint8_t run_seq(const uint8_t *ops, int len, uint8_t input) {
 // Target function table (256 entries: target[input] = expected output)
 __constant__ uint8_t d_target[256];
 
-__constant__ uint8_t opCost[NUM_OPS] = {4,4,4,4,4,4,4,4,8,4,4,4,4,8, 4,8,4,4,4,4,4,4,4,4,4,4,4,7,7,7,7,7,4};
+__constant__ uint8_t opCost[NUM_OPS] = {4,4,4,4,4,4,4,4,8,4,4,4,4,8, 4,8,4,4,4,4,4,4,4,4,4,4,4,7,7,7,7,7,4, 4,4,4,4};
 
 __global__ void idiom_kernel(int seqLen, uint64_t offset, uint64_t count,
                               uint32_t *bestScore, uint64_t *bestIdx) {
@@ -100,7 +112,8 @@ static const char *opNames[] = {
     "SBC A,B","SBC A,A","SRL A","RLA","RRA","RLCA","RRCA","NEG",
     "XOR A","SRL A2","RLA2","RRA2","SBC A,A2","AND B","OR B","XOR B",
     "CP B","ADC A,B2","ADC A,A2","INC A","DEC A","AND 0x0F","AND 0xF0",
-    "AND 0x7F","AND 0x1F","OR 0x01","RLCA2"
+    "AND 0x7F","AND 0x1F","OR 0x01","RLCA2",
+    "CPL","SCF","CCF","DAA"
 };
 
 static uint64_t ipow(uint64_t b, int e) { uint64_t r=1; for(int i=0;i<e;i++) r*=b; return r; }
