@@ -425,7 +425,8 @@ func (e *emitter) emitRunSeq() {
 		}
 	}
 
-	e.w("    for (int i = 0; i < len; i++) exec_op(ops[i]")
+	e.w("    for (int i = 0; i < len; i++) {\n")
+	e.w("        exec_op(ops[i]")
 	for _, reg := range e.isa.State {
 		if e.backend == Metal || e.backend == Vulkan {
 			e.w(", %s", reg.Name)
@@ -434,6 +435,15 @@ func (e *emitter) emitRunSeq() {
 		}
 	}
 	e.w(");\n")
+	// Vulkan: mask all u8 registers to 8 bits (GLSL has no 8-bit type)
+	if e.backend == Vulkan {
+		for _, reg := range e.isa.State {
+			if reg.Type == U8 {
+				e.w("        %s &= 0xFF;\n", reg.Name)
+			}
+		}
+	}
+	e.w("    }\n")
 	// Return expression
 	retExpr := e.isa.OutputReg
 	if e.isa.OutputExpr != "" {
