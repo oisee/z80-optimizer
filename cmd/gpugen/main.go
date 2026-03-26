@@ -11,6 +11,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/oisee/z80-optimizer/pkg/gpugen"
 )
@@ -36,15 +37,27 @@ var extensions = map[gpugen.Backend]string{
 }
 
 func main() {
-	isaName := flag.String("isa", "z80", "ISA: z80, 6502")
+	isaName := flag.String("isa", "z80", "ISA: z80, z80_arith16, 6502")
 	backendName := flag.String("backend", "metal", "Backend: cuda, metal, opencl, vulkan, all, host-header")
 	outDir := flag.String("out", "", "Output directory (for -backend all)")
+	mask := flag.String("mask", "", "Bitmask of enabled ops (e.g. '11110000011111111')")
+	disable := flag.String("disable", "", "Comma-separated op names to disable")
 	flag.Parse()
 
 	isa, ok := isas[*isaName]
 	if !ok {
 		fmt.Fprintf(os.Stderr, "Unknown ISA: %s (available: z80, z80_arith16, 6502)\n", *isaName)
 		os.Exit(1)
+	}
+
+	// Apply op mask/disable
+	if *mask != "" {
+		isa = isa.MaskedByBits(*mask)
+		fmt.Fprintf(os.Stderr, "Masked to %d ops\n", len(isa.Ops))
+	} else if *disable != "" {
+		names := strings.Split(*disable, ",")
+		isa = isa.MaskedDisable(names)
+		fmt.Fprintf(os.Stderr, "Disabled %d ops, %d remaining\n", len(names), len(isa.Ops))
 	}
 
 	if *backendName == "host-header" {
