@@ -15,6 +15,7 @@ import (
 	"flag"
 	"fmt"
 	"os"
+	"strings"
 )
 
 // Realistic per-vreg allowed loc sets from actual Z80 patterns
@@ -133,7 +134,28 @@ func main() {
 	maxVregs := flag.Int("max-vregs", 5, "max vregs to enumerate (2-6)")
 	minTW := flag.Int("min-treewidth", 0, "only emit shapes with treewidth >= this (0=all)")
 	onlyNV := flag.Int("only-nv", 0, "only emit shapes with this exact nVregs (0=all)")
+	denseMasksFile := flag.String("dense-masks", "", "file of interference bitmasks to enumerate (one per line, skip all others)")
 	flag.Parse()
+
+	// Load dense masks if provided (fast path: skip treewidth computation)
+	denseMasks := map[int]bool{}
+	if *denseMasksFile != "" {
+		data, err := os.ReadFile(*denseMasksFile)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error reading dense masks: %v\n", err)
+			os.Exit(1)
+		}
+		for _, line := range strings.Split(string(data), "\n") {
+			line = strings.TrimSpace(line)
+			if line == "" {
+				continue
+			}
+			var m int
+			fmt.Sscanf(line, "%d", &m)
+			denseMasks[m] = true
+		}
+		fmt.Fprintf(os.Stderr, "Loaded %d dense interference masks\n", len(denseMasks))
+	}
 
 	enc := json.NewEncoder(os.Stdout)
 	total := 0
@@ -182,6 +204,12 @@ func main() {
 
 				// Enumerate all interference graphs
 				for ig := 0; ig < (1 << nEdges); ig++ {
+					// Dense mask filter: skip graphs not in the mask set
+					if len(denseMasks) > 0 && !denseMasks[ig] {
+						total++
+						filtered++
+						continue
+					}
 					var interf [][]int
 					edgeIdx := 0
 					for i := 0; i < nv; i++ {
