@@ -17,7 +17,7 @@
 
 __device__ uint16_t run_seq(const uint8_t *ops, int len, uint8_t input, int numOps) {
     // Initial state: A=input, B=0, C=0, H=0, L=input (preamble: LD L,A / LD H,0)
-    uint8_t a = input, b = 0, c = 0, h = 0, l = input;
+    uint8_t a = input, b = 0, c = 0, d = 0, e = 0, h = 0, l = input;
     int carry = 0;
     
     for (int i = 0; i < len; i++) {
@@ -57,20 +57,37 @@ __device__ uint16_t run_seq(const uint8_t *ops, int len, uint8_t input, int numO
               h = (uint8_t)(hl2 >> 8);
               l = (uint8_t)hl2; }
             break;
-        // -- Pool 7: add 8-bit helpers --
-        case 5: // NEG (8-bit)
+        // -- Pool 7: add EX DE,HL + DE arithmetic --
+        case 5: // EX DE,HL: swap HL ↔ DE (1 inst, 4T)
+            { uint8_t th = h, tl = l;
+              h = d; l = e;
+              d = th; e = tl; }
+            break;
+        case 6: // ADD HL,DE (1 inst, 11T)
+            { uint16_t hl2 = ((uint16_t)h << 8) | l;
+              uint16_t de2 = ((uint16_t)d << 8) | e;
+              uint16_t r2 = hl2 + de2;
+              carry = r2 < hl2 ? 1 : 0;
+              h = (uint8_t)(r2 >> 8);
+              l = (uint8_t)r2; }
+            break;
+        case 7: // SUB HL,DE: HL -= DE (OR A / SBC HL,DE, 2 insts, 15T)
+            { uint16_t hl2 = ((uint16_t)h << 8) | l;
+              uint16_t de2 = ((uint16_t)d << 8) | e;
+              carry = hl2 < de2 ? 1 : 0;
+              hl2 = hl2 - de2;
+              h = (uint8_t)(hl2 >> 8);
+              l = (uint8_t)hl2; }
+            break;
+        // -- Pool 10: add 8-bit helpers --
+        case 8: // NEG (8-bit)
             carry = (a != 0) ? 1 : 0;
             a = (uint8_t)(0 - a);
             break;
-        case 6: // SBC A,B
-            { int cc = carry ? 1 : 0;
-              carry = ((int)a - (int)b - cc) < 0 ? 1 : 0;
-              a = a - b - (uint8_t)cc; }
-            break;
-        case 7: // LD L,A
+        case 9: // LD L,A
             l = a;
             break;
-        case 8: // LD H,A
+        case 10: // LD H,A
             h = a;
             break;
         }
@@ -106,10 +123,11 @@ __global__ void kernel(uint8_t k, int seqLen, uint64_t offset, uint64_t count,
     // Cost (approximate — all ops are 11T except NEG=8T, LD=4T)
     uint16_t cost = 0;
     // Costs: real T-states for materialized sequence
-    const uint8_t costs[] = {11, 11, 4, 11, 15, 8, 4, 4, 4};
+    const uint8_t costs[] = {11, 11, 4, 11, 15, 4, 11, 15, 8, 4, 4};
     // pool 3: ADD_HL_HL=11, ADD_HL_BC=11, LD_C_A=4
-    // pool 5: SWAP_HL=11(LD H,L+LD L,0), SUB_HL_BC=15(OR A+SBC HL,BC)
-    // pool 9: NEG=8, SBC_A_B=4, LD_L_A=4, LD_H_A=4
+    // pool 5: SWAP_HL=11, SUB_HL_BC=15
+    // pool 8: EX_DE_HL=4, ADD_HL_DE=11, SUB_HL_DE=15
+    // pool 11: NEG=8, LD_L_A=4, LD_H_A=4
     for (int i = 0; i < seqLen; i++) cost += costs[ops[i]];
     uint32_t score = ((uint32_t)seqLen << 16) | cost;
     
@@ -127,11 +145,12 @@ static uint64_t ipow(uint64_t base, int exp) {
 
 static const char *opName(uint8_t op) {
     static const char *names[] = {
-        "ADD HL,HL", "ADD HL,BC", "LD C,A",      // pool 3: core
-        "SWAP_HL", "SUB HL,BC",                    // pool 5: +virtual 16-bit
-        "NEG", "SBC A,B", "LD L,A", "LD H,A"      // pool 9: +8-bit helpers
+        "ADD HL,HL", "ADD HL,BC", "LD C,A",        // pool 3: core shift-add
+        "SWAP_HL", "SUB HL,BC",                    // pool 5: +byte swap, subtract
+        "EX DE,HL", "ADD HL,DE", "SUB HL,DE",     // pool 8: +DE as 2nd accumulator
+        "NEG", "LD L,A", "LD H,A"                  // pool 11: +8-bit helpers
     };
-    return op < 9 ? names[op] : "?";
+    return op < 11 ? names[op] : "?";
 }
 
 int main(int argc, char *argv[]) {

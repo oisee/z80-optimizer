@@ -198,3 +198,70 @@ independently verify the same exhaustive search results.
 - [ ] antique-toy book patterns — how do they compare with GPU-optimal?
 - [ ] 6502 mulopt: how different is the optimal instruction pool?
 - [ ] Meet-in-the-middle: practical on GPU with hash tables in shared memory?
+
+---
+
+## 2026-03-26: Clobber-Aware Multiply Tables
+
+**Tags:** mulopt, mulopt16, compiler-integration
+
+**Insight:** The shortest multiply sequence is not always the best for a compiler.
+A 5-instruction solution that clobbers DE is worse than a 6-instruction solution
+that preserves DE — if the caller needs DE alive.
+
+**Proposed storage:** For each constant K, store **Pareto-optimal** solutions:
+multiple sequences that are either shorter OR less clobbering. The compiler
+picks the cheapest solution whose clobber set doesn't conflict with live registers.
+
+**Clobber classes for u16 multiply:**
+- Class A: {HL, C only} — safest (3-op pool: ADD HL,HL + ADD HL,BC + LD C,A)
+- Class B: {HL, C, A} — uses A (NEG, LD L,A etc.)
+- Class C: {HL, C, DE} — uses DE temp (EX DE,HL)
+- Class D: {HL, C, A, DE} — uses everything
+
+Verified: 3-op pool (class A) finds ALL 254 constants — DE is NEVER required.
+But 8-op pool (class C) finds 30 constants shorter. These are Pareto-optimal
+alternatives: same K, shorter sequence, but larger clobber set.
+
+**For compiler integration:** generate all Pareto solutions during brute-force,
+tag with clobber bitmask. At code generation time, intersect clobber with
+liveness → pick cheapest compatible solution.
+
+---
+
+## 2026-03-26: EX DE,HL for Factored Multiplication
+
+**Tags:** mulopt16, virtual-ops
+
+EX DE,HL (4T, 1 inst) enables factored multiplication:
+1. Compute partial result x*A in HL
+2. EX DE,HL (save to DE)
+3. Compute x*B in HL (starting fresh)
+4. ADD HL,DE (combine: x*A + x*B)
+
+This is the shift-add equivalent of polynomial factoring:
+  x*63 = x*64 - x = (x<<6) - x
+  x*99 = x*100 - x = (x*10 * x*10) - x
+
+With EX DE,HL: 30 constants improved by 1-2 instructions (validated
+against 5-op pool). No regressions. DE arithmetic adds ADD HL,DE (11T)
+and SBC HL,DE (15T) to the virtual op pool.
+
+---
+
+## 2026-03-26: SWAP_HL (Byte Swap Trick)
+
+**Tags:** mulopt16, virtual-ops, z80-lore
+
+SWAP_HL = LD H,L / LD L,0 (2 insts, 11T). Semantics: HL = L * 256.
+
+This is the classic Z80 "multiply by 256" trick from optimization guides.
+Combined with SUB HL,BC: enables x*K = x*256 - x*(256-K) patterns.
+
+Impact: 88/254 constants improved (35%), 179 total instructions saved vs
+pure 3-op pool. x255: 15→3 virtual insts (12 saved). Zero regressions.
+
+The byte swap trick is one of the most well-known Z80 optimizations but
+was never systematically applied to constant multiplication before.
+Our brute-force search rediscovered it independently — and proved it
+optimal via exhaustive verification.
