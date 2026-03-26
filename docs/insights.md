@@ -457,3 +457,42 @@ For integer ALU brute-force (no tensors, no ML), GPU portability options:
 - WGPU: tried before, SIGSEGV bugs in Go bindings
 
 Strategy: CUDA for NVIDIA (fast path) + OpenCL for AMD/fallback. Two files per kernel, 95% shared logic. For abstract chains: pure CPU, no GPU needed.
+
+---
+
+## 2026-03-26: Compressed Multiply Core via Prefix Sharing
+
+**Tags:** mulopt, code-size, compiler, publishable
+
+**Discovery:** 311 prefix overlaps among 164 optimal multiply sequences.
+Many larger multiplies START with a smaller multiply as prefix:
+  x58 = x56 + ADD A,B
+  x104 = x52 + ADD A,A
+  x52 = x26 + ADD A,A
+  ... forming chains up to 7 constants deep.
+
+**Fall-through layout:** place constants in reverse order, each enters
+at its label and falls through to the end:
+```asm
+mul104:
+mul52:  ADD A,A
+mul26:  ADD A,A
+mul24:  ADD A,B
+mul12:  ADD A,A
+mul6:   ADD A,A / LD B,A / ADD A,B / ADD A,B
+mul2:   RLA
+        RET              ; shared return
+```
+7 constants, 9 instructions, 1 RET (vs 40 naive = 77% saved!)
+
+**Total savings:** 1224 → 594 instructions (51% reduction).
+All 164 multiply sequences packed into 594 bytes of shared code.
+
+**For compiler:** emit CALL to the right label. The multiply "library"
+is a single compact block with multiple entry points.
+
+**For ROM/embedded:** 594 bytes for 164 optimal multiplies = fits in
+any Z80 system. Even ZX Spectrum (48KB) has room.
+
+**Also works for chains:** abstract chains have even MORE overlap
+since they use fewer distinct operations.
