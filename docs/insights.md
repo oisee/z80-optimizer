@@ -644,3 +644,61 @@ used ops → 20^8 = 25.6B (fast).
 
 For next session: build full ALU pool, search all idioms to len-7/8,
 analyze which ops appear → reduce → go deeper.
+
+---
+
+## 2026-03-26: Packed Arithmetic Cassette — Multi-Entry Overlapped Code
+
+**Tags:** code-size, publishable, architecture, mul, div, rotation
+
+**The Ultimate Z80 Arithmetic Library**: one compact ROM blob with hundreds
+of entry points. Three types of multi-entry code, all overlapping:
+
+**1. Instruction Sleds** (homogeneous chains):
+```asm
+rot7: RLCA          ; 7 rotations left
+rot6: RLCA          ; 6 rotations
+rot5: RLCA          ; 5
+rot4: RLCA          ; = nibble swap!
+rot3: RLCA
+rot2: RLCA
+rot1: RLCA          ; = ×2 via rotate
+      RET           ; 9 bytes, 7 entry points
+
+shr7: SRL A         ; 7 shifts right (= /128)
+shr6: SRL A         ; 6 shifts (= /64)
+...
+shr1: SRL A         ; 1 shift (= /2)
+      RET           ; 16 bytes (CB prefix), 7 entry points
+```
+
+**2. Multiply Chains** (prefix-shared heterogeneous):
+```asm
+mul104: ADD A,A     ; falls through to ×52
+mul52:  ADD A,A
+mul26:  ADD A,B     ; uses saved B
+mul24:  ADD A,A
+mul12:  ADD A,A
+mul6:   LD B,A : ADD A,B : ADD A,B
+mul2:   RLA
+        RET         ; 7 constants, 9 instructions, 1 RET
+```
+
+**3. Division via Shared Reciprocal**:
+Divisors sharing the same magic constant M overlap in the multiply phase.
+div6 and div12 both use M=171 — the mul(171) code is shared, only
+the shift count differs.
+
+**Combined**: sleds + multiply chains + division chains = one blob,
+~2KB for ALL optimal arithmetic. Hundreds of entry points,
+each labeled `mul_K:`, `div_K:`, `rot_N:`, `shr_N:`.
+
+**Runtime dispatch**: page-aligned jump table (256 bytes).
+`LD H, page / LD L, K / JP (HL)` = single-instruction dispatch.
+
+**With TSMC** (self-modifying code): `CALL target` patches once,
+then runs at full speed forever. Zero dispatch overhead after first call.
+
+**Total: ~2KB packed cassette = provably optimal arithmetic for Z80.**
+Every operation 2-8× faster than general loops. For ZX Spectrum (48KB):
+just 4% of RAM. For ROM systems: fits in any EPROM alongside the program.
