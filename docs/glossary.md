@@ -1,5 +1,12 @@
 # Z80 Register Allocation Research — Glossary
 
+## Common Shorthand
+
+- **Nv** (e.g. 5v, 6v) — "N virtual registers". A function with 6v has 6 variables needing physical registers
+- **tw=N** (e.g. tw=3, tw=4) — "treewidth N". How tangled the interference graph is. tw=1 is a tree (easy), tw=n-1 is complete (hardest)
+- **NT** (e.g. 35T, 210T) — "N T-states". Z80 clock cycles, the cost metric
+- **L^N** (e.g. 15^6) — search space size. L locations raised to N vregs = total assignments to check
+
 ## Core Concepts
 
 - **vreg (virtual register)** — a compiler's abstract variable that needs to be assigned to a physical CPU register. A function with "6v" has 6 virtual registers.
