@@ -612,3 +612,35 @@ individual registers. Need expanded pool with H/L byte access for complete searc
 **abs_diff(a,b)** from MinZ corpus: SUB C / RET NC / NEG / RET
 = 3 insts + conditional return. Branchless abs not possible in 14-op pool
 (needs conditional ops). Branching version is already near-optimal.
+
+---
+
+## 2026-03-26: Full ALU Pool for 16-bit Idiom Search (TODO)
+
+**Tags:** arith16, pool-design, next-session
+
+Current 21-op pool misses basic ALU ops needed for many patterns:
+
+**Must add:**
+- ADC A,L / ADC A,H — add with carry (multi-byte arithmetic!)
+- SBC A,L / SBC A,H — subtract with carry
+- INC L / INC H — increment WITHOUT touching carry (unique Z80 property!)
+- DEC L / DEC H — decrement without carry
+- AND L / AND H — bitwise AND
+- OR H — for testing (OR L already in pool)
+- XOR L / XOR H — bitwise XOR
+- CP L / CP H — compare without storing
+- INC A / DEC A — accumulator inc/dec (no carry touch)
+
+**INC/DEC carry preservation** is key:
+  SBC A,A (carry to mask) → INC L (no carry damage) → SBC continues correct.
+  This enables interleaved byte-level operations during multi-byte chains.
+
+**Estimated pool:** ~35 ops. 35^6 = 1.8B (instant), 35^7 = 64B (feasible),
+35^8 = 2.3T (borderline). Len-7 covers most patterns.
+
+**After empirical reduction** (like 21→14 for mul8): probably ~20 actually
+used ops → 20^8 = 25.6B (fast).
+
+For next session: build full ALU pool, search all idioms to len-7/8,
+analyze which ops appear → reduce → go deeper.
