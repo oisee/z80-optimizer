@@ -32,3 +32,22 @@ lib/
 
 # Claude Code
 .claude/
+
+# Compiled binaries
+cuda/z80_regalloc
+cuda/z80_regalloc_8locs
+cuda/z80search_v2
+cuda/z80_mulopt
+cuda/z80_mulopt_fast
+cuda/z80_mulopt16
+cuda/z80_mulopt16_mini
+cuda/z80_divmod
+cuda/z80_divmod_fast
+cuda/z80_idiom_search
+cuda/z80_arith16
+cuda/z80_shuffle
+chains
+mulopt
+partopt
+regalloc-enum
+dedelulu.jsonl
