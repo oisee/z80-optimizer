@@ -16,8 +16,9 @@ import (
 )
 
 var isas = map[string]gpugen.ISA{
-	"z80":  gpugen.Z80Mul,
-	"6502": gpugen.MOS6502Mul,
+	"z80":         gpugen.Z80Mul,
+	"z80_arith16": gpugen.Z80Arith16,
+	"6502":        gpugen.MOS6502Mul,
 }
 
 var backends = map[string]gpugen.Backend{
