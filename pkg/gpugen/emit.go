@@ -435,11 +435,14 @@ func (e *emitter) emitRunSeq() {
 		}
 	}
 	e.w(");\n")
-	// Vulkan: mask all u8 registers to 8 bits (GLSL has no 8-bit type)
+	// Vulkan: mask registers to correct width (GLSL has no 8/16-bit types)
 	if e.backend == Vulkan {
 		for _, reg := range e.isa.State {
-			if reg.Type == U8 {
+			switch reg.Type {
+			case U8:
 				e.w("        %s &= 0xFF;\n", reg.Name)
+			case U16:
+				e.w("        %s &= 0xFFFF;\n", reg.Name)
 			}
 		}
 	}
