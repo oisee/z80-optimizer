@@ -174,11 +174,17 @@ func main() {
 	maxDepth := flag.Int("max-depth", 20, "maximum chain depth")
 	singleK := flag.Int("k", 0, "single constant (0 = all 2..255)")
 	jsonMode := flag.Bool("json", false, "JSON output")
+	divMode := flag.Bool("div", false, "search for division chains instead of multiply")
 	flag.Parse()
 
 	startK, endK := 2, 255
 	if *singleK > 0 {
 		startK, endK = *singleK, *singleK
+	}
+
+	if *divMode {
+		runDiv(*maxDepth, startK, endK, *jsonMode)
+		return
 	}
 
 	solved := 0
@@ -216,4 +222,43 @@ func main() {
 	}
 
 	fmt.Fprintf(os.Stderr, "Done: %d/%d solved\n", solved, endK-startK+1)
+}
+
+func runDiv(maxDepth, startK, endK int, jsonMode bool) {
+	solved := 0
+	if jsonMode {
+		fmt.Println("[")
+	}
+	for k := startK; k <= endK; k++ {
+		if k <= 1 {
+			continue
+		}
+		// Skip powers of 2 (trivial: just shift right)
+		if k&(k-1) == 0 {
+			continue
+		}
+		start := time.Now()
+		r := solveDivK(k, maxDepth)
+		elapsed := time.Since(start)
+		if r != nil {
+			solved++
+			if jsonMode {
+				if solved > 1 {
+					fmt.Print(",")
+				}
+				b, _ := json.Marshal(r)
+				fmt.Println(string(b))
+			} else {
+				fmt.Printf("div%d: %v (%d steps, %v, %d nodes)\n",
+					k, r.Ops, r.Depth, elapsed, divNodes)
+			}
+		} else {
+			fmt.Fprintf(os.Stderr, "div%d: not found at depth %d (%v, %d nodes)\n",
+				k, maxDepth, elapsed, divNodes)
+		}
+	}
+	if jsonMode {
+		fmt.Println("]")
+	}
+	fmt.Fprintf(os.Stderr, "Done: %d divisors solved\n", solved)
 }
