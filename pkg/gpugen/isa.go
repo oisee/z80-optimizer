@@ -45,6 +45,8 @@ type ISA struct {
 	QuickCheck []uint8  // Test inputs for quick rejection (e.g. {1, 2, 127, 255})
 	InputReg   string   // Register loaded with input value (e.g. "a")
 	OutputReg  string   // Register checked for result (e.g. "a")
+	OutputExpr string   // C expression for result if OutputReg is not a register (e.g. "((UINT16)h << 8) | l")
+	OutputType Type     // Return type (default U8; use U16 for 16-bit results)
 }
 
 // Backend selects the GPU target language.

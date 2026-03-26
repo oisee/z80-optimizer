@@ -5,7 +5,9 @@ package gpugen
 var Z80Arith16 = ISA{
 	Name:       "z80_arith16",
 	InputReg:   "l",  // input loaded into L (and A)
-	OutputReg:  "hl", // result is (H<<8)|L
+	OutputReg:  "a",  // placeholder, OutputExpr used instead
+	OutputExpr: "((UINT16)h << 8) | l",
+	OutputType: U16,
 	QuickCheck: []uint8{0, 1, 127, 255},
 	Locals: []Var{
 		{Name: "hl", Type: U16},
@@ -44,7 +46,7 @@ var Z80Arith16 = ISA{
 		{Name: "SUB H", Cost: 4, Body: `carry = (a < h) ? CTRUE : CFALSE; a = a - h;`},
 		{Name: "ADD A,L", Cost: 4, Body: `r = (UINT16)a + l; carry = r > 0xFF ? CTRUE : CFALSE; a = (UINT8)r;`},
 		{Name: "ADD A,H", Cost: 4, Body: `r = (UINT16)a + h; carry = r > 0xFF ? CTRUE : CFALSE; a = (UINT8)r;`},
-		{Name: "SBC A,A", Cost: 4, Body: `cc = carry ? 1 : 0; carry = cc > 0 ? CTRUE : CFALSE; a = cc ? 0xFF : 0x00;`},
+		{Name: "SBC A,A", Cost: 4, Body: `cc = carry ? 1 : 0; carry = cc > 0 ? CTRUE : CFALSE; a = (cc != 0) ? 0xFF : 0x00;`},
 		{Name: "LD L,A", Cost: 4, Body: `l = a;`},
 		{Name: "LD H,A", Cost: 4, Body: `h = a;`},
 		{Name: "LD A,L", Cost: 4, Body: `a = l;`},

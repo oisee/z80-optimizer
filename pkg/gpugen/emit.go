@@ -115,6 +115,13 @@ func (e *emitter) boolFalse() string {
 	return "false"
 }
 
+func (e *emitter) boolTrue() string {
+	if e.backend == OpenCL {
+		return "1"
+	}
+	return "true"
+}
+
 // vulkan needs explicit masking since all "u8" ops are actually uint
 func (e *emitter) isVulkan() bool {
 	return e.backend == Vulkan
@@ -127,6 +134,8 @@ func (e *emitter) expandTypes(body string) string {
 		"UINT8", e.u8(),
 		"UINT16", e.u16(),
 		"INT16", e.i16(),
+		"CTRUE", e.boolTrue(),
+		"CFALSE", e.boolFalse(),
 	)
 	body = r.Replace(body)
 	if e.backend == Vulkan {
@@ -266,8 +275,22 @@ func (e *emitter) emitExecOp() {
 	}
 	e.w(") {\n")
 
-	// Local vars for temporaries used in op bodies
-	e.w("    %s r; %s c; %s bit;\n", e.u16(), e.u16(), e.u8())
+	// Local vars for temporaries used in op bodies.
+	// Default temps (r, c, bit) are skipped if they conflict with register names.
+	regNames := make(map[string]bool, len(e.isa.State))
+	for _, reg := range e.isa.State {
+		regNames[reg.Name] = true
+	}
+	defaults := []Var{
+		{Name: "r", Type: U16},
+		{Name: "c", Type: U16},
+		{Name: "bit", Type: U8},
+	}
+	for _, v := range defaults {
+		if !regNames[v.Name] {
+			e.w("    %s %s;\n", e.typeStr(v.Type), v.Name)
+		}
+	}
 	// Additional locals declared by ISA (for multi-register ops)
 	for _, v := range e.isa.Locals {
 		e.w("    %s %s;\n", e.typeStr(v.Type), v.Name)
@@ -346,7 +369,11 @@ func (e *emitter) emitRunSeq() {
 	if e.backend == Vulkan {
 		inputParam = "inp"
 	}
-	e.w("%s run_seq(", e.u8())
+	retType := e.u8()
+	if e.isa.OutputType == U16 {
+		retType = e.u16()
+	}
+	e.w("%s run_seq(", retType)
 	switch e.backend {
 	case Metal:
 		e.w("thread %s *ops, int len, %s %s", e.u8(), e.u8(), inputParam)
@@ -377,10 +404,15 @@ func (e *emitter) emitRunSeq() {
 		}
 	}
 	e.w(");\n")
-	if e.backend == Vulkan {
-		e.w("    return %s & 0xFF;\n", e.isa.OutputReg)
+	// Return expression
+	retExpr := e.isa.OutputReg
+	if e.isa.OutputExpr != "" {
+		retExpr = e.expandTypes(e.isa.OutputExpr)
+	}
+	if e.backend == Vulkan && e.isa.OutputType != U16 {
+		e.w("    return %s & 0xFF;\n", retExpr)
 	} else {
-		e.w("    return %s;\n", e.isa.OutputReg)
+		e.w("    return %s;\n", retExpr)
 	}
 	e.w("}\n\n")
 }
@@ -497,13 +529,18 @@ func (e *emitter) emitKernelBody(seqVar, tidVar, offsetExpr string) {
 	e.w("        tmp /= NUM_OPS;\n")
 	e.w("    }\n\n")
 
-	// QuickCheck — must cast (N * k) to u8 to match run_seq return type
-	// Vulkan uses & 0xFF (no 8-bit type), others use (uchar)/(uint8_t) cast
+	// QuickCheck — cast result to match run_seq return type (u8 or u16)
+	castType := e.u8()
+	mask := " & 0xFF"
+	if e.isa.OutputType == U16 {
+		castType = e.u16()
+		mask = " & 0xFFFF"
+	}
 	for _, v := range e.isa.QuickCheck {
 		if e.backend == Vulkan {
-			e.w("    if (run_seq(ops, seqLen, %d) != ((%d * k) & 0xFF)) return;\n", v, v)
+			e.w("    if (run_seq(ops, seqLen, %d) != ((%d * k)%s)) return;\n", v, v, mask)
 		} else {
-			e.w("    if (run_seq(ops, seqLen, %d) != (%s)(%d * k)) return;\n", v, e.u8(), v)
+			e.w("    if (run_seq(ops, seqLen, %d) != (%s)(%d * k)) return;\n", v, castType, v)
 		}
 	}
 
@@ -514,9 +551,9 @@ func (e *emitter) emitKernelBody(seqVar, tidVar, offsetExpr string) {
 	}
 	e.w("\n    for (int %s = 0; %s < 256; %s++) {\n", loopVar, loopVar, loopVar)
 	if e.backend == Vulkan {
-		e.w("        if (run_seq(ops, seqLen, uint(%s)) != ((%s * k) & 0xFF)) return;\n", loopVar, loopVar)
+		e.w("        if (run_seq(ops, seqLen, uint(%s)) != ((%s * k)%s)) return;\n", loopVar, loopVar, mask)
 	} else {
-		e.w("        if (run_seq(ops, seqLen, (%s)%s) != (%s)(%s * k)) return;\n", e.u8(), loopVar, e.u8(), loopVar)
+		e.w("        if (run_seq(ops, seqLen, (%s)%s) != (%s)(%s * k)) return;\n", e.u8(), loopVar, castType, loopVar)
 	}
 	e.w("    }\n\n")
 
