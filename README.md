@@ -1,10 +1,24 @@
 # z80-optimizer
 
-A GPU-accelerated superoptimizer for the Zilog Z80 processor.
+A GPU-accelerated superoptimizer for the Zilog Z80 processor. The compiler that **never guesses** — every optimization is provably optimal.
+
+## What's New (v1.0.0 — March 2026) 🎂
+
+- **500 optimal arithmetic sequences**: 254 multiplies (8× faster than shift-and-add) + 246 divisions (2.5× faster than general loop)
+- **83.6M exhaustive register allocations** for ≤6 virtual registers (32MB compressed)
+- **97.7% infeasibility** at 7-15 vregs — proven that Z80 MUST decompose most real functions
+- **15 branchless idioms**: ABS, bool, sign, NOT — all found by GPU exhaustive search
+- **Multi-backend DSL**: one ISA definition → CUDA / Metal / OpenCL / Vulkan kernels
+- **Cross-verified** on 5 platforms, 4 APIs, 3 GPU vendors (NVIDIA + AMD + Apple)
+- **739K peephole rules** (len-2 complete)
+
+📄 **Article**: [The Z80 Compiler That Never Guesses](release/z80_compiler_never_guesses.pdf) (PDF / [EPUB](release/z80_compiler_never_guesses.epub) / [HTML](release/z80_compiler_never_guesses.html))
+
+📖 **Book outline**: [19 chapters](docs/book_outline.md) — from peephole rules to universal computation chains
+
+---
 
 Given a sequence of Z80 instructions, it exhaustively searches for a shorter equivalent sequence that produces **identical register, flag, and memory state** for all possible inputs. No heuristics, no pattern databases — provably correct by construction.
-
-**739K+ peephole optimizations**, **17.4M provably optimal register allocations**, **164 optimal multiply sequences** — all found by exhaustive GPU search. Three GPUs across three machines (NVIDIA CUDA + AMD ROCm). No heuristics — every result is provably correct by construction.
 
 ## Why?
 
@@ -532,8 +546,8 @@ Three GPUs across three machines, running searches in parallel:
 | Machine | GPU | VRAM | API | Use |
 |---------|-----|------|-----|-----|
 | main | 2× RTX 4060 Ti | 16GB each | CUDA | Regalloc tables, peephole search |
-| i5 (ubullama) | RTX 2070 | 8GB | CUDA | Mulopt, divmod search |
-| i3 (macaron) | Radeon RX 580 | 8GB | ROCm/HIP | (setup complete, pending reboot) |
+| secondary | RTX 2070 | 8GB | CUDA | Mulopt, divmod search |
+| AMD node | Radeon RX 580 | 8GB | OpenCL + Vulkan | Cross-vendor verification |
 
 ### Research Documents
 
