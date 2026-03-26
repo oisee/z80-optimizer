@@ -1,0 +1,949 @@
+{
+  "total": 129,
+  "feasible": 3,
+  "infeasible": 126,
+  "results": [
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 576650390625,
+      "feasible": 0
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 38443359375,
+      "feasible": 0
+    },
+    {
+      "_name": "filter_map_forEach",
+      "cost": -2,
+      "timeout": true
+    },
+    {
+      "_name": "filter_map_explicit",
+      "cost": -2,
+      "timeout": true
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 169621,
+      "feasible": 0,
+      "solver": "backtrack"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 1,
+      "feasible": 0,
+      "solver": "backtrack"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 2221,
+      "feasible": 0,
+      "solver": "backtrack"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 17597,
+      "feasible": 0,
+      "solver": "backtrack"
+    },
+    {
+      "_name": "Arena_alloc",
+      "cost": -2,
+      "timeout": true
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 38443359375,
+      "feasible": 0
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 182749869,
+      "feasible": 0,
+      "solver": "backtrack"
+    },
+    {
+      "cost": 46,
+      "assignment": [
+        9,
+        0,
+        9,
+        8,
+        6,
+        9,
+        6
+      ],
+      "searchSpace": 170859375,
+      "feasible": 16728
+    },
+    {
+      "cost": 93,
+      "assignment": [
+        7,
+        8,
+        9,
+        0,
+        1,
+        8,
+        9,
+        6,
+        9,
+        9,
+        9,
+        0
+      ],
+      "searchSpace": 39724164,
+      "feasible": 139872,
+      "solver": "backtrack"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 55221,
+      "feasible": 0,
+      "solver": "backtrack"
+    },
+    {
+      "cost": 43,
+      "assignment": [
+        7,
+        8,
+        9,
+        6,
+        9,
+        9,
+        5
+      ],
+      "searchSpace": 170859375,
+      "feasible": 5952
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    },
+    {
+      "cost": -1,
+      "assignment": [],
+      "searchSpace": 0,
+      "feasible": 0,
+      "error": "parse error"
+    }
+  ]
+}
