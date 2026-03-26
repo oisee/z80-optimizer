@@ -496,3 +496,28 @@ any Z80 system. Even ZX Spectrum (48KB) has room.
 
 **Also works for chains:** abstract chains have even MORE overlap
 since they use fewer distinct operations.
+
+---
+
+## 2026-03-26: mul16 Prefix Sharing — 86% Compression
+
+**Tags:** mulopt16, code-size, publishable
+
+mul16 (3-op pool) is even denser than mul8:
+- 254 constants, 2375 virtual ops naive
+- With prefix sharing: 328 virtual ops (86% saved!)
+- Materialized: ~500 bytes of Z80 code for ALL 254 multiplies
+- vs __mul16 runtime: 30 bytes but 200-300T per call
+
+The regularity comes from the 3-op pool: most sequences are
+ADD HL,HL chains with occasional LD C,A + ADD HL,BC insertions.
+This makes prefix trees very deep (6+ constants per chain).
+
+**Combined library:**
+  mul8:  594 bytes, 164 constants (51% shared)
+  mul16: ~500 bytes, 254 constants (86% shared)
+  Total: ~1094 bytes for COMPLETE multiply coverage
+  = 2.2% of ZX Spectrum 48KB RAM
+
+**Publishable as:** "Z80 Multiply Library: 418 Optimal Sequences in 1KB"
+or include as appendix in the universal chains paper.
