@@ -521,3 +521,37 @@ This makes prefix trees very deep (6+ constants per chain).
 
 **Publishable as:** "Z80 Multiply Library: 418 Optimal Sequences in 1KB"
 or include as appendix in the universal chains paper.
+
+---
+
+## 2026-03-26: Complete 254/254 mul8 via Composition
+
+**Tags:** mulopt, composition, compiler, publishable
+
+**Strategy: 4-tier multiply for ALL 254 constants:**
+
+| Tier | Constants | Avg cost | Method |
+|------|-----------|----------|--------|
+| 1. Direct table | 164 | ~31T | GPU brute-force optimal (len ≤9) |
+| 2. Factor composition | 67 | ~43T | x*K = mul_A(mul_B(x)) where A×B=K |
+| 3. Near-table adjust | 19 | ~47T | x*K = mul_(K±δ)(x) ± δ*x |
+| 4. Double composition | 4 | ~50T | factor + adjust (primes 149,151,167 + 166) |
+
+**Combined: all 254 constants, avg ~35T, 8.1× faster than general.**
+No constant needs the 280T shift-and-add loop.
+
+The 4 hardest: 149, 151, 167 (primes near unsolved range) + 166=2×83.
+Solved via double composition: e.g. x149 = x(3×50) - 1 = 52T.
+
+**For compiler:** cascading lookup:
+```
+if table[k] → emit sequence                    // 164 constants, ~31T
+elif factor_table[k] → emit mul_a + mul_b       // 67 constants, ~43T
+elif near_table[k] → emit mul_adj + add/sub     // 19 constants, ~47T
+else → emit double_composition                  // 4 constants, ~50T
+```
+
+**Key metric for paper:**
+- General shift-and-add: 280T average
+- Our table: 35T average
+- Speedup: **8× for ALL 254 constants, zero fallback**
