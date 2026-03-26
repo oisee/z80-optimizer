@@ -7,6 +7,16 @@ var Z80Arith16 = ISA{
 	InputReg:   "l",  // input loaded into L (and A)
 	OutputReg:  "hl", // result is (H<<8)|L
 	QuickCheck: []uint8{0, 1, 127, 255},
+	Locals: []Var{
+		{Name: "hl", Type: U16},
+		{Name: "bc", Type: U16},
+		{Name: "de", Type: U16},
+		{Name: "r16", Type: U16},
+		{Name: "th", Type: U8},
+		{Name: "tl", Type: U8},
+		{Name: "hbit", Type: U8},
+		{Name: "cc", Type: U8},
+	},
 	State: []Reg{
 		{Name: "a", Type: U8},
 		{Name: "b", Type: U8},

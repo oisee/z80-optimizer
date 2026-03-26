@@ -66,6 +66,19 @@ func (e *emitter) i16() string {
 	}
 }
 
+func (e *emitter) typeStr(t Type) string {
+	switch t {
+	case U8:
+		return e.u8()
+	case U16:
+		return e.u16()
+	case Bool:
+		return e.boolType()
+	default:
+		return e.u8()
+	}
+}
+
 func (e *emitter) u32() string {
 	switch e.backend {
 	case CUDA:
@@ -255,6 +268,10 @@ func (e *emitter) emitExecOp() {
 
 	// Local vars for temporaries used in op bodies
 	e.w("    %s r; %s c; %s bit;\n", e.u16(), e.u16(), e.u8())
+	// Additional locals declared by ISA (for multi-register ops)
+	for _, v := range e.isa.Locals {
+		e.w("    %s %s;\n", e.typeStr(v.Type), v.Name)
+	}
 	e.w("    switch (op) {\n")
 
 	for i, op := range e.isa.Ops {

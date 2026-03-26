@@ -29,11 +29,19 @@ type Op struct {
 	Body string // C fragment executed in switch case. Uses register names directly.
 }
 
+// Var is a temporary variable used in Op.Body fragments.
+// Declared at the top of the exec_op function in generated code.
+type Var struct {
+	Name string
+	Type Type
+}
+
 // ISA defines an instruction set for brute-force search.
 type ISA struct {
 	Name       string   // Identifier (e.g. "z80_mulopt")
 	State      []Reg    // Simulated registers
 	Ops        []Op     // Instruction pool
+	Locals     []Var    // Temp variables used in Op Bodies
 	QuickCheck []uint8  // Test inputs for quick rejection (e.g. {1, 2, 127, 255})
 	InputReg   string   // Register loaded with input value (e.g. "a")
 	OutputReg  string   // Register checked for result (e.g. "a")
