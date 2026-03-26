@@ -183,10 +183,10 @@ func seqNames(seq []MulOp) []string {
 }
 
 // Find optimal sequence for constant K.
-func findOptimal(k uint8, maxLen int) *MulResult {
+func findOptimal(k uint8, minLen, maxLen int) *MulResult {
 	// Try each length, shortest first (BFS by length).
 	// At each length, also track the minimum-cost sequence found.
-	for length := 1; length <= maxLen; length++ {
+	for length := minLen; length <= maxLen; length++ {
 		var bestSeq []MulOp
 		bestCost := 999999
 
@@ -230,14 +230,36 @@ func findOptimal(k uint8, maxLen int) *MulResult {
 
 func main() {
 	maxLen := flag.Int("max-len", 8, "maximum sequence length to search")
+	minLen := flag.Int("min-len", 1, "minimum sequence length (skip shorter)")
 	jsonOut := flag.Bool("json", false, "output as JSON array")
 	singleK := flag.Int("k", 0, "search for single constant (0 = all 2..255)")
+	resume := flag.String("resume", "", "load previous JSON results, skip solved constants")
 	flag.Parse()
+
+	// Load previous results if resuming
+	var prev map[int]*MulResult
+	if *resume != "" {
+		data, err := os.ReadFile(*resume)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Error reading resume file: %v\n", err)
+			os.Exit(1)
+		}
+		var prevResults []*MulResult
+		if err := json.Unmarshal(data, &prevResults); err != nil {
+			fmt.Fprintf(os.Stderr, "Error parsing resume file: %v\n", err)
+			os.Exit(1)
+		}
+		prev = make(map[int]*MulResult, len(prevResults))
+		for _, r := range prevResults {
+			prev[r.K] = r
+		}
+		fmt.Fprintf(os.Stderr, "Resumed %d previous results\n", len(prev))
+	}
 
 	if *singleK > 0 {
 		k := uint8(*singleK)
-		fmt.Fprintf(os.Stderr, "Searching for mul×%d (max length %d, %d ops)...\n", k, *maxLen, NumOps)
-		result := findOptimal(k, *maxLen)
+		fmt.Fprintf(os.Stderr, "Searching for mul×%d (len %d..%d, %d ops)...\n", k, *minLen, *maxLen, NumOps)
+		result := findOptimal(k, *minLen, *maxLen)
 		if result == nil {
 			fmt.Fprintf(os.Stderr, "No sequence found for ×%d within length %d\n", k, *maxLen)
 			os.Exit(1)
@@ -258,19 +280,37 @@ func main() {
 	var mu sync.Mutex
 	var wg sync.WaitGroup
 	solved := 0
+	skipped := 0
+
+	// Pre-fill with previous results
+	if prev != nil {
+		for k, r := range prev {
+			results[k-2] = r
+			solved++
+			skipped++
+		}
+	}
 
 	ch := make(chan int, 254)
 	for k := 2; k <= 255; k++ {
+		if prev != nil {
+			if _, ok := prev[k]; ok {
+				continue // already solved
+			}
+		}
 		ch <- k
 	}
 	close(ch)
+
+	fmt.Fprintf(os.Stderr, "Searching len %d..%d, %d constants to check (%d pre-solved)\n",
+		*minLen, *maxLen, 254-skipped, skipped)
 
 	for i := 0; i < nWorkers; i++ {
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 			for k := range ch {
-				result := findOptimal(uint8(k), *maxLen)
+				result := findOptimal(uint8(k), *minLen, *maxLen)
 				mu.Lock()
 				results[k-2] = result
 				if result != nil {
