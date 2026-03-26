@@ -10,7 +10,7 @@
 // 21-op pool: 16-bit ops + per-byte ops (for Alf-style patterns)
 // 0-8: 16-bit level ops
 // 9-20: per-byte ops (A↔H, A↔L, cross-register arithmetic)
-#define NUM_OPS 21
+#define NUM_OPS 33
 
 __device__ uint16_t run_seq(const uint8_t *ops, int len, uint8_t input) {
     uint8_t a = input, b = 0, c = 0, d = 0, e = 0, h = 0, l = input;
@@ -89,6 +89,31 @@ __device__ uint16_t run_seq(const uint8_t *ops, int len, uint8_t input) {
             a |= l; carry = 0; break;
         case 20: // NEG (8T) — A = -A
             carry = (a != 0) ? 1 : 0; a = (uint8_t)(0 - a); break;
+        // --- Full ALU per-byte (21-32) ---
+        case 21: // ADC A,L (4T)
+            { int cc=carry?1:0; uint16_t r2=a+l+cc; carry=r2>0xFF; a=(uint8_t)r2; } break;
+        case 22: // ADC A,H (4T)
+            { int cc=carry?1:0; uint16_t r2=a+h+cc; carry=r2>0xFF; a=(uint8_t)r2; } break;
+        case 23: // SBC A,L (4T)
+            { int cc=carry?1:0; carry=((int)a-(int)l-cc)<0; a=a-l-(uint8_t)cc; } break;
+        case 24: // SBC A,H (4T)
+            { int cc=carry?1:0; carry=((int)a-(int)h-cc)<0; a=a-h-(uint8_t)cc; } break;
+        case 25: // INC L (4T) — NO CARRY CHANGE!
+            l++; break;
+        case 26: // INC H (4T) — NO CARRY CHANGE!
+            h++; break;
+        case 27: // DEC L (4T) — NO CARRY CHANGE!
+            l--; break;
+        case 28: // DEC H (4T) — NO CARRY CHANGE!
+            h--; break;
+        case 29: // AND L (4T)
+            a &= l; carry = 0; break;
+        case 30: // XOR L (4T)
+            a ^= l; carry = 0; break;
+        case 31: // XOR H (4T)
+            a ^= h; carry = 0; break;
+        case 32: // OR H (4T)
+            a |= h; carry = 0; break;
         }
     }
     return ((uint16_t)h << 8) | l;
@@ -99,14 +124,17 @@ __constant__ uint16_t d_target[256];
 
 __constant__ uint8_t opCost[] = {
     11, 11, 4, 11, 15, 4, 11, 15, 16,  // 16-bit ops (0-8)
-    4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8  // per-byte ops (9-20)
+    4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8,  // per-byte ops (9-20)
+    4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4   // ALU per-byte (21-32)
 };
 
 static const char *opNames[] = {
     "ADD HL,HL", "ADD HL,BC", "LD C,A", "SWAP_HL", "SUB HL,BC",
     "EX DE,HL", "ADD HL,DE", "SUB HL,DE", "SHR_HL",
     "XOR A", "SUB L", "SUB H", "ADD A,L", "ADD A,H",
-    "SBC A,A", "LD L,A", "LD H,A", "LD A,L", "LD A,H", "OR L", "NEG"
+    "SBC A,A", "LD L,A", "LD H,A", "LD A,L", "LD A,H", "OR L", "NEG",
+    "ADC A,L", "ADC A,H", "SBC A,L", "SBC A,H",
+    "INC L", "INC H", "DEC L", "DEC H", "AND L", "XOR L", "XOR H", "OR H"
 };
 
 __global__ void arith_kernel(int seqLen, uint64_t offset, uint64_t count,
@@ -145,6 +173,7 @@ static uint64_t ipow(uint64_t b, int e) { uint64_t r=1; for(int i=0;i<e;i++) r*=
 
 static void gen_target(const char *name, uint16_t *tgt) {
     for (int i = 0; i < 256; i++) {
+        uint8_t l_in = (uint8_t)i;
         uint16_t hl = (uint16_t)i; // initial: H=0, L=input → HL = input
         if (!strcmp(name, "neg"))       tgt[i] = (-hl) & 0xFFFF;
         else if (!strcmp(name, "shr1")) tgt[i] = hl >> 1;
@@ -154,6 +183,35 @@ static void gen_target(const char *name, uint16_t *tgt) {
         else if (!strcmp(name, "x256")) tgt[i] = hl << 8;
         else if (!strcmp(name, "abs"))  tgt[i] = (hl & 0x8000) ? (-hl) & 0xFFFF : hl;
         else if (!strcmp(name, "sqr"))  tgt[i] = (hl * hl) & 0xFFFF;
+        else if (!strcmp(name, "byteswap")) tgt[i] = (l_in << 8) | 0; // H=L, L=0 — same as x256
+        else if (!strcmp(name, "realswap")) { // true swap: H↔L (when H≠0 too)
+            // Input HL: H=0, L=input. Output: H=input, L=0. Same as x256 for 8-bit input.
+            // For true swap we need 16-bit input... skip for now
+            tgt[i] = (hl & 0xFF) << 8;  // same as x256 for 8-bit
+        }
+        else if (!strcmp(name, "zext")) tgt[i] = hl & 0xFF; // zero-extend: HL = (0, input) — identity!
+        else if (!strcmp(name, "sext")) { // sign-extend: if input >= 128, H=0xFF else H=0x00
+            uint8_t inp = hl & 0xFF;
+            tgt[i] = (inp >= 128) ? (0xFF00 | inp) : inp;
+        }
+        else if (!strcmp(name, "clamp127")) { // clamp to 0-127 (clear bit 7)
+            tgt[i] = hl & 0x7F;
+        }
+        else if (!strcmp(name, "hl_eq_0")) { // HL==0 ? 1 : 0 (result in L, H=0)
+            tgt[i] = (hl == 0) ? 1 : 0;
+        }
+        else if (!strcmp(name, "hl_ne_0")) { // HL!=0 ? 1 : 0
+            tgt[i] = (hl != 0) ? 1 : 0;
+        }
+        else if (!strcmp(name, "double_lo")) { // HL = (0, L*2) — double low byte only
+            tgt[i] = ((hl & 0xFF) * 2) & 0xFF;
+        }
+        else if (!strcmp(name, "neg8_in_hl")) { // HL = (0xFF if input>0 else 0, -input)
+            uint8_t inp = hl & 0xFF;
+            uint16_t neg = (-inp) & 0xFF;
+            uint8_t hi = (inp > 0) ? 0xFF : 0;
+            tgt[i] = (hi << 8) | neg;
+        }
         else tgt[i] = hl;
     }
 }
@@ -176,7 +234,7 @@ int main(int argc, char *argv[]) {
     cudaMemcpy(d_best, &dummy, 4, cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
     
-    const char *all[] = {"neg","shr1","shr4","shl4","swap","x256","sqr",NULL};
+    const char *all[] = {"neg","shr1","shr4","shl4","swap","x256","sext","clamp127","hl_ne_0","neg8_in_hl","sqr",NULL};
     
     for (int ii = 0; all[ii]; ii++) {
         if (!runAll && strcmp(idiom, all[ii]) != 0) continue;
