@@ -4,8 +4,9 @@ package gpugen
 // Includes 16-bit level ops + per-byte H/L operations + full ALU.
 var Z80Arith16 = ISA{
 	Name:       "z80_arith16",
-	InputReg:   "l",  // input loaded into L (and A)
-	OutputReg:  "a",  // placeholder, OutputExpr used instead
+	InputReg:   "l",           // input loaded into L
+	InputRegs:  []string{"a", "l"},  // both A and L get input (matches CUDA kernel)
+	OutputReg:  "a",           // placeholder, OutputExpr used instead
 	OutputExpr: "((UINT16)h << 8) | l",
 	OutputType: U16,
 	QuickCheck: []uint8{0, 1, 127, 255},

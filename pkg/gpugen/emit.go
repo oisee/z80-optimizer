@@ -410,8 +410,13 @@ func (e *emitter) emitRunSeq() {
 	e.w(") {\n")
 
 	// Declare state registers
+	// Build set of registers that get loaded with input
+	inputRegs := map[string]bool{e.isa.InputReg: true}
+	for _, r := range e.isa.InputRegs {
+		inputRegs[r] = true
+	}
 	for _, reg := range e.isa.State {
-		if reg.Name == e.isa.InputReg {
+		if inputRegs[reg.Name] {
 			e.w("    %s %s = %s;\n", e.regType(reg.Type), reg.Name, inputParam)
 		} else if reg.Type == Bool {
 			e.w("    %s %s = %s;\n", e.regType(reg.Type), reg.Name, e.boolFalse())
