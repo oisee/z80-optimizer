@@ -442,3 +442,18 @@ With 2 save slots and these 7 ops:
 
 **Publication potential:** "Universal Computation Chains: ISA-Independent 
 Optimal Arithmetic via Exhaustive Search" — standalone paper.
+
+---
+
+## 2026-03-26: GPU Portability — OpenCL wins, Mojo/MLIR overkill
+
+**Tags:** infrastructure, portability
+
+For integer ALU brute-force (no tensors, no ML), GPU portability options:
+- **OpenCL: WINNER** — already working on RX 580, 250 LOC per kernel, works on NVIDIA too
+- Vulkan compute: works everywhere but 200 lines boilerplate per kernel
+- Mojo/MLIR: heavy dependency, GPU via MAX engine, overkill for our case
+- SYCL: Intel-focused, AMD via hipSYCL
+- WGPU: tried before, SIGSEGV bugs in Go bindings
+
+Strategy: CUDA for NVIDIA (fast path) + OpenCL for AMD/fallback. Two files per kernel, 95% shared logic. For abstract chains: pure CPU, no GPU needed.
