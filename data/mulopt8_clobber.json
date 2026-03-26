@@ -1,0 +1,3508 @@
+[
+  {
+    "k": 2,
+    "ops": [
+      "RLA"
+    ],
+    "length": 1,
+    "tstates": 4,
+    "clobber": [
+      "A",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 5
+  },
+  {
+    "k": 3,
+    "ops": [
+      "LD B,A",
+      "ADC A,A",
+      "ADD A,B"
+    ],
+    "length": 3,
+    "tstates": 12,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 4,
+    "ops": [
+      "RLA",
+      "ADD A,A"
+    ],
+    "length": 2,
+    "tstates": 8,
+    "clobber": [
+      "A",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 5
+  },
+  {
+    "k": 5,
+    "ops": [
+      "LD B,A",
+      "ADC A,B",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 4,
+    "tstates": 16,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 6,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B"
+    ],
+    "length": 4,
+    "tstates": 16,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 7,
+    "ops": [
+      "LD B,A",
+      "ADC A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 5,
+    "tstates": 20,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 8,
+    "ops": [
+      "RLA",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 3,
+    "tstates": 12,
+    "clobber": [
+      "A",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 5
+  },
+  {
+    "k": 9,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 5,
+    "tstates": 20,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 10,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 5,
+    "tstates": 20,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 11,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 6,
+    "tstates": 24,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 12,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A"
+    ],
+    "length": 5,
+    "tstates": 20,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 13,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 6,
+    "tstates": 24,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 14,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 6,
+    "tstates": 24,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 15,
+    "ops": [
+      "LD B,A",
+      "ADC A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 6,
+    "tstates": 24,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 16,
+    "ops": [
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 4,
+    "tstates": 16,
+    "clobber": [
+      "A",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 5
+  },
+  {
+    "k": 17,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 6,
+    "tstates": 24,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 18,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 6,
+    "tstates": 24,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 19,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 7,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 20,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A"
+    ],
+    "length": 6,
+    "tstates": 24,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 21,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 7,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 22,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 7,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 23,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 7,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 24,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 6,
+    "tstates": 24,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 25,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 7,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 26,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 7,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 27,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 28,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A"
+    ],
+    "length": 7,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 29,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 30,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 7,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 31,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 7,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 32,
+    "ops": [
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 5,
+    "tstates": 20,
+    "clobber": [
+      "A",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 5
+  },
+  {
+    "k": 33,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 7,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 34,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 7,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 35,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 36,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A"
+    ],
+    "length": 7,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 37,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 38,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 39,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 40,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 7,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 41,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 42,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 43,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 44,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 45,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,B",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 46,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 47,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 48,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 7,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 49,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 50,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 51,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,B",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 52,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 53,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 54,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 55,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 56,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 57,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 58,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 59,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 60,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 61,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 62,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 63,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 64,
+    "ops": [
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 6,
+    "tstates": 24,
+    "clobber": [
+      "A",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 5
+  },
+  {
+    "k": 65,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 66,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 67,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 68,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 69,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 70,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 71,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 72,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 73,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 74,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 76,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 78,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 79,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 80,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 81,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 82,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 84,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 88,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 92,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 94,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 95,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 96,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 97,
+    "ops": [
+      "LD B,A",
+      "RLA",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 98,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 100,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 104,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 112,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 120,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 124,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 125,
+    "ops": [
+      "LD B,A",
+      "RRCA",
+      "SBC A,A",
+      "NEG",
+      "RRA",
+      "SUB B",
+      "SUB B",
+      "SUB B"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 126,
+    "ops": [
+      "RRCA",
+      "ADD A,A",
+      "LD B,A",
+      "SBC A,A",
+      "SRL A",
+      "SBC A,B",
+      "SUB B"
+    ],
+    "length": 7,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 127,
+    "ops": [
+      "RRCA",
+      "LD B,A",
+      "ADC A,B",
+      "NEG",
+      "RRA",
+      "SUB B"
+    ],
+    "length": 6,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 128,
+    "ops": [
+      "RRCA",
+      "SBC A,A",
+      "ADC A,B",
+      "RRA"
+    ],
+    "length": 4,
+    "tstates": 16,
+    "clobber": [
+      "A",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 5
+  },
+  {
+    "k": 129,
+    "ops": [
+      "RRA",
+      "LD B,A",
+      "RLA",
+      "RRCA",
+      "ADC A,B"
+    ],
+    "length": 5,
+    "tstates": 20,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 130,
+    "ops": [
+      "LD B,A",
+      "RRCA",
+      "SBC A,A",
+      "SRL A",
+      "ADC A,B",
+      "ADD A,B"
+    ],
+    "length": 6,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 131,
+    "ops": [
+      "LD B,A",
+      "RRCA",
+      "SBC A,A",
+      "SRL A",
+      "ADC A,B",
+      "ADD A,B",
+      "ADD A,B"
+    ],
+    "length": 7,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 132,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "RRCA",
+      "RRCA",
+      "SBC A,A",
+      "SRL A",
+      "ADC A,B",
+      "ADD A,B"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 133,
+    "ops": [
+      "RRA",
+      "LD B,A",
+      "RLA",
+      "RRCA",
+      "ADC A,B",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 134,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "RRCA",
+      "RRCA",
+      "SBC A,A",
+      "SRL A",
+      "ADC A,B",
+      "ADD A,B",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 136,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 144,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 160,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 176,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 184,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 188,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 190,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 191,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 192,
+    "ops": [
+      "NEG",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 7,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 5
+  },
+  {
+    "k": 193,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 194,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 196,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 200,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 204,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 206,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 207,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 208,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 209,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 210,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 212,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 214,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 215,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 216,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 217,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 218,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 219,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 220,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 221,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 222,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 223,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 224,
+    "ops": [
+      "NEG",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 6,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 5
+  },
+  {
+    "k": 225,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "SUB B"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 226,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 227,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 228,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "SUB B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 229,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 9,
+    "tstates": 40,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 230,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 231,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 232,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 7,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 233,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "SUB B"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 234,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 235,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 236,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 7,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 237,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 8,
+    "tstates": 36,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 238,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A"
+    ],
+    "length": 7,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 239,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 7,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 240,
+    "ops": [
+      "RLA",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "NEG"
+    ],
+    "length": 5,
+    "tstates": 24,
+    "clobber": [
+      "A",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 5
+  },
+  {
+    "k": 241,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 7,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 242,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A"
+    ],
+    "length": 7,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 243,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 7,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 244,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 6,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 245,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 7,
+    "tstates": 32,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 246,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A"
+    ],
+    "length": 6,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 247,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 6,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 248,
+    "ops": [
+      "RLA",
+      "NEG",
+      "ADD A,A",
+      "ADD A,A"
+    ],
+    "length": 4,
+    "tstates": 20,
+    "clobber": [
+      "A",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 5
+  },
+  {
+    "k": 249,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 6,
+    "tstates": 28,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 250,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "NEG",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 5,
+    "tstates": 24,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 251,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 5,
+    "tstates": 24,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 252,
+    "ops": [
+      "RLA",
+      "NEG",
+      "ADD A,A"
+    ],
+    "length": 3,
+    "tstates": 16,
+    "clobber": [
+      "A",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 5
+  },
+  {
+    "k": 253,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B"
+    ],
+    "length": 4,
+    "tstates": 20,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 254,
+    "ops": [
+      "RLA",
+      "NEG"
+    ],
+    "length": 2,
+    "tstates": 12,
+    "clobber": [
+      "A",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 5
+  },
+  {
+    "k": 255,
+    "ops": [
+      "NEG"
+    ],
+    "length": 1,
+    "tstates": 8,
+    "clobber": [
+      "A",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 5
+  }
+]
