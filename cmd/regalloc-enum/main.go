@@ -58,14 +58,91 @@ type FuncDesc struct {
 	ParamConstraints []ParamConstraint `json:"paramConstraints"`
 }
 
+// Compute exact treewidth via minimum elimination ordering.
+// For nv≤6, tries all nv! permutations (max 720). Returns exact treewidth.
+func treewidth(nv int, edges [][]int) int {
+	adj := make([]map[int]bool, nv)
+	for i := range adj {
+		adj[i] = make(map[int]bool)
+	}
+	for _, e := range edges {
+		adj[e[0]][e[1]] = true
+		adj[e[1]][e[0]] = true
+	}
+
+	perm := make([]int, nv)
+	for i := range perm {
+		perm[i] = i
+	}
+
+	bestTW := nv - 1 // upper bound
+
+	// Try all permutations
+	var tryAll func(int)
+	tryAll = func(k int) {
+		if k == nv {
+			// Evaluate this elimination ordering
+			localAdj := make([]map[int]bool, nv)
+			for i := range localAdj {
+				localAdj[i] = make(map[int]bool)
+				for v := range adj[i] {
+					localAdj[i][v] = true
+				}
+			}
+			tw := 0
+			for _, v := range perm {
+				deg := len(localAdj[v])
+				if deg > tw {
+					tw = deg
+				}
+				if tw >= bestTW {
+					return // can't improve
+				}
+				// Eliminate: connect all neighbors
+				nbrs := make([]int, 0, deg)
+				for n := range localAdj[v] {
+					nbrs = append(nbrs, n)
+				}
+				for i := 0; i < len(nbrs); i++ {
+					for j := i + 1; j < len(nbrs); j++ {
+						localAdj[nbrs[i]][nbrs[j]] = true
+						localAdj[nbrs[j]][nbrs[i]] = true
+					}
+				}
+				for _, n := range nbrs {
+					delete(localAdj[n], v)
+				}
+				localAdj[v] = nil
+			}
+			if tw < bestTW {
+				bestTW = tw
+			}
+			return
+		}
+		for i := k; i < nv; i++ {
+			perm[k], perm[i] = perm[i], perm[k]
+			tryAll(k + 1)
+			perm[k], perm[i] = perm[i], perm[k]
+		}
+	}
+	tryAll(0)
+	return bestTW
+}
+
 func main() {
 	maxVregs := flag.Int("max-vregs", 5, "max vregs to enumerate (2-6)")
+	minTW := flag.Int("min-treewidth", 0, "only emit shapes with treewidth >= this (0=all)")
+	onlyNV := flag.Int("only-nv", 0, "only emit shapes with this exact nVregs (0=all)")
 	flag.Parse()
 
 	enc := json.NewEncoder(os.Stdout)
 	total := 0
 
+	filtered := 0
 	for nv := 2; nv <= *maxVregs; nv++ {
+		if *onlyNV > 0 && nv != *onlyNV {
+			continue
+		}
 		nEdges := nv * (nv - 1) / 2
 		nWidthCombos := 1 << nv
 
@@ -154,6 +231,16 @@ func main() {
 						}
 					}
 
+					// Treewidth filter: skip shapes below threshold
+					if *minTW > 0 {
+						tw := treewidth(nv, interf)
+						if tw < *minTW {
+							filtered++
+							total++
+							continue
+						}
+					}
+
 					fd := FuncDesc{
 						NVregs:           nv,
 						Widths:           widths,
@@ -169,5 +256,5 @@ func main() {
 		}
 		fmt.Fprintf(os.Stderr, "  %d vregs: %d total so far\n", nv, total)
 	}
-	fmt.Fprintf(os.Stderr, "Total: %d function patterns\n", total)
+	fmt.Fprintf(os.Stderr, "Total: %d patterns (%d emitted, %d filtered by treewidth)\n", total, total-filtered, filtered)
 }
