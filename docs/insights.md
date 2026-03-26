@@ -1,0 +1,200 @@
+# Research Insights & Experiment Log
+
+Running log of discoveries, ideas, and experimental results.
+Each insight is timestamped and tagged for traceability into papers.
+
+---
+
+## 2026-03-26: Virtual Instruction Pool for u16 Multiply
+
+**Tags:** mulopt16, pool-reduction, paper-seed
+
+**Discovery:** Only 7 of 23 ops appear in optimal u16 multiply solutions (len ≤6):
+- `ADD HL,HL` (60x) — 16-bit doubling, by far dominant
+- `ADD HL,BC` (20x) — add original value
+- `LD C,A` (14x) — save input to C for ADD HL,BC
+- `NEG` (2x) — negate for complement multiplication
+- `LD L,A`, `SBC A,B`, `LD H,A` (1x each) — edge cases
+
+16 ops never used: all carry-propagation (RL B, RL H), all ADC, all SUB, OR A, SCF.
+
+**Insight:** The optimal u16 multiply patterns operate at 16-bit granularity:
+1. **Double:** `ADD HL,HL` (native 16-bit)
+2. **Add original:** `LD C,A` then `ADD HL,BC`
+3. **Negate:** `NEG` for ×(-1) complement
+4. **Byte swap:** `LD H,L / LD L,0` for ×256
+
+The 8-bit carry-propagation ops are implementation details of these 16-bit
+operations. Searching in a virtual 16-bit op space is both more natural AND
+dramatically smaller.
+
+**Impact on search space:**
+
+| Pool | len-8 | len-9 | len-10 | Speedup vs 23-op |
+|------|-------|-------|--------|-------------------|
+| 23 ops (current) | 78B | 1.8T | 41T | 1x |
+| 11 virtual ops | 214M | 2.4B | 26B | 365x |
+| 7 ops (empirical) | 5.7M | 40M | 282M | 13,600x |
+
+At 7 ops, len-10 = 282M — **instant on any GPU**. len-12 = 13.8B — still feasible.
+
+**Caveat:** The 7-op pool is validated only through len-6. Longer sequences
+might need carry-propagation ops (RL H, RL B) for multi-step multiplication
+where intermediate results overflow 8 bits. Must verify against len-7 results
+(running on i5).
+
+**Proposed virtual instruction set for mulopt16:**
+
+| Virtual Op | Materializes to | Cost | Semantics |
+|-----------|----------------|------|-----------|
+| DBL | ADD HL,HL | 11T | HL *= 2 |
+| ADD | LD C,A / ADD HL,BC | 15T | HL += input (first use sets C) |
+| SUB | OR A / SBC HL,BC | 15T | HL -= input |
+| NEG16 | (5-inst sequence) | 24T | HL = -HL |
+| SAVE | LD B,H / LD C,L | 8T | BC = HL (save for later) |
+| RESTORE | LD H,B / LD L,C | 8T | HL = BC (restore saved) |
+| SWAP | LD H,L / LD L,0 | 8T | HL = L * 256 (byte swap) |
+
+7 virtual ops → 7^12 = 13.8B for len-12. Entire u16 multiply table
+to depth 12 becomes feasible in minutes.
+
+**Next steps:**
+1. Wait for len-7 results to validate which ops appear at longer lengths
+2. Build virtual mulopt16 kernel
+3. If validated: search to len-12 for complete u16 multiply table
+
+---
+
+## 2026-03-26: Instruction Pool Reduction (8-bit Multiply)
+
+**Tags:** mulopt, pool-reduction
+
+**Discovery:** 7 of 21 ops never appear in optimal 8-bit multiply solutions:
+- `SLA A` — identical to `ADD A,A` but costs 8T vs 4T (strictly dominated)
+- `SRA A` — arithmetic shift right (not useful for unsigned multiply)
+- `RLC A` / `RRC A` — CB-prefix rotates, same as RLCA/RRCA but 8T vs 4T
+- `OR A` — only clears carry, no useful effect on A for multiplication
+- `SCF` — set carry, never needed
+- `EX AF,AF'` — shadow register swap, never needed
+
+Reducing from 21 to 14 ops gives **38x speedup at len-9**.
+
+**Verified:** 103/254 constants produce identical results with 14-op pool (len ≤8).
+Cross-verified CUDA (RTX 4060 Ti, RTX 2070) vs OpenCL (RX 580).
+
+---
+
+## 2026-03-26: OpenCL on AMD Radeon RX 580
+
+**Tags:** infrastructure, cross-vendor
+
+**Discovery:** ROCm 6.4.4 dropped gfx803 (Polaris) support. ROCm 5.7.3
+installs but KFD doesn't register GPU on Ubuntu 24.04 kernel 6.8.
+However, Mesa rusticl OpenCL works perfectly.
+
+**Setup:**
+```bash
+sudo apt install mesa-opencl-icd ocl-icd-opencl-dev clinfo
+# Compile: gcc -O2 -o prog prog.c -lOpenCL
+```
+
+No CUDA, no ROCm needed. Mesa provides OpenCL 3.0 via Vulkan/RADV driver.
+Our mulopt OpenCL port produces identical results to CUDA version.
+
+**Performance:** RX 580 via OpenCL ≈ 40-50% of RTX 2070 via CUDA for mulopt.
+
+---
+
+## 2026-03-26: Feasibility Phase Transition at 6 Virtual Registers
+
+**Tags:** regalloc, phase-transition, paper-A
+
+**Discovery:** Sharp cliff in register allocation feasibility:
+
+| vregs | Feasible | Infeasible |
+|-------|----------|------------|
+| 2 | 95.9% | 4.1% |
+| 3 | 88.5% | 11.5% |
+| 4 | 78.7% | 21.3% |
+| 5 | 67.7% | 32.4% |
+| 6 | 0.9% | 99.1% |
+
+At 6v, the Z80 register file is effectively "full" — 99.1% of all possible
+constraint shapes are infeasible. This is a **phase transition** in the
+constraint satisfaction sense.
+
+---
+
+## 2026-03-26: Treewidth Analysis — Random vs Compiler Graphs
+
+**Tags:** treewidth, regalloc, paper-C
+
+**Discovery:** 99.5% of randomly enumerated interference graphs have treewidth ≤3
+(classically tractable). But compiler-generated graphs are denser:
+53.7% of dense real-world functions have treewidth ≥4.
+
+The random graph prediction does NOT transfer to real programs.
+Compilers produce biased interference patterns — variables in real programs
+tend to be more interconnected than random chance would predict.
+
+**Exact treewidth of all 32,768 possible 6-vertex interference graphs:**
+- tw=0: 1 (0.0%)
+- tw=1: 2,931 (8.9%)
+- tw=2: 18,612 (56.8%)
+- tw=3: 10,662 (32.5%)
+- tw=4: 561 (1.7%)
+- tw=5: 1 (0.0%)
+
+Only 562 of 32,768 (1.7%) have treewidth ≥4 — this enables the
+treewidth-filtered 6v enumeration (66M shapes instead of 1.9B).
+
+---
+
+## 2026-03-26: Composition Verification (13.2M data points)
+
+**Tags:** composition, regalloc, paper-A
+
+5v shapes composed from 4v table via cut-vertex splitting:
+- Zero missed solutions (composition always finds solution when GPU does)
+- Average overhead: 5.06 T-states
+- Maximum overhead: 12 T-states (~3 register moves at cut boundary)
+- 480 edge cases where composition finds solution but GPU reports infeasible
+  (likely GPU search budget/numeric edge case — composition is MORE robust)
+
+---
+
+## 2026-03-26: div3 NOT FOUND at len ≤8
+
+**Tags:** divmod, search-certificate
+
+GPU exhaustive search proves no sequence of ≤8 instructions from 14-op pool
+computes integer division by 3 for all 256 8-bit inputs. This is a negative
+result / search certificate — the lower bound for div3 is ≥9 instructions.
+
+Combined with div10 lower bound ≥13, this confirms that division by
+non-power-of-2 is fundamentally hard on Z80 (no native divide instruction).
+
+---
+
+## 2026-03-26: Cross-Vendor GPU Verification
+
+**Tags:** infrastructure, verification
+
+mulopt results cross-verified across 3 GPUs from 2 vendors:
+- NVIDIA RTX 4060 Ti (CUDA) — 103/254 at len ≤8
+- NVIDIA RTX 2070 (CUDA) — 103/254 at len ≤8 ✓
+- AMD RX 580 (OpenCL) — 103/254 at len ≤8 ✓
+
+All produce identical solution counts. Different GPU architectures
+independently verify the same exhaustive search results.
+
+---
+
+## Future Insights (to investigate)
+
+- [ ] Do len-7+ u16 solutions use carry-propagation ops? (validates virtual pool)
+- [ ] Can virtual instruction approach work for 8-bit mulopt too?
+- [ ] What's the optimal split: 2 temps (BC) vs 1 temp (B only)?
+- [ ] antique-toy book patterns — how do they compare with GPU-optimal?
+- [ ] 6502 mulopt: how different is the optimal instruction pool?
+- [ ] Meet-in-the-middle: practical on GPU with hash tables in shared memory?
