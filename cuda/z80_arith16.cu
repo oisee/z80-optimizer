@@ -7,10 +7,10 @@
 #include <cstdlib>
 #include <cstring>
 
-// 9-op pool: core + virtual + EX DE,HL + ADD HL,DE
-// 0=ADD_HL_HL, 1=ADD_HL_BC, 2=LD_C_A, 3=SWAP_HL, 4=SUB_HL_BC
-// 5=EX_DE_HL, 6=ADD_HL_DE, 7=SUB_HL_DE, 8=SRL_H_RR_L (16-bit shift right!)
-#define NUM_OPS 9
+// 21-op pool: 16-bit ops + per-byte ops (for Alf-style patterns)
+// 0-8: 16-bit level ops
+// 9-20: per-byte ops (A↔H, A↔L, cross-register arithmetic)
+#define NUM_OPS 21
 
 __device__ uint16_t run_seq(const uint8_t *ops, int len, uint8_t input) {
     uint8_t a = input, b = 0, c = 0, d = 0, e = 0, h = 0, l = input;
@@ -64,6 +64,31 @@ __device__ uint16_t run_seq(const uint8_t *ops, int len, uint8_t input) {
               l = (l >> 1) | (hbit << 7);
               carry = lbit; }
             break;
+        // --- Per-byte ops (9-20) ---
+        case 9:  // XOR A (4T) — A=0, carry=0
+            a = 0; carry = 0; break;
+        case 10: // SUB L (4T) — A = A - L
+            carry = (a < l) ? 1 : 0; a = a - l; break;
+        case 11: // SUB H (4T) — A = A - H
+            carry = (a < h) ? 1 : 0; a = a - h; break;
+        case 12: // ADD A,L (4T)
+            { uint16_t r2 = (uint16_t)a + l; carry = r2 > 0xFF; a = (uint8_t)r2; } break;
+        case 13: // ADD A,H (4T)
+            { uint16_t r2 = (uint16_t)a + h; carry = r2 > 0xFF; a = (uint8_t)r2; } break;
+        case 14: // SBC A,A (4T) — A = -carry (0xFF if carry, 0x00 if not)
+            { int cc = carry; carry = cc ? 1 : 0; a = cc ? 0xFF : 0x00; } break;
+        case 15: // LD L,A (4T)
+            l = a; break;
+        case 16: // LD H,A (4T)
+            h = a; break;
+        case 17: // LD A,L (4T)
+            a = l; break;
+        case 18: // LD A,H (4T)
+            a = h; break;
+        case 19: // OR L (4T) — A |= L
+            a |= l; carry = 0; break;
+        case 20: // NEG (8T) — A = -A
+            carry = (a != 0) ? 1 : 0; a = (uint8_t)(0 - a); break;
         }
     }
     return ((uint16_t)h << 8) | l;
@@ -72,11 +97,16 @@ __device__ uint16_t run_seq(const uint8_t *ops, int len, uint8_t input) {
 // Target function table
 __constant__ uint16_t d_target[256];
 
-__constant__ uint8_t opCost[] = {11, 11, 4, 11, 15, 4, 11, 15, 16};
+__constant__ uint8_t opCost[] = {
+    11, 11, 4, 11, 15, 4, 11, 15, 16,  // 16-bit ops (0-8)
+    4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 8  // per-byte ops (9-20)
+};
 
 static const char *opNames[] = {
     "ADD HL,HL", "ADD HL,BC", "LD C,A", "SWAP_HL", "SUB HL,BC",
-    "EX DE,HL", "ADD HL,DE", "SUB HL,DE", "SHR_HL"
+    "EX DE,HL", "ADD HL,DE", "SUB HL,DE", "SHR_HL",
+    "XOR A", "SUB L", "SUB H", "ADD A,L", "ADD A,H",
+    "SBC A,A", "LD L,A", "LD H,A", "LD A,L", "LD A,H", "OR L", "NEG"
 };
 
 __global__ void arith_kernel(int seqLen, uint64_t offset, uint64_t count,
