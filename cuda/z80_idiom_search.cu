@@ -8,7 +8,7 @@
 #include <cstdlib>
 #include <cstring>
 
-#define NUM_OPS 14
+#define NUM_OPS 33
 
 // Same executor as mulopt_fast
 __device__ void exec_op(uint8_t op, uint8_t &a, uint8_t &b, bool &carry) {
@@ -28,6 +28,26 @@ __device__ void exec_op(uint8_t op, uint8_t &a, uint8_t &b, bool &carry) {
     case 11: carry=(a&0x80)!=0; a=(a<<1)|(a>>7); break;
     case 12: carry=a&1; a=(a>>1)|(a<<7); break;
     case 13: carry=(a!=0); a=(uint8_t)(0-a); break;
+    // Per-byte H/L ops (14-20) — using B as H-proxy, carry tricks
+    case 14: /* XOR A */ a=0; carry=false; break;
+    case 15: /* SRL A */ carry=a&1; a=a>>1; break;
+    case 16: /* RLA */ { uint8_t bit=carry?1:0; carry=(a&0x80)!=0; a=(a<<1)|bit; } break;
+    case 17: /* RRA */ { uint8_t bit=carry?0x80:0; carry=a&1; a=(a>>1)|bit; } break;
+    case 18: /* SBC A,A */ { int cc=carry?1:0; carry=cc>0; a=cc?0xFF:0x00; } break;
+    case 19: /* AND B */ a&=b; carry=false; break;
+    case 20: /* OR B */ a|=b; carry=false; break;
+    case 21: /* XOR B */ a^=b; carry=false; break;
+    case 22: /* CP B (sets carry) */ carry=(a<b); break;
+    case 23: /* ADC A,B */ { int cc=carry?1:0; uint16_t r=a+b+cc; carry=r>0xFF; a=(uint8_t)r; } break;
+    case 24: /* ADC A,A */ { int cc=carry?1:0; uint16_t r=a+a+cc; carry=r>0xFF; a=(uint8_t)r; } break;
+    case 25: /* INC A */ a++; break;  // no carry change!
+    case 26: /* DEC A */ a--; break;  // no carry change!
+    case 27: /* AND imm 0x0F */ a&=0x0F; carry=false; break;
+    case 28: /* AND imm 0xF0 */ a&=0xF0; carry=false; break;
+    case 29: /* AND imm 0x7F */ a&=0x7F; carry=false; break;
+    case 30: /* AND imm 0x1F */ a&=0x1F; carry=false; break;
+    case 31: /* OR imm 0x01 */ a|=0x01; carry=false; break;
+    case 32: /* RLCA */ carry=(a&0x80)!=0; a=(a<<1)|(a>>7); break;
     }
 }
 
@@ -41,7 +61,7 @@ __device__ uint8_t run_seq(const uint8_t *ops, int len, uint8_t input) {
 // Target function table (256 entries: target[input] = expected output)
 __constant__ uint8_t d_target[256];
 
-__constant__ uint8_t opCost[NUM_OPS] = {4,4,4,4,4,4,4,4,8,4,4,4,4,8};
+__constant__ uint8_t opCost[NUM_OPS] = {4,4,4,4,4,4,4,4,8,4,4,4,4,8, 4,8,4,4,4,4,4,4,4,4,4,4,4,7,7,7,7,7,4};
 
 __global__ void idiom_kernel(int seqLen, uint64_t offset, uint64_t count,
                               uint32_t *bestScore, uint64_t *bestIdx) {
@@ -77,7 +97,10 @@ __global__ void idiom_kernel(int seqLen, uint64_t offset, uint64_t count,
 
 static const char *opNames[] = {
     "ADD A,A","ADD A,B","SUB B","LD B,A","ADC A,B","ADC A,A",
-    "SBC A,B","SBC A,A","SRL A","RLA","RRA","RLCA","RRCA","NEG"
+    "SBC A,B","SBC A,A","SRL A","RLA","RRA","RLCA","RRCA","NEG",
+    "XOR A","SRL A2","RLA2","RRA2","SBC A,A2","AND B","OR B","XOR B",
+    "CP B","ADC A,B2","ADC A,A2","INC A","DEC A","AND 0x0F","AND 0xF0",
+    "AND 0x7F","AND 0x1F","OR 0x01","RLCA2"
 };
 
 static uint64_t ipow(uint64_t b, int e) { uint64_t r=1; for(int i=0;i<e;i++) r*=b; return r; }
@@ -108,6 +131,14 @@ static void gen_target(const char *name, uint8_t *tgt) {
         }
         else if (!strcmp(name, "toupper")) tgt[i] = (a >= 0x61 && a <= 0x7A) ? a - 32 : a;
         else if (!strcmp(name, "tolower")) tgt[i] = (a >= 0x41 && a <= 0x5A) ? a + 32 : a;
+        else if (!strncmp(name, "div", 3)) {
+            int k = atoi(name + 3);
+            tgt[i] = (k > 0) ? a / k : 0;
+        }
+        else if (!strncmp(name, "mod", 3)) {
+            int k = atoi(name + 3);
+            tgt[i] = (k > 0) ? a % k : 0;
+        }
         else tgt[i] = a; // identity
     }
 }
@@ -131,7 +162,7 @@ int main(int argc, char *argv[]) {
     cudaMemcpy(d_best, &dummy, 4, cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
     
-    const char *all_idioms[] = {"abs","sign","bool","not","nibswap","bitrev","clz","popcnt","toupper","tolower",NULL};
+    const char *all_idioms[] = {"bool","sign","nibswap","abs","not","div3","div5","div7","div10","mod3","mod5","mod10",NULL};
     
     for (int ii = 0; all_idioms[ii]; ii++) {
         if (!runAll && strcmp(idiom, all_idioms[ii]) != 0) continue;
