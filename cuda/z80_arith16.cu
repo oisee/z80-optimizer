@@ -1,0 +1,206 @@
+// z80_arith16.cu — GPU brute-force 16-bit arithmetic idioms for Z80
+// Uses mulopt16_mini's 8-op pool. Target: HL = f(input) for all 256 8-bit inputs.
+// Build: nvcc -O3 -o z80_arith16 z80_arith16.cu
+
+#include <cstdint>
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+// 9-op pool: core + virtual + EX DE,HL + ADD HL,DE
+// 0=ADD_HL_HL, 1=ADD_HL_BC, 2=LD_C_A, 3=SWAP_HL, 4=SUB_HL_BC
+// 5=EX_DE_HL, 6=ADD_HL_DE, 7=SUB_HL_DE, 8=SRL_H_RR_L (16-bit shift right!)
+#define NUM_OPS 9
+
+__device__ uint16_t run_seq(const uint8_t *ops, int len, uint8_t input) {
+    uint8_t a = input, b = 0, c = 0, d = 0, e = 0, h = 0, l = input;
+    int carry = 0;
+    
+    for (int i = 0; i < len; i++) {
+        uint16_t hl, bc, de, r;
+        switch (ops[i]) {
+        case 0: // ADD HL,HL (11T)
+            hl = ((uint16_t)h << 8) | l;
+            r = hl + hl;
+            h = (uint8_t)(r >> 8); l = (uint8_t)r;
+            break;
+        case 1: // ADD HL,BC (11T)
+            hl = ((uint16_t)h << 8) | l;
+            bc = ((uint16_t)b << 8) | c;
+            r = hl + bc;
+            h = (uint8_t)(r >> 8); l = (uint8_t)r;
+            break;
+        case 2: // LD C,A (4T)
+            c = a;
+            break;
+        case 3: // SWAP_HL: H=L, L=0 (11T)
+            h = l; l = 0;
+            break;
+        case 4: // SUB HL,BC (15T)
+            hl = ((uint16_t)h << 8) | l;
+            bc = ((uint16_t)b << 8) | c;
+            hl = hl - bc;
+            h = (uint8_t)(hl >> 8); l = (uint8_t)hl;
+            break;
+        case 5: // EX DE,HL (4T)
+            { uint8_t th=h, tl=l; h=d; l=e; d=th; e=tl; }
+            break;
+        case 6: // ADD HL,DE (11T)
+            hl = ((uint16_t)h << 8) | l;
+            de = ((uint16_t)d << 8) | e;
+            r = hl + de;
+            h = (uint8_t)(r >> 8); l = (uint8_t)r;
+            break;
+        case 7: // SUB HL,DE (15T)
+            hl = ((uint16_t)h << 8) | l;
+            de = ((uint16_t)d << 8) | e;
+            hl = hl - de;
+            h = (uint8_t)(hl >> 8); l = (uint8_t)hl;
+            break;
+        case 8: // SRL H / RR L = 16-bit shift right (16T)
+            { uint8_t hbit = h & 1;
+              h = h >> 1;
+              uint8_t lbit = l & 1;
+              l = (l >> 1) | (hbit << 7);
+              carry = lbit; }
+            break;
+        }
+    }
+    return ((uint16_t)h << 8) | l;
+}
+
+// Target function table
+__constant__ uint16_t d_target[256];
+
+__constant__ uint8_t opCost[] = {11, 11, 4, 11, 15, 4, 11, 15, 16};
+
+static const char *opNames[] = {
+    "ADD HL,HL", "ADD HL,BC", "LD C,A", "SWAP_HL", "SUB HL,BC",
+    "EX DE,HL", "ADD HL,DE", "SUB HL,DE", "SHR_HL"
+};
+
+__global__ void arith_kernel(int seqLen, uint64_t offset, uint64_t count,
+                              uint32_t *bestScore, uint64_t *bestIdx) {
+    uint64_t tid = blockIdx.x * (uint64_t)blockDim.x + threadIdx.x;
+    if (tid >= count) return;
+    
+    uint64_t seqIdx = offset + tid;
+    uint8_t ops[20];
+    uint64_t tmp = seqIdx;
+    for (int i = seqLen - 1; i >= 0; i--) {
+        ops[i] = (uint8_t)(tmp % NUM_OPS);
+        tmp /= NUM_OPS;
+    }
+    
+    // QuickCheck
+    if (run_seq(ops, seqLen, 0) != d_target[0]) return;
+    if (run_seq(ops, seqLen, 1) != d_target[1]) return;
+    if (run_seq(ops, seqLen, 127) != d_target[127]) return;
+    if (run_seq(ops, seqLen, 255) != d_target[255]) return;
+    
+    // Full verify
+    for (int i = 0; i < 256; i++) {
+        if (run_seq(ops, seqLen, (uint8_t)i) != d_target[i]) return;
+    }
+    
+    uint16_t cost = 0;
+    for (int i = 0; i < seqLen; i++) cost += opCost[ops[i]];
+    uint32_t score = ((uint32_t)seqLen << 16) | cost;
+    
+    uint32_t old = atomicMin(bestScore, score);
+    if (score <= old) atomicExch((unsigned long long*)bestIdx, (unsigned long long)seqIdx);
+}
+
+static uint64_t ipow(uint64_t b, int e) { uint64_t r=1; for(int i=0;i<e;i++) r*=b; return r; }
+
+static void gen_target(const char *name, uint16_t *tgt) {
+    for (int i = 0; i < 256; i++) {
+        uint16_t hl = (uint16_t)i; // initial: H=0, L=input → HL = input
+        if (!strcmp(name, "neg"))       tgt[i] = (-hl) & 0xFFFF;
+        else if (!strcmp(name, "shr1")) tgt[i] = hl >> 1;
+        else if (!strcmp(name, "shr4")) tgt[i] = hl >> 4;
+        else if (!strcmp(name, "shl4")) tgt[i] = (hl << 4) & 0xFFFF;
+        else if (!strcmp(name, "swap")) tgt[i] = ((hl & 0xFF) << 8) | ((hl >> 8) & 0xFF);
+        else if (!strcmp(name, "x256")) tgt[i] = hl << 8;
+        else if (!strcmp(name, "abs"))  tgt[i] = (hl & 0x8000) ? (-hl) & 0xFFFF : hl;
+        else if (!strcmp(name, "sqr"))  tgt[i] = (hl * hl) & 0xFFFF;
+        else tgt[i] = hl;
+    }
+}
+
+int main(int argc, char *argv[]) {
+    int maxLen = 12;
+    const char *idiom = "neg";
+    int runAll = 0;
+    
+    for (int i = 1; i < argc; i++) {
+        if (!strcmp(argv[i], "--idiom") && i+1 < argc) idiom = argv[++i];
+        else if (!strcmp(argv[i], "--max-len") && i+1 < argc) maxLen = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--all")) runAll = 1;
+    }
+    
+    cudaSetDeviceFlags(cudaDeviceScheduleBlockingSync);
+    uint32_t *d_best; uint64_t *d_idx;
+    cudaMalloc(&d_best, 4); cudaMalloc(&d_idx, 8);
+    uint32_t dummy = 0;
+    cudaMemcpy(d_best, &dummy, 4, cudaMemcpyHostToDevice);
+    cudaDeviceSynchronize();
+    
+    const char *all[] = {"neg","shr1","shr4","shl4","swap","x256","sqr",NULL};
+    
+    for (int ii = 0; all[ii]; ii++) {
+        if (!runAll && strcmp(idiom, all[ii]) != 0) continue;
+        
+        const char *name = all[ii];
+        uint16_t tgt[256];
+        gen_target(name, tgt);
+        cudaMemcpyToSymbol(d_target, tgt, 512);
+        
+        fprintf(stderr, "Searching: %s (max-len %d, %d ops)\n", name, maxLen, NUM_OPS);
+        
+        uint32_t initScore = 0xFFFFFFFF;
+        uint64_t initIdx = 0;
+        int found = 0;
+        
+        for (int len = 1; len <= maxLen; len++) {
+            uint64_t total = ipow(NUM_OPS, len);
+            if (total > 5000000000000ULL) break;
+            
+            cudaMemcpy(d_best, &initScore, 4, cudaMemcpyHostToDevice);
+            cudaMemcpy(d_idx, &initIdx, 8, cudaMemcpyHostToDevice);
+            
+            int bs = 256;
+            uint64_t batch = (uint64_t)bs * 65535;
+            for (uint64_t off = 0; off < total; off += batch) {
+                uint64_t cnt = total - off;
+                if (cnt > batch) cnt = batch;
+                arith_kernel<<<(unsigned int)((cnt+bs-1)/bs), bs>>>(len, off, cnt, d_best, d_idx);
+                cudaDeviceSynchronize();
+            }
+            
+            uint32_t bestScore;
+            uint64_t bestIdx;
+            cudaMemcpy(&bestScore, d_best, 4, cudaMemcpyDeviceToHost);
+            cudaMemcpy(&bestIdx, d_idx, 8, cudaMemcpyDeviceToHost);
+            
+            if (bestScore != 0xFFFFFFFF) {
+                found = 1;
+                int rlen = bestScore >> 16;
+                int rcost = bestScore & 0xFFFF;
+                uint8_t ops[20];
+                uint64_t tmp = bestIdx;
+                for (int i = rlen-1; i >= 0; i--) { ops[i] = tmp % NUM_OPS; tmp /= NUM_OPS; }
+                
+                printf("%s:", name);
+                for (int i = 0; i < rlen; i++) printf(" %s", opNames[ops[i]]);
+                printf(" (%d virtual, %dT)\n", rlen, rcost);
+                fflush(stdout);
+                break;
+            }
+        }
+        if (!found) printf("%s: NOT FOUND at len %d\n", name, maxLen);
+    }
+    
+    cudaFree(d_best); cudaFree(d_idx);
+    return 0;
+}
