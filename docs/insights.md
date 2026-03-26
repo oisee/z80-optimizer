@@ -582,3 +582,33 @@ No new GPU brute-force needed — purely derived from mul16 results.
 
 Total library: mul16 table (~500 bytes) + reciprocal constants (128 bytes)
 = ~630 bytes covers multiply AND divide for all 8-bit constants.
+
+---
+
+## 2026-03-26: NEG HL — 4 Methods, Clobber-Aware Selection
+
+**Tags:** arith16, neg, clobber, Alf
+
+Four provably correct methods for HL = -HL:
+
+| Method | Insts | T | Prerequisite | Source |
+|--------|-------|---|-------------|--------|
+| EX DE,HL / OR A / SBC HL,DE | 3 | 23T | DE=0 | GPU brute-force |
+| NEG / LD L,A / NEG / SBC A,B / LD H,A | 5 | 28T | B=0 | GPU 23-op search |
+| XOR A / SUB L / LD L,A / SBC A,A / SUB H / LD H,A | 6 | 24T | NONE | Alf (human expert) |
+| LD A,L / CPL / INC A / LD L,A / LD A,H / CPL / ADC A,0 / LD H,A | 8 | 32T | NONE | GPT/textbook |
+
+Alf's method verified: 65536/65536 inputs correct.
+
+**Why brute-force missed Alf's:** our 16-bit pool operates on HL as a unit.
+Alf's uses per-byte ops (SUB L, SUB H, SBC A,A) that decompose HL into
+individual registers. Need expanded pool with H/L byte access for complete search.
+
+**For compiler:** clobber-based selection:
+  DE=0 available → use 3-inst (23T)
+  B=0 available → use 5-inst (28T)
+  else → Alf's 6-inst (24T) universal
+
+**abs_diff(a,b)** from MinZ corpus: SUB C / RET NC / NEG / RET
+= 3 insts + conditional return. Branchless abs not possible in 14-op pool
+(needs conditional ops). Branching version is already near-optimal.
