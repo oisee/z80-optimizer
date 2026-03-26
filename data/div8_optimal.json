@@ -1,0 +1,645 @@
+[
+  {
+    "k": 3,
+    "ops": [
+      "LD C,A",
+      "SRL A",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "LD C,A",
+      "ADD HL,BC",
+      "LD A,H"
+    ],
+    "length": 14,
+    "tstates": 130,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 5,
+    "ops": [
+      "LD C,A",
+      "SRL A",
+      "SRL A",
+      "ADD HL,BC",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "LD C,A",
+      "ADD HL,BC",
+      "LD A,H"
+    ],
+    "length": 14,
+    "tstates": 127,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 6,
+    "ops": [
+      "SRL A",
+      "SHR_HL",
+      "LD C,A",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "LD A,H"
+    ],
+    "length": 13,
+    "tstates": 131,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 7,
+    "ops": [
+      "LD C,A",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "LD A,H",
+      "LD C,A",
+      "ADD HL,BC",
+      "LD A,H",
+      "SRL A"
+    ],
+    "length": 14,
+    "tstates": 123,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 9,
+    "ops": [
+      "LD C,A",
+      "SRL A",
+      "ADD HL,BC",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "LD C,A",
+      "ADD HL,BC",
+      "LD A,H"
+    ],
+    "length": 11,
+    "tstates": 97,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 10,
+    "ops": [
+      "SRL A",
+      "LD C,A",
+      "SRL A",
+      "SRL A",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "LD C,A",
+      "ADD HL,BC",
+      "LD A,H"
+    ],
+    "length": 14,
+    "tstates": 124,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 12,
+    "ops": [
+      "SRL A",
+      "SHR_HL",
+      "LD C,A",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "LD A,H"
+    ],
+    "length": 12,
+    "tstates": 120,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 13,
+    "ops": [
+      "LD C,A",
+      "SRL A",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "LD C,A",
+      "SRL A",
+      "ADD HL,BC",
+      "LD C,A",
+      "ADD HL,BC",
+      "LD A,H"
+    ],
+    "length": 14,
+    "tstates": 120,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 14,
+    "ops": [
+      "SRL A",
+      "LD C,A",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "LD A,H",
+      "LD C,A",
+      "ADD HL,BC",
+      "LD A,H",
+      "SRL A"
+    ],
+    "length": 14,
+    "tstates": 120,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 15,
+    "ops": [
+      "LD C,A",
+      "SRL A",
+      "SRL A",
+      "SRL A",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "LD C,A",
+      "ADD HL,BC",
+      "LD A,H"
+    ],
+    "length": 12,
+    "tstates": 102,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 17,
+    "ops": [
+      "LD C,A",
+      "ADD HL,BC",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "LD A,H",
+      "SHR_HL",
+      "LD C,A",
+      "ADD HL,BC",
+      "LD A,H"
+    ],
+    "length": 13,
+    "tstates": 120,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 19,
+    "ops": [
+      "LD C,A",
+      "SRL A",
+      "ADD HL,BC",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "LD C,A",
+      "ADD HL,BC",
+      "LD A,H"
+    ],
+    "length": 10,
+    "tstates": 86,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 20,
+    "ops": [
+      "SRL A",
+      "SRL A",
+      "SHR_HL",
+      "SHR_HL",
+      "LD C,A",
+      "ADD HL,BC",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "LD A,H"
+    ],
+    "length": 13,
+    "tstates": 133,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 24,
+    "ops": [
+      "SRL A",
+      "SRL A",
+      "LD C,A",
+      "SRL A",
+      "ADD HL,BC",
+      "LD C,A",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "LD A,H"
+    ],
+    "length": 12,
+    "tstates": 102,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 25,
+    "ops": [
+      "LD C,A",
+      "SRL A",
+      "SRL A",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "LD C,A",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "LD A,H"
+    ],
+    "length": 10,
+    "tstates": 83,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 30,
+    "ops": [
+      "LD C,A",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "LD A,H",
+      "ADD HL,BC",
+      "SHR_HL",
+      "LD C,A",
+      "ADD HL,BC",
+      "LD A,H"
+    ],
+    "length": 11,
+    "tstates": 98,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 40,
+    "ops": [
+      "SRL A",
+      "SRL A",
+      "SRL A",
+      "SHR_HL",
+      "LD C,A",
+      "ADD HL,BC",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "LD A,H"
+    ],
+    "length": 12,
+    "tstates": 114,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 50,
+    "ops": [
+      "SRL A",
+      "LD C,A",
+      "SRL A",
+      "SRL A",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "LD C,A",
+      "ADD HL,HL",
+      "ADD HL,BC",
+      "LD A,H"
+    ],
+    "length": 10,
+    "tstates": 80,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 60,
+    "ops": [
+      "SRL A",
+      "LD C,A",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "ADD HL,HL",
+      "LD A,H",
+      "ADD HL,BC",
+      "LD C,A",
+      "SHR_HL",
+      "ADD HL,BC",
+      "LD A,H"
+    ],
+    "length": 11,
+    "tstates": 95,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
+    "k": 100,
+    "ops": [
+      "SHR_HL",
+      "SHR_HL",
+      "SHR_HL",
+      "LD C,A",
+      "ADD HL,BC",
+      "SHR_HL",
+      "ADD HL,BC",
+      "ADD HL,BC",
+      "LD A,H"
+    ],
+    "length": 9,
+    "tstates": 105,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  }
+]
