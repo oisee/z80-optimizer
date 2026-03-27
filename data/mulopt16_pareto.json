@@ -1,0 +1,6224 @@
+[
+  {
+    "k": 2,
+    "solutions": [
+      {
+        "ops": [
+          "ADD HL,HL"
+        ],
+        "length": 1,
+        "tstates": 11,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 3,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC"
+        ],
+        "length": 3,
+        "tstates": 26,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 4,
+    "solutions": [
+      {
+        "ops": [
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 2,
+        "tstates": 22,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 5,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 4,
+        "tstates": 37,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 6,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 4,
+        "tstates": 37,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 7,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 5,
+        "tstates": 48,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 8,
+    "solutions": [
+      {
+        "ops": [
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 3,
+        "tstates": 33,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 9,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 5,
+        "tstates": 48,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 10,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 5,
+        "tstates": 48,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 11,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 6,
+        "tstates": 59,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 12,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 5,
+        "tstates": 48,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 13,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 6,
+        "tstates": 59,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 14,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 6,
+        "tstates": 59,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 15,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 6,
+        "tstates": 63,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 16,
+    "solutions": [
+      {
+        "ops": [
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 4,
+        "tstates": 44,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 17,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 6,
+        "tstates": 59,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 18,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 6,
+        "tstates": 59,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 19,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 7,
+        "tstates": 70,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 20,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 6,
+        "tstates": 59,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 21,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 7,
+        "tstates": 70,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 22,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 7,
+        "tstates": 70,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 23,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 7,
+        "tstates": 74,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 24,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 6,
+        "tstates": 59,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 25,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 7,
+        "tstates": 70,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 26,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 7,
+        "tstates": 70,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 27,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 28,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 7,
+        "tstates": 70,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 29,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 30,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 7,
+        "tstates": 74,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 31,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 7,
+        "tstates": 74,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 32,
+    "solutions": [
+      {
+        "ops": [
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 5,
+        "tstates": 55,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 33,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 7,
+        "tstates": 70,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 34,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 7,
+        "tstates": 70,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 35,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 36,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 7,
+        "tstates": 70,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 37,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 38,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 39,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 8,
+        "tstates": 85,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 40,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 7,
+        "tstates": 70,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 41,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 42,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 43,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 44,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 45,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 46,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 8,
+        "tstates": 85,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 47,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 8,
+        "tstates": 85,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 48,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 7,
+        "tstates": 70,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 49,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 50,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 51,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 52,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 53,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 54,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 55,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 9,
+        "tstates": 96,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 56,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 57,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 58,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 59,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 9,
+        "tstates": 100,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 60,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 8,
+        "tstates": 85,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 61,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 9,
+        "tstates": 96,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 62,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 8,
+        "tstates": 85,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 63,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 8,
+        "tstates": 85,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 64,
+    "solutions": [
+      {
+        "ops": [
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 6,
+        "tstates": 66,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 65,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 66,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 67,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 68,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 69,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 70,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 71,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 9,
+        "tstates": 96,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 72,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 73,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 74,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 75,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 76,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 77,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 78,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 96,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 79,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 9,
+        "tstates": 96,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 80,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 81,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 82,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 83,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 84,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 85,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 86,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 87,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 88,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 89,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 90,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 91,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 10,
+        "tstates": 111,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 92,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 96,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 93,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 94,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 96,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 95,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 9,
+        "tstates": 96,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 96,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 8,
+        "tstates": 81,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 97,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 98,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 99,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 100,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 101,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 102,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 103,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 104,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 105,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 106,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 107,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 108,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 109,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 110,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 111,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 112,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 113,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 114,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 115,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 116,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 117,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 118,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 111,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 119,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 10,
+        "tstates": 111,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 120,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 96,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 121,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 122,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 123,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 10,
+        "tstates": 111,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 124,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 96,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 125,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 126,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 96,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 127,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 9,
+        "tstates": 96,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 128,
+    "solutions": [
+      {
+        "ops": [
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 7,
+        "tstates": 77,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 129,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 130,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 131,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 132,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 133,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 134,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 135,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 136,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 137,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 138,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 139,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 140,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 141,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 142,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 143,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 144,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 145,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 146,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 147,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 148,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 149,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 150,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 151,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 152,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 153,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 154,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 155,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 11,
+        "tstates": 122,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 156,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 157,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 158,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 159,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 160,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 161,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 162,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 163,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 164,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 165,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 166,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 167,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 168,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 169,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 170,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 171,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 172,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 173,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 174,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 175,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 176,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 177,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 178,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 179,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 180,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 181,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 182,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 122,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 183,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 11,
+        "tstates": 122,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 184,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 185,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 186,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 187,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 11,
+        "tstates": 122,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 188,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 189,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 190,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 191,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 192,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 9,
+        "tstates": 92,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 193,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 194,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 195,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 196,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 197,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 198,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 199,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 200,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 201,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 202,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 203,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 204,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 205,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 206,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 207,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 208,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 209,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 210,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 211,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 212,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 213,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 214,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 215,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 12,
+        "tstates": 129,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 216,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "SWAP_HL",
+          "SUB HL,DE"
+        ],
+        "length": 11,
+        "tstates": 111,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 217,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 218,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 219,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 12,
+        "tstates": 133,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 220,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "SWAP_HL",
+          "SUB HL,DE"
+        ],
+        "length": 11,
+        "tstates": 111,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 221,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 129,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 222,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "SWAP_HL",
+          "SUB HL,DE"
+        ],
+        "length": 11,
+        "tstates": 111,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 223,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "EX DE,HL",
+          "SWAP_HL",
+          "SUB HL,DE"
+        ],
+        "length": 11,
+        "tstates": 111,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 224,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 103,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "SUB HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "SWAP_HL",
+          "ADD HL,DE",
+          "ADD HL,DE"
+        ],
+        "length": 10,
+        "tstates": 100,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 225,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "SUB HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "EX DE,HL",
+          "SWAP_HL",
+          "ADD HL,DE"
+        ],
+        "length": 11,
+        "tstates": 111,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 226,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "SUB HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "EX DE,HL",
+          "SWAP_HL",
+          "ADD HL,DE",
+          "ADD HL,DE"
+        ],
+        "length": 11,
+        "tstates": 111,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 227,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 228,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "SUB HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "SWAP_HL",
+          "ADD HL,DE",
+          "ADD HL,DE"
+        ],
+        "length": 11,
+        "tstates": 111,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 229,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "SUB HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,DE",
+          "EX DE,HL",
+          "SWAP_HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,DE"
+        ],
+        "length": 11,
+        "tstates": 115,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 230,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "SWAP_HL",
+          "SUB HL,DE"
+        ],
+        "length": 11,
+        "tstates": 111,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 231,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 12,
+        "tstates": 129,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "EX DE,HL",
+          "SWAP_HL",
+          "SUB HL,DE"
+        ],
+        "length": 11,
+        "tstates": 111,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 232,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 114,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "SUB HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "SWAP_HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,DE"
+        ],
+        "length": 10,
+        "tstates": 100,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 233,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "ADD HL,BC",
+          "SWAP_HL",
+          "SUB HL,DE",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 111,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 234,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 12,
+        "tstates": 125,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "SWAP_HL",
+          "SUB HL,DE"
+        ],
+        "length": 11,
+        "tstates": 111,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 235,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 12,
+        "tstates": 137,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "SUB HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "EX DE,HL",
+          "SWAP_HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,DE"
+        ],
+        "length": 11,
+        "tstates": 111,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 236,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 122,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "SWAP_HL",
+          "SUB HL,DE"
+        ],
+        "length": 10,
+        "tstates": 100,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 237,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 133,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "EX DE,HL",
+          "SWAP_HL",
+          "SUB HL,DE"
+        ],
+        "length": 11,
+        "tstates": 111,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 238,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 122,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "SWAP_HL",
+          "SUB HL,DE"
+        ],
+        "length": 10,
+        "tstates": 100,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 239,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 11,
+        "tstates": 122,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "EX DE,HL",
+          "SWAP_HL",
+          "SUB HL,DE"
+        ],
+        "length": 10,
+        "tstates": 100,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 240,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "SUB HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "SWAP_HL",
+          "ADD HL,DE",
+          "ADD HL,DE"
+        ],
+        "length": 9,
+        "tstates": 89,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 241,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "SUB HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "EX DE,HL",
+          "SWAP_HL",
+          "ADD HL,DE"
+        ],
+        "length": 10,
+        "tstates": 100,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 242,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "SUB HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "EX DE,HL",
+          "SWAP_HL",
+          "ADD HL,DE",
+          "ADD HL,DE"
+        ],
+        "length": 10,
+        "tstates": 100,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 243,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 129,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "EX DE,HL",
+          "SWAP_HL",
+          "SUB HL,DE"
+        ],
+        "length": 10,
+        "tstates": 100,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 244,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 118,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "SUB HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "SWAP_HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,DE"
+        ],
+        "length": 9,
+        "tstates": 89,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 245,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,BC"
+        ],
+        "length": 12,
+        "tstates": 129,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "EX DE,HL",
+          "SWAP_HL",
+          "SUB HL,DE"
+        ],
+        "length": 10,
+        "tstates": 100,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 246,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL"
+        ],
+        "length": 11,
+        "tstates": 122,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "SWAP_HL",
+          "SUB HL,DE"
+        ],
+        "length": 9,
+        "tstates": 89,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 247,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC"
+        ],
+        "length": 11,
+        "tstates": 122,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "EX DE,HL",
+          "SWAP_HL",
+          "SUB HL,DE"
+        ],
+        "length": 9,
+        "tstates": 89,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 248,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "ADD HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "SUB HL,BC",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL"
+        ],
+        "length": 10,
+        "tstates": 107,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "SUB HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "SWAP_HL",
+          "ADD HL,DE",
+          "ADD HL,DE"
+        ],
+        "length": 8,
+        "tstates": 78,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 249,
+    "solutions": [
+      {
+        "ops": [
+          "SWAP_HL",
+          "LD C,A",
+          "SUB HL,BC",
+          "SUB HL,BC",
+          "SUB HL,BC",
+          "SUB HL,BC",
+          "SUB HL,BC",
+          "SUB HL,BC",
+          "SUB HL,BC"
+        ],
+        "length": 9,
+        "tstates": 120,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "SUB HL,DE",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,HL",
+          "ADD HL,DE",
+          "EX DE,HL",
+          "SWAP_HL",
+          "ADD HL,DE"
+        ],
+        "length": 9,
+        "tstates": 89,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 250,
+    "solutions": [
+      {
+        "ops": [
+          "SWAP_HL",
+          "LD C,A",
+          "SUB HL,BC",
+          "SUB HL,BC",
+          "SUB HL,BC",
+          "SUB HL,BC",
+          "SUB HL,BC",
+          "SUB HL,BC"
+        ],
+        "length": 8,
+        "tstates": 105,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      },
+      {
+        "ops": [
+          "EX DE,HL",
+          "SUB HL,DE",
+          "ADD HL,HL",
+          "EX DE,HL",
+          "SWAP_HL",
+          "ADD HL,DE",
+          "ADD HL,DE",
+          "ADD HL,DE"
+        ],
+        "length": 8,
+        "tstates": 78,
+        "clobber": "HL_C_DE",
+        "pool": "8-op"
+      }
+    ]
+  },
+  {
+    "k": 251,
+    "solutions": [
+      {
+        "ops": [
+          "SWAP_HL",
+          "LD C,A",
+          "SUB HL,BC",
+          "SUB HL,BC",
+          "SUB HL,BC",
+          "SUB HL,BC",
+          "SUB HL,BC"
+        ],
+        "length": 7,
+        "tstates": 90,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 252,
+    "solutions": [
+      {
+        "ops": [
+          "SWAP_HL",
+          "LD C,A",
+          "SUB HL,BC",
+          "SUB HL,BC",
+          "SUB HL,BC",
+          "SUB HL,BC"
+        ],
+        "length": 6,
+        "tstates": 75,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 253,
+    "solutions": [
+      {
+        "ops": [
+          "LD C,A",
+          "SWAP_HL",
+          "SUB HL,BC",
+          "SUB HL,BC",
+          "SUB HL,BC"
+        ],
+        "length": 5,
+        "tstates": 60,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 254,
+    "solutions": [
+      {
+        "ops": [
+          "SWAP_HL",
+          "LD C,A",
+          "SUB HL,BC",
+          "SUB HL,BC"
+        ],
+        "length": 4,
+        "tstates": 45,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  },
+  {
+    "k": 255,
+    "solutions": [
+      {
+        "ops": [
+          "SWAP_HL",
+          "LD C,A",
+          "SUB HL,BC"
+        ],
+        "length": 3,
+        "tstates": 30,
+        "clobber": "HL_C",
+        "pool": "5-op"
+      }
+    ]
+  }
+]
