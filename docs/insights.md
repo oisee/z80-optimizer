@@ -856,3 +856,43 @@ Our format's strength: exponent manipulation is trivially fast.
 - Mantissa add/sub = our existing 16-bit idioms
 - Normalize = our SHL/SHR sequences
 - The float library COMPOSES from parts we already brute-forced
+
+---
+
+## 2026-03-27: Z80 Float Format Zoo — by Register Fit
+
+**Tags:** floating-point, architecture, publishable, z80-native
+
+### Tier 1: 1 register (A = 8 bits)
+- **FP8 E4M3**: [S][EEEE][MMM] — NVIDIA H100 format on Z80! ×2 = ADD A,0x08
+- **FP8 E5M2**: [S][EEEEE][MM] — wider range, 2-bit mantissa
+- **f1.7 / f2.6 / f4.4 fixed**: for normalized values, pi, coordinates
+
+### Tier 2: 1 register pair (HL = 16 bits)
+- **Z80-FP16**: H=[EEEEEEEE] L=[SMMMMMMM] — OUR FORMAT!
+  ×2 = INC H (4T!). Byte-aligned exp. Better than IEEE/Bfloat16 on Z80.
+- **IEEE FP16**: exp crosses nibble boundary → 10 insts for ×2 (40T!)
+- **Bfloat16**: exp crosses byte boundary → even worse!
+
+### Tier 3: A + HL (24 bits)
+- **s1.E8.M15**: A=[exp] HL=[sign+mantissa] — PREMIUM
+  ×2 = INC A (4T). 15-bit mantissa = 4.5 digits. Better than Bfloat16!
+
+### Tier 4: A + HL + H'L' via EXX (40 bits)
+- **s1.E8.M31**: A=[exp] HL=[sign+mant_hi] H'L'=[mant_lo]
+  ZX Spectrum ROM compatible layout. 31-bit mantissa = 9.3 digits.
+  EXX switches to shadow for low mantissa. ~20T per shift.
+
+### Tier 5: A + HL + DE (40 bits, no shadow)
+- **s1.E8.M31v2**: A=[exp] HL=[sign+mant_hi] DE=[mant_lo]
+  No EXX needed. ADD HL,HL + RL E + RL D for 32-bit shift.
+
+### Key finding
+**BYTE-ALIGNED EXPONENT** is 10× faster than IEEE on Z80.
+- Our formats: INC/DEC = 4T for ×2/÷2
+- IEEE/Bfloat16: bit extraction = 32-40T for ×2
+
+**Our s1.E8.M15 vs Bfloat16:**
+- Same 8-bit exponent range
+- 15-bit vs 7-bit mantissa (OUR is 2× more precise!)
+- ×2 cost: 4T vs 32T (OUR is 8× faster!)
