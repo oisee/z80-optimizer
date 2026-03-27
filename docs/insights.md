@@ -806,3 +806,53 @@ idea: exp in first byte.
 **For brute-force:** f1.7 operations (sin, cos, sqrt, lerp) are small enough
 for GPU exhaustive search. Each is a 128-entry lookup or short instruction
 sequence. Abstract chains apply directly.
+
+---
+
+## 2026-03-27: Abstract Float Machine — Brute-Force Design
+
+**Tags:** floating-point, abstract-machine, brute-force, sprint-next
+
+### s1.E8.M15 format: A=[exp], H=[sign+mant_hi], L=[mant_lo]
+
+**12 abstract ops for float arithmetic:**
+
+| Op | Effect | Z80 materialization | Cost |
+|----|--------|-------------------|------|
+| INC_E | exp++ (×2) | INC A | 4T |
+| DEC_E | exp-- (÷2) | DEC A | 4T |
+| SHL_M | mantissa <<= 1 | ADD HL,HL | 11T |
+| SHR_M | mantissa >>= 1 | SRL H / RR L | 16T |
+| NEG_S | flip sign | LD A,H / XOR 0x80 / LD H,A | 12T |
+| CLR_S | abs value | RES 7,H | 8T |
+| ADD_M | mant += saved | ADD HL,BC | 11T |
+| SUB_M | mant -= saved | OR A / SBC HL,BC | 15T |
+| SAVE_M | BC = HL | LD B,H / LD C,L | 8T |
+| SAVE_E | D = A | LD D,A | 4T |
+| CMP_E | carry=(A<D) | CP D | 4T |
+| SWAP_IF | conditional swap | if carry: swap A↔D, HL↔BC | ~20T |
+
+**Search space:** 12^8 = 430M (CPU feasible, seconds).
+12^10 = 62B (GPU feasible, minutes).
+
+**Phase 1 targets (single-float, state=A,H,L):**
+- f_normalize: shift mantissa until bit 14 = 1, adjust exp
+- f_to_int: extract integer part to register
+- f_from_int: convert 8-bit integer to float
+- f_x10: multiply float by 10 (decimal output)
+- f_div10: divide float by 10 (decimal input)
+
+**Phase 2 targets (two-float, state=A,H,L + D,E,B,C):**
+- f_add: float addition (align→add→normalize)
+- f_mul: float multiply (add exp, multiply mantissa)
+- f_compare: compare two floats
+
+**Key insight:** float ×2 = INC A (4T!). float ÷2 = DEC A (4T!).
+This is the fastest possible — can't beat 1 instruction.
+Our format's strength: exponent manipulation is trivially fast.
+
+**Connection to existing work:**
+- Mantissa multiply = our mul16 table!
+- Mantissa add/sub = our existing 16-bit idioms
+- Normalize = our SHL/SHR sequences
+- The float library COMPOSES from parts we already brute-forced
