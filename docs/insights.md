@@ -732,3 +732,31 @@ just 4% of RAM. For ROM systems: fits in any EPROM alongside the program.
 
 **Dead-flags peephole running** (Layer 2: ~2-5M rules when flags dead).
 **mul8 len-10 overnight on i5** (90 unsolved constants).
+
+---
+
+## 2026-03-27: Z80-Optimal Fixed Point Formats
+
+**Tags:** floating-point, fixed-point, architecture, future
+
+**Key insight:** our existing mul8/mul16 tables ARE fixed-point multiply tables.
+
+**u8.8 fixed (HL):** H=integer, L=fraction. Range 0-255.996, precision 1/256.
+  - ADD HL,HL = ×2 (11T, native!)
+  - Our mul16 table: `mul16_K(u8.8_input)` = correct u8.8 × K result
+  - Division: our div table + adjust for fractional part
+  - NEG HL = negate (23T, our 3-method solution)
+
+**u1.7 unit (A):** Values 0.0-1.992. Perfect for normalized quantities.
+  - sin/cos output is always 0..1 → fits u1.7
+  - Our mul8 table: A×K mod 256 = fraction multiply in u1.7!
+  - 128 entries for sin table = full circle at ~2.8° resolution
+
+**Brute-force targets for fixed-point:**
+  - u8.8 × u8.8 → u8.8 (fixed multiply with proper rounding)
+  - sqrt(u8.8) → u8.8 (optimal instruction sequence!)
+  - sin(u1.7) → i1.7 (polynomial approximation in Z80 ops)
+  - 1/x for u8.8 (reciprocal via our division table)
+
+**Abstract chain for fixed-point:** same {dbl, add, sub, save, shr} chains
+but with fractional semantics. ISA-independent!
