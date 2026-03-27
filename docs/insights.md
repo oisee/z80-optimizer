@@ -760,3 +760,49 @@ just 4% of RAM. For ROM systems: fits in any EPROM alongside the program.
 
 **Abstract chain for fixed-point:** same {dbl, add, sub, save, shr} chains
 but with fractional semantics. ISA-independent!
+
+---
+
+## 2026-03-27: Z80-Optimal Floating/Fixed Point Format Deep Dive
+
+**Tags:** floating-point, fixed-point, architecture, publishable, future
+
+### 8-bit formats (fits in A register)
+
+| Format | Layout | Range | Precision | Sweet spot |
+|--------|--------|-------|-----------|-----------|
+| **f1.7 unit** | [I.FFFFFFF] | 0-1.99 | 1/128 | sin/cos, blend, normalized |
+| **f2.6** | [II.FFFFFF] | 0-3.98 | 1/64 | pi fits (3.14≈0xC9)! |
+| f4.4 | [IIII.FFFF] | 0-15.9 | 1/16 | nibble-aligned, BCD-like |
+
+### 16-bit formats (fits in HL)
+
+| Format | Layout | Range | Precision | Sweet spot |
+|--------|--------|-------|-----------|-----------|
+| **f8.8** | H=[int] L=[frac] | 0-255.99 | 1/256 | BYTE ALIGNED! H=floor, L=frac |
+| **i8.8** | two's complement | ±127.99 | 1/256 | signed, BIT 7,H = sign test |
+| **f1.7+f1.7** | H=[x] L=[y] | 2× 0-1.99 | 1/128 | SIMD! ADD HL,HL doubles BOTH |
+
+### 24-bit Z80-native float
+
+| Format | Layout | Range | Precision | Sweet spot |
+|--------|--------|-------|-----------|-----------|
+| **s1.E8.M8** | A=[exp] H=[S+mant_hi] L=[mant_lo] | huge | ~4.5 digits | INC A = ×2 (exp in A!) |
+
+### Key insights
+
+**Our mul8/mul16 tables are ALREADY fixed-point tables:**
+- mul8 on f1.7: `A × K mod 256` = fraction multiply
+- mul16 on f8.8: `HL × K` = full 8.8 fixed multiply
+
+**f1.7+f1.7 packed vector:** ADD HL,HL doubles BOTH x,y simultaneously.
+Pseudo-SIMD on Z80! But carry from L bit 7 leaks into H bit 0 — needs
+AND mask after parallel ops to prevent cross-component contamination.
+
+**s1.E8.M8:** exponent in A register = easy compare (CP), adjust (INC/DEC),
+branch (JR Z). No bit extraction needed. MBF (Microsoft Binary) had same
+idea: exp in first byte.
+
+**For brute-force:** f1.7 operations (sin, cos, sqrt, lerp) are small enough
+for GPU exhaustive search. Each is a 128-entry lookup or short instruction
+sequence. Abstract chains apply directly.
