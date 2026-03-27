@@ -9,7 +9,13 @@
         "length": 1,
         "tstates": 11,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 224
       }
     ]
   },
@@ -25,7 +31,14 @@
         "length": 3,
         "tstates": 26,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -40,7 +53,13 @@
         "length": 2,
         "tstates": 22,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 224
       }
     ]
   },
@@ -57,7 +76,14 @@
         "length": 4,
         "tstates": 37,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -74,7 +100,14 @@
         "length": 4,
         "tstates": 37,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -92,7 +125,14 @@
         "length": 5,
         "tstates": 48,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -108,7 +148,13 @@
         "length": 3,
         "tstates": 33,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 224
       }
     ]
   },
@@ -126,7 +172,14 @@
         "length": 5,
         "tstates": 48,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -144,7 +197,14 @@
         "length": 5,
         "tstates": 48,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -163,7 +223,14 @@
         "length": 6,
         "tstates": 59,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -181,7 +248,14 @@
         "length": 5,
         "tstates": 48,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -200,7 +274,14 @@
         "length": 6,
         "tstates": 59,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -219,7 +300,14 @@
         "length": 6,
         "tstates": 59,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -238,7 +326,14 @@
         "length": 6,
         "tstates": 63,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -255,7 +350,13 @@
         "length": 4,
         "tstates": 44,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 224
       }
     ]
   },
@@ -274,7 +375,14 @@
         "length": 6,
         "tstates": 59,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -293,7 +401,14 @@
         "length": 6,
         "tstates": 59,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -313,7 +428,14 @@
         "length": 7,
         "tstates": 70,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -332,7 +454,14 @@
         "length": 6,
         "tstates": 59,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -352,7 +481,14 @@
         "length": 7,
         "tstates": 70,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -372,7 +508,14 @@
         "length": 7,
         "tstates": 70,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -392,7 +535,14 @@
         "length": 7,
         "tstates": 74,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -411,7 +561,14 @@
         "length": 6,
         "tstates": 59,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -431,7 +588,14 @@
         "length": 7,
         "tstates": 70,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -451,7 +615,14 @@
         "length": 7,
         "tstates": 70,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -472,7 +643,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -492,7 +670,14 @@
         "length": 7,
         "tstates": 70,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -513,7 +698,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -533,7 +725,14 @@
         "length": 7,
         "tstates": 74,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -553,7 +752,14 @@
         "length": 7,
         "tstates": 74,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -571,7 +777,13 @@
         "length": 5,
         "tstates": 55,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 224
       }
     ]
   },
@@ -591,7 +803,14 @@
         "length": 7,
         "tstates": 70,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -611,7 +830,14 @@
         "length": 7,
         "tstates": 70,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -632,7 +858,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -652,7 +885,14 @@
         "length": 7,
         "tstates": 70,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -673,7 +913,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -694,7 +941,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -715,7 +969,14 @@
         "length": 8,
         "tstates": 85,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -735,7 +996,14 @@
         "length": 7,
         "tstates": 70,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -756,7 +1024,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -777,7 +1052,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -799,7 +1081,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -820,7 +1109,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -842,7 +1138,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -863,7 +1166,14 @@
         "length": 8,
         "tstates": 85,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -884,7 +1194,14 @@
         "length": 8,
         "tstates": 85,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -904,7 +1221,14 @@
         "length": 7,
         "tstates": 70,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -925,7 +1249,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -946,7 +1277,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -968,7 +1306,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -989,7 +1334,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1011,7 +1363,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1033,7 +1392,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1055,7 +1421,14 @@
         "length": 9,
         "tstates": 96,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1076,7 +1449,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1098,7 +1478,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1120,7 +1507,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1142,7 +1536,14 @@
         "length": 9,
         "tstates": 100,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1163,7 +1564,14 @@
         "length": 8,
         "tstates": 85,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1185,7 +1593,14 @@
         "length": 9,
         "tstates": 96,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1206,7 +1621,14 @@
         "length": 8,
         "tstates": 85,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1227,7 +1649,14 @@
         "length": 8,
         "tstates": 85,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1246,7 +1675,13 @@
         "length": 6,
         "tstates": 66,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 224
       }
     ]
   },
@@ -1267,7 +1702,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1288,7 +1730,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1310,7 +1759,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1331,7 +1787,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1353,7 +1816,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1375,7 +1845,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1397,7 +1874,14 @@
         "length": 9,
         "tstates": 96,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1418,7 +1902,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1440,7 +1931,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1462,7 +1960,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1485,7 +1990,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1507,7 +2019,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1530,7 +2049,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1552,7 +2078,14 @@
         "length": 9,
         "tstates": 96,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1574,7 +2107,14 @@
         "length": 9,
         "tstates": 96,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1595,7 +2135,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1617,7 +2164,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1639,7 +2193,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1662,7 +2223,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1684,7 +2252,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1707,7 +2282,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1730,7 +2312,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1753,7 +2342,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1775,7 +2371,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1798,7 +2401,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1821,7 +2431,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1844,7 +2461,14 @@
         "length": 10,
         "tstates": 111,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1866,7 +2490,14 @@
         "length": 9,
         "tstates": 96,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1889,7 +2520,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1911,7 +2549,14 @@
         "length": 9,
         "tstates": 96,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1933,7 +2578,14 @@
         "length": 9,
         "tstates": 96,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1954,7 +2606,14 @@
         "length": 8,
         "tstates": 81,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1976,7 +2635,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -1998,7 +2664,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2021,7 +2694,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2043,7 +2723,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2066,7 +2753,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2089,7 +2783,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2112,7 +2813,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2134,7 +2842,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2157,7 +2872,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2180,7 +2902,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2204,7 +2933,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2227,7 +2963,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2251,7 +2994,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2274,7 +3024,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2297,7 +3054,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2319,7 +3083,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2342,7 +3113,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2365,7 +3143,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2389,7 +3174,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2412,7 +3204,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2436,7 +3235,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2459,7 +3265,14 @@
         "length": 10,
         "tstates": 111,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2482,7 +3295,14 @@
         "length": 10,
         "tstates": 111,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2504,7 +3324,14 @@
         "length": 9,
         "tstates": 96,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2527,7 +3354,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2550,7 +3384,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2573,7 +3414,14 @@
         "length": 10,
         "tstates": 111,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2595,7 +3443,14 @@
         "length": 9,
         "tstates": 96,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2618,7 +3473,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2640,7 +3502,14 @@
         "length": 9,
         "tstates": 96,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2662,7 +3531,14 @@
         "length": 9,
         "tstates": 96,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2682,7 +3558,13 @@
         "length": 7,
         "tstates": 77,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 224
       }
     ]
   },
@@ -2704,7 +3586,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2726,7 +3615,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2749,7 +3645,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2771,7 +3674,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2794,7 +3704,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2817,7 +3734,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2840,7 +3764,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2862,7 +3793,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2885,7 +3823,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2908,7 +3853,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2932,7 +3884,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2955,7 +3914,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -2979,7 +3945,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3002,7 +3975,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3025,7 +4005,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3047,7 +4034,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3070,7 +4064,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3093,7 +4094,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3117,7 +4125,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3140,7 +4155,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3164,7 +4186,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3188,7 +4217,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3212,7 +4248,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3235,7 +4278,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3259,7 +4309,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3283,7 +4340,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3307,7 +4371,14 @@
         "length": 11,
         "tstates": 122,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3330,7 +4401,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3354,7 +4432,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3377,7 +4462,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3400,7 +4492,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3422,7 +4521,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3445,7 +4551,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3468,7 +4581,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3492,7 +4612,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3515,7 +4642,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3539,7 +4673,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3563,7 +4704,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3587,7 +4735,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3610,7 +4765,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3634,7 +4796,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3658,7 +4827,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3683,7 +4859,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3707,7 +4890,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3732,7 +4922,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3756,7 +4953,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3780,7 +4984,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3803,7 +5014,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3827,7 +5045,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3851,7 +5076,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3876,7 +5108,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3900,7 +5139,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3925,7 +5171,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3949,7 +5202,14 @@
         "length": 11,
         "tstates": 122,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3973,7 +5233,14 @@
         "length": 11,
         "tstates": 122,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -3996,7 +5263,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4020,7 +5294,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4044,7 +5325,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4068,7 +5356,14 @@
         "length": 11,
         "tstates": 122,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4091,7 +5386,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4115,7 +5417,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4138,7 +5447,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4161,7 +5477,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4183,7 +5506,14 @@
         "length": 9,
         "tstates": 92,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4206,7 +5536,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4229,7 +5566,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4253,7 +5597,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4276,7 +5627,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4300,7 +5658,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4324,7 +5689,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4348,7 +5720,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4371,7 +5750,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4395,7 +5781,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4419,7 +5812,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4444,7 +5844,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4468,7 +5875,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4493,7 +5907,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4517,7 +5938,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4541,7 +5969,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4564,7 +5999,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4588,7 +6030,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4612,7 +6061,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4637,7 +6093,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4661,7 +6124,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4686,7 +6156,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4711,7 +6188,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4736,7 +6220,14 @@
         "length": 12,
         "tstates": 129,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4760,7 +6251,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -4779,7 +6277,15 @@
         "length": 11,
         "tstates": 111,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -4804,7 +6310,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4829,7 +6342,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4854,7 +6374,14 @@
         "length": 12,
         "tstates": 133,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4878,7 +6405,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -4897,7 +6431,15 @@
         "length": 11,
         "tstates": 111,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -4922,7 +6464,14 @@
         "length": 12,
         "tstates": 129,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -4946,7 +6495,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -4965,7 +6521,15 @@
         "length": 11,
         "tstates": 111,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -4989,7 +6553,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5008,7 +6579,15 @@
         "length": 11,
         "tstates": 111,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5031,7 +6610,14 @@
         "length": 10,
         "tstates": 103,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5049,7 +6635,15 @@
         "length": 10,
         "tstates": 100,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5073,7 +6667,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5092,7 +6693,15 @@
         "length": 11,
         "tstates": 111,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5116,7 +6725,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5135,7 +6751,15 @@
         "length": 11,
         "tstates": 111,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5160,7 +6784,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -5184,7 +6815,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5203,7 +6841,15 @@
         "length": 11,
         "tstates": 111,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5228,7 +6874,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5247,7 +6900,15 @@
         "length": 11,
         "tstates": 115,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5272,7 +6933,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5291,7 +6959,15 @@
         "length": 11,
         "tstates": 111,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5316,7 +6992,14 @@
         "length": 12,
         "tstates": 129,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5335,7 +7018,15 @@
         "length": 11,
         "tstates": 111,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5359,7 +7050,14 @@
         "length": 11,
         "tstates": 114,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5377,7 +7075,15 @@
         "length": 10,
         "tstates": 100,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5402,7 +7108,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5421,7 +7134,16 @@
         "length": 11,
         "tstates": 111,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "C",
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 252
       }
     ]
   },
@@ -5446,7 +7168,14 @@
         "length": 12,
         "tstates": 125,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5465,7 +7194,15 @@
         "length": 11,
         "tstates": 111,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5490,7 +7227,14 @@
         "length": 12,
         "tstates": 137,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5509,7 +7253,15 @@
         "length": 11,
         "tstates": 111,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5533,7 +7285,14 @@
         "length": 11,
         "tstates": 122,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5551,7 +7310,15 @@
         "length": 10,
         "tstates": 100,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5576,7 +7343,14 @@
         "length": 12,
         "tstates": 133,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5595,7 +7369,15 @@
         "length": 11,
         "tstates": 111,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5619,7 +7401,14 @@
         "length": 11,
         "tstates": 122,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5637,7 +7426,15 @@
         "length": 10,
         "tstates": 100,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5661,7 +7458,14 @@
         "length": 11,
         "tstates": 122,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5679,7 +7483,15 @@
         "length": 10,
         "tstates": 100,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5702,7 +7514,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5719,7 +7538,15 @@
         "length": 9,
         "tstates": 89,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5743,7 +7570,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5761,7 +7595,15 @@
         "length": 10,
         "tstates": 100,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5785,7 +7627,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5803,7 +7652,15 @@
         "length": 10,
         "tstates": 100,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5828,7 +7685,14 @@
         "length": 12,
         "tstates": 129,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5846,7 +7710,15 @@
         "length": 10,
         "tstates": 100,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5870,7 +7742,14 @@
         "length": 11,
         "tstates": 118,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5887,7 +7766,15 @@
         "length": 9,
         "tstates": 89,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5912,7 +7799,14 @@
         "length": 12,
         "tstates": 129,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5930,7 +7824,15 @@
         "length": 10,
         "tstates": 100,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5954,7 +7856,14 @@
         "length": 11,
         "tstates": 122,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -5971,7 +7880,15 @@
         "length": 9,
         "tstates": 89,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -5995,7 +7912,14 @@
         "length": 11,
         "tstates": 122,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -6012,7 +7936,15 @@
         "length": 9,
         "tstates": 89,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -6035,7 +7967,14 @@
         "length": 10,
         "tstates": 107,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -6051,7 +7990,15 @@
         "length": 8,
         "tstates": 78,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -6073,7 +8020,14 @@
         "length": 9,
         "tstates": 120,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -6090,7 +8044,15 @@
         "length": 9,
         "tstates": 89,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -6111,7 +8073,14 @@
         "length": 8,
         "tstates": 105,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       },
       {
         "ops": [
@@ -6127,7 +8096,15 @@
         "length": 8,
         "tstates": 78,
         "clobber": "HL_C_DE",
-        "pool": "8-op"
+        "pool": "8-op",
+        "clobber_regs": [
+          "D",
+          "E",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 248
       }
     ]
   },
@@ -6147,7 +8124,14 @@
         "length": 7,
         "tstates": 90,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -6166,7 +8150,14 @@
         "length": 6,
         "tstates": 75,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -6184,7 +8175,14 @@
         "length": 5,
         "tstates": 60,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -6201,7 +8199,14 @@
         "length": 4,
         "tstates": 45,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   },
@@ -6217,7 +8222,14 @@
         "length": 3,
         "tstates": 30,
         "clobber": "HL_C",
-        "pool": "5-op"
+        "pool": "5-op",
+        "clobber_regs": [
+          "C",
+          "F",
+          "H",
+          "L"
+        ],
+        "clobber_mask": 228
       }
     ]
   }

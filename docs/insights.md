@@ -980,3 +980,71 @@ RISC-V has no carry flag — multi-byte needs explicit compare+branch.
 
 This makes 6502 BETTER than Z80 for multi-byte float ops!
 (But Z80 has 16-bit register pairs for mantissa — 6502 doesn't.)
+
+---
+
+## 2026-03-27: FP16 Single-Op Results (33-op GPU brute-force)
+
+**Tags:** fp16, arith16, brute-force
+
+**16-bit arithmetic idioms** found at len ≤8 with 33-op pool:
+
+| Idiom | Sequence | Cost |
+|-------|----------|------|
+| NEG HL | EX DE,HL; SUB HL,DE | 2 ops, 19T |
+| NOT HL | DEC H; XOR H; LD L,A | 3 ops, 12T |
+| sign-ext A→HL | ADC A,L; SBC A,A; LD H,A | 3 ops, 12T |
+| bool(HL≠0) | NEG; ADC A,L; LD L,A | 3 ops, 16T |
+| clamp(0..127) | ADC A,L; LD L,A; SHR_HL | 3 ops, 24T |
+| MUL3 HL | LD C,A; ADD HL,BC; ADD HL,BC | 3 ops, 26T |
+| MUL5 HL | LD C,A; ADD HL,HL ×2; ADD HL,BC | 4 ops, 37T |
+| MUL10 HL | LD C,A; ADD HL,BC; ADD HL,HL; ADD HL,BC; ADD HL,HL | 5 ops, 48T |
+| INC HL | EX DE,HL; INC L; ADD HL,DE | 3 vops, 19T |
+| DEC HL | DEC L; SBC A,L; SBC A,A; LD H,A | 4 ops, 16T |
+
+**FP16 trivial ops** (with H=exp constraint, H=0 for 8-bit input):
+
+| Op | Sequence | Cost | Note |
+|----|----------|------|------|
+| ×2 | INC H | 1 op, 4T | Optimal! |
+| ÷2 | DEC H | 1 op, 4T | Optimal! |
+| abs | ADC A,L; LD L,A; SHR_HL | 3 ops, 24T | Better: RES 7,L (8T, not in pool) |
+| neg | EX DE,HL; DEC L; SHR_HL; SBC A,L; LD L,A | 5 ops, 32T | Better: LD A,L; XOR 0x80; LD L,A (12T) |
+| is_zero | ADC A,L; NEG; SBC A,A; LD L,A; INC L | 5 ops, 24T | Uses SBC A,A carry trick! |
+
+**int→FP16 NOT FOUND at depth 8.** Running depth-11 search on GPU0. Expected: 33^9 ≈ 5.5T sequences.
+
+**Key insight:** FP16 trivial ops confirm the byte-aligned format design works —
+×2 and ÷2 are truly 1 instruction (4T). The format is correct by construction.
+
+---
+
+## 2026-03-27: BCD Arithmetic Results (CPU brute-force, i3)
+
+**Tags:** bcd, daa, brute-force
+
+| Operation | Sequence | Cost | Note |
+|-----------|----------|------|------|
+| BCD×10 | `DAA; ADD A,A; ADD A,A; ADD A,A; ADD A,A` | 5 ops | DAA normalizes, then ×16 gives low byte of BCD×10 |
+| BCD low digit | `AND 0x0F` | 1 op | trivial |
+| BCD high digit | `SRL A ×4` | 4 ops | shift nibble down |
+| BCD→binary | NOT FOUND at depth 6 | - | needs (A>>4)×10 + (A&0xF), minimum ~8 ops |
+| BCD×2 | NOT FOUND at depth 6 | - | needs DAA after double? |
+| binary→BCD | searching depth 7 | - | running on i3 |
+
+**BCD×10 insight:** `DAA` followed by 4× `ADD A,A` = ×16 in binary, but for valid BCD
+inputs the low byte matches BCD×10. This is because BCD value N stored as 0xHL means
+binary value 16*H + L, and ×16 of that gives 256*H + 16*L. Mod 256 = 16*L. For the
+low digit L of BCD(N), 16*L = (N%10)*16. Meanwhile BCD(N*10) low byte = BCD of
+(N*10 mod 100). This only works for single-digit! Not a general solution.
+
+---
+
+## 2026-03-27: VIR Feedback on FP Types
+
+**Tags:** fp16, register-allocation, vir
+
+VIR backend confirms: fp16 = same Z3 constraint as u16 (DstLocs=HL, SrcLocs=HL).
+No new constraint types needed! fp24 (A+HL) modeled as two tied vregs.
+This validates the byte-aligned exponent design — zero integration cost for the
+most common format.

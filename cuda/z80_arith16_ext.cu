@@ -10,7 +10,7 @@
 // 21-op pool: 16-bit ops + per-byte ops (for Alf-style patterns)
 // 0-8: 16-bit level ops
 // 9-20: per-byte ops (A↔H, A↔L, cross-register arithmetic)
-#define NUM_OPS 33
+#define NUM_OPS 46
 
 __device__ uint16_t run_seq(const uint8_t *ops, int len, uint8_t input) {
     uint8_t a = input, b = 0, c = 0, d = 0, e = 0, h = 0, l = input;

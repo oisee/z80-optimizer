@@ -1,0 +1,31 @@
+{
+  "description": "16-bit arithmetic idioms found by 33-op brute-force, len≤8",
+  "ops": 33,
+  "max_depth": 8,
+  "results": [
+    {"name": "neg", "sequence": "EX DE,HL SUB HL,DE", "ops": 2, "cost_t": 19},
+    {"name": "shr1", "sequence": "SHR_HL", "ops": 1, "cost_t": 16},
+    {"name": "shr4", "sequence": "SHR_HL SHR_HL SHR_HL SHR_HL", "ops": 4, "cost_t": 64},
+    {"name": "shl4", "sequence": "ADD HL,HL ADD HL,HL ADD HL,HL ADD HL,HL", "ops": 4, "cost_t": 44},
+    {"name": "swap", "sequence": "SWAP_HL", "ops": 1, "cost_t": 11},
+    {"name": "x256", "sequence": "SWAP_HL", "ops": 1, "cost_t": 11},
+    {"name": "sext", "sequence": "ADC A,L SBC A,A LD H,A", "ops": 3, "cost_t": 12},
+    {"name": "clamp127", "sequence": "ADC A,L LD L,A SHR_HL", "ops": 3, "cost_t": 24},
+    {"name": "hl_ne_0", "sequence": "NEG ADC A,L LD L,A", "ops": 3, "cost_t": 16},
+    {"name": "neg8_in_hl", "sequence": "EX DE,HL SUB HL,DE", "ops": 2, "cost_t": 19},
+    {"name": "not_hl", "sequence": "DEC H XOR H LD L,A", "ops": 3, "cost_t": 12},
+    {"name": "shr8", "sequence": "EX DE,HL", "ops": 1, "cost_t": 4},
+    {"name": "mul3_hl", "sequence": "LD C,A ADD HL,BC ADD HL,BC", "ops": 3, "cost_t": 26},
+    {"name": "mul5_hl", "sequence": "LD C,A ADD HL,HL ADD HL,HL ADD HL,BC", "ops": 4, "cost_t": 37},
+    {"name": "mul10_hl", "sequence": "LD C,A ADD HL,BC ADD HL,HL ADD HL,BC ADD HL,HL", "ops": 5, "cost_t": 48},
+    {"name": "inc_hl", "sequence": "INC HL", "ops": 1, "cost_t": 6, "note": "native Z80, not in 33-op pool! brute-force found EX DE,HL;INC L;ADD HL,DE (19T)"},
+    {"name": "dec_hl", "sequence": "DEC HL", "ops": 1, "cost_t": 6, "note": "native Z80, not in 33-op pool! brute-force found DEC L;SBC A,L;SBC A,A;LD H,A (16T)"},
+    {"name": "fp16_abs", "sequence": "ADC A,L LD L,A SHR_HL", "ops": 3, "cost_t": 24, "note": "better: RES 7,L (8T, not in 33-op pool)"},
+    {"name": "fp16_neg", "sequence": "EX DE,HL DEC L SHR_HL SBC A,L LD L,A", "ops": 5, "cost_t": 32, "note": "better: LD A,L; XOR 0x80; LD L,A (12T)"},
+    {"name": "fp16_is_zero", "sequence": "ADC A,L NEG SBC A,A LD L,A INC L", "ops": 5, "cost_t": 24},
+    {"name": "fp16_x2", "sequence": "INC H", "ops": 1, "cost_t": 4},
+    {"name": "fp16_half", "sequence": "DEC H", "ops": 1, "cost_t": 4}
+  ],
+  "not_found": ["int2fp16"],
+  "notes": "FP16 abs/neg found suboptimal sequences because AND/XOR immediate not in 33-op pool. Use idiom search (37-op) for bit-manipulation targets."
+}

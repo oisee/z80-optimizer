@@ -1,0 +1,14 @@
+{
+  "description": "BCD arithmetic idioms found by CPU brute-force (16-op pool with DAA)",
+  "ops": 16,
+  "results": [
+    {"name": "bcd_x10", "sequence": ["DAA", "ADD A,A", "ADD A,A", "ADD A,A", "ADD A,A"], "ops": 5, "note": "low byte of BCD*10; DAA normalizes then x16"},
+    {"name": "bcd_lo_digit", "sequence": ["AND 0x0F"], "ops": 1, "note": "extract low BCD digit"},
+    {"name": "bcd_hi_digit", "sequence": ["SRL A", "SRL A", "SRL A", "SRL A"], "ops": 4, "note": "extract high BCD digit (shift nibble down)"}
+  ],
+  "not_found": [
+    {"name": "bcd_to_bin", "max_depth": 6, "note": "needs (hi*10)+lo, minimum ~8 ops (multiply by 10 + add)"},
+    {"name": "bcd_x2", "max_depth": 6, "note": "KNOWN: ADD A,A + DAA (2 ops). Search missed it because our DAA model lacks half-carry (H) flag tracking. ADD 0x49+0x49=0x92 sets H flag, DAA needs H to correct low nibble. Model bug, not real absence."},
+    {"name": "bin_to_bcd", "max_depth": 7, "note": "needs double-dabble or divide-by-10, not brute-forceable at this depth"}
+  ]
+}
