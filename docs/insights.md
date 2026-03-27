@@ -896,3 +896,37 @@ Our format's strength: exponent manipulation is trivially fast.
 - Same 8-bit exponent range
 - 15-bit vs 7-bit mantissa (OUR is 2× more precise!)
 - ×2 cost: 4T vs 32T (OUR is 8× faster!)
+
+---
+
+## 2026-03-27: Float Brute-Force — What ACTUALLY to Search
+
+**Tags:** floating-point, brute-force, clarification
+
+**DON'T brute-force:** float add/mul/div algorithms (known from textbooks).
+**DO brute-force:** Z80-specific sub-step implementations.
+
+**~30 small targets, seconds each:**
+
+1. **Variable barrel shift** (Z80 has none!): shift HL right by N (in A).
+   15 targets, one per shift amount. Our SRL sled is already close.
+
+2. **CLZ on 16-bit HL**: count leading zeros → A.
+   One target. Z80 has no BSR. Need sequence of tests + count.
+
+3. **Format conversion bit-shuffles** (~8 targets):
+   - IEEE half [SEEEEEММ][ММММММММ] → Z80-FP16 [EEEEEEEE][SМММММММ]
+   - Bfloat16 [SEEEEEEE][EМММММММ] → Z80-FP16
+   - And reverses
+   Each is a fixed HL→HL bit permutation. Perfect for brute-force.
+
+4. **Round-to-nearest** on 7/15-bit mantissa (1 target)
+
+5. **Special case detection** (~5 targets): is_zero, is_inf, is_nan, is_denormal
+
+**Why this works:** each sub-step is a small fixed function (HL→HL or HL→A).
+State = 2-3 bytes. Pool = 15-20 ops. Depth ≤ 8. Seconds per target.
+
+The ALGORITHM (add/mul/div) is textbook. The IMPLEMENTATION sub-steps are what
+we brute-force to find Z80-optimal sequences. Then compose sub-steps = complete
+float library with provably optimal sub-operations.
