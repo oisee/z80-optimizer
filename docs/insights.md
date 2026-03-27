@@ -956,3 +956,32 @@ Refined brute-force targets for float (~15):
 collapses search space. Same principle applies to all "parameterized"
 operations: mul_K, div_K, shr_N, shl_N are all single virtual ops
 in the abstract machine.
+
+---
+
+## 2026-03-27: Carry-Aware Abstract Machine for Multi-Byte Arithmetic
+
+**Tags:** abstract-machine, carry, float, multi-byte
+
+Extended abstract machine with carry propagation:
+  {dbl, add, sub, **adc**, **sbc**, save, neg, shr, shl,
+   **carry_clear**, **carry_set**, **rol**, **ror**} = 13 ops
+
+**adc/sbc** = add/subtract with carry from previous operation.
+Essential for: multi-byte addition, float mantissa ops, 24/32-bit arithmetic.
+
+Materialization:
+| Abstract | Z80 | 6502 | RISC-V |
+|----------|-----|------|--------|
+| adc | ADC A,B (4T) / ADC HL,BC (15T) | ADC zp (3cy) | no native carry-add |
+| sbc | SBC A,B (4T) / SBC HL,BC (15T) | SBC zp (3cy) | no native carry-sub |
+| carry_clear | OR A (4T) | CLC (2cy) | — |
+| rol | RL r (8T) | ROL (2cy) | — |
+| ror | RR r (8T) | ROR (2cy) | — |
+
+**6502 has NATIVE carry arithmetic** — ADC/SBC always use carry.
+Z80 has both carry-aware (ADC/SBC) and carry-unaware (ADD/SUB) variants.
+RISC-V has no carry flag — multi-byte needs explicit compare+branch.
+
+This makes 6502 BETTER than Z80 for multi-byte float ops!
+(But Z80 has 16-bit register pairs for mantissa — 6502 doesn't.)
