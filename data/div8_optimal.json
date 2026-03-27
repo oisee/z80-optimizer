@@ -4977,6 +4977,55 @@
     "preamble_tstates": 11
   },
   {
+    "k": 129,
+    "ops": [
+      "SRL",
+      "A",
+      "LD",
+      "C,A",
+      "ADD",
+      "HL,BC",
+      "ADD",
+      "HL,HL",
+      "ADD",
+      "HL,BC",
+      "ADD",
+      "HL,HL",
+      "ADD",
+      "HL,BC",
+      "ADD",
+      "HL,HL",
+      "LD",
+      "A,H",
+      "ADD",
+      "HL,BC",
+      "SHR_HL",
+      "LD",
+      "C,A",
+      "SHR_HL",
+      "SHR_HL",
+      "ADD",
+      "HL,BC",
+      "LD",
+      "A,H"
+    ],
+    "length": 16,
+    "tstates": 160,
+    "clobber": [
+      "A",
+      "C",
+      "H",
+      "L",
+      "F"
+    ],
+    "clobber_mask": 41,
+    "preamble": [
+      "LD L, A",
+      "LD H, 0"
+    ],
+    "preamble_tstates": 11
+  },
+  {
     "k": 130,
     "ops": [
       "SHR_HL",
