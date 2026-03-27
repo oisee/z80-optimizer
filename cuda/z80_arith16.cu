@@ -193,6 +193,19 @@ static void gen_target(const char *name, uint16_t *tgt) {
         else if (!strcmp(name, "and_7f"))  tgt[i] = hl & 0x007F;
         else if (!strcmp(name, "or_80"))   tgt[i] = hl | 0x0080;
         else if (!strcmp(name, "hi_byte")) tgt[i] = (hl >> 8) & 0xFF;
+        else if (!strcmp(name, "int2fp16")) {
+            // int (in L) → Z80-FP16 (in HL): H=exp, L=mant
+            uint8_t inp = hl & 0xFF;
+            if (inp == 0) { tgt[i] = 0; }
+            else {
+                int exp = 127;
+                uint8_t v = inp;
+                while (v >= 2) { v >>= 1; exp++; }
+                // mant = ((inp / 2^(exp-127)) - 1) * 128
+                uint8_t mant = ((inp << 7) >> (exp - 127)) & 0x7F;
+                tgt[i] = ((uint16_t)(exp & 0xFF) << 8) | mant;
+            }
+        }
         else if (!strcmp(name, "byteswap")) tgt[i] = (l_in << 8) | 0; // H=L, L=0 — same as x256
         else if (!strcmp(name, "realswap")) { // true swap: H↔L (when H≠0 too)
             // Input HL: H=0, L=input. Output: H=input, L=0. Same as x256 for 8-bit input.
@@ -244,7 +257,7 @@ int main(int argc, char *argv[]) {
     cudaMemcpy(d_best, &dummy, 4, cudaMemcpyHostToDevice);
     cudaDeviceSynchronize();
     
-    const char *all[] = {"neg","shr1","shr4","shl4","swap","x256","sext","clamp127","hl_ne_0","neg8_in_hl","not_hl","shr8","mul3_hl","mul5_hl","mul10_hl","inc_hl","dec_hl",NULL};
+    const char *all[] = {"neg","shr1","shr4","shl4","swap","x256","sext","clamp127","hl_ne_0","neg8_in_hl","not_hl","shr8","mul3_hl","mul5_hl","mul10_hl","inc_hl","dec_hl","int2fp16",NULL};
     
     for (int ii = 0; all[ii]; ii++) {
         if (!runAll && strcmp(idiom, all[ii]) != 0) continue;

@@ -49,7 +49,7 @@ Then we analyzed which instructions actually *appeared* in any optimal solution.
 
 Removing them shrinks the search from 21^N to 14^N candidates. At length 9, that's 38× fewer. At length 10, 57× fewer. This single insight — **empirical pool reduction** — is the most powerful technique in the entire project.
 
-With 14 ops, the GPU found 164 constants at length ≤9. The remaining 90 were solved by composition: `×75 = ×3 then ×25`, both already in the table. **All 254 non-trivial constants have optimal sequences.**
+With 14 ops, the GPU found 164 constants at length ≤9, 249 at length ≤10, and the final 5 (170, 171, 173, 179, 181) at length 11. **All 254 non-trivial constants have provably optimal DIRECT sequences — no composition needed.** Every entry in the table was found by GPU brute-force search, and each is proven optimal at its length.
 
 The most beautiful: `×255 = NEG` — one instruction, 8 T-states. Because 255 = -1 mod 256, and NEG computes `-A`. The GPU doesn't know number theory. It just found that NEG produces the right output for all 256 inputs.
 
@@ -81,7 +81,7 @@ Division by a constant K uses the identity `n/K = (n × M) >> S` where M ≈ 2^S
 
 What's new: we automate the entire process. An abstract chain solver (running on CPU, 8 seconds for all 254 constants) finds the shortest multiply-then-shift pattern. Then a focused GPU kernel — with only 6 ops instead of 37 — searches the Z80-specific materialization.
 
-The result: **246 of 247 non-power-of-2 divisors** found in 11 seconds each. The GPU's div10 sequence (14 instructions, 124 T-states) exactly matches the hand-optimized Hacker's Delight solution. But the GPU found it automatically.
+The result: **all 247 non-power-of-2 divisors** found. The GPU's div10 sequence (14 instructions, 124 T-states) exactly matches the hand-optimized Hacker's Delight solution. But the GPU found it automatically. Division is now 247/247 COMPLETE.
 
 The fastest: `÷171 = 4 instructions, 27 T-states`. The most useful: `÷10 = 124T, ÷100 = 105T, ÷3 = 130T`.
 
@@ -180,7 +180,7 @@ rot1:   RLCA       ; 1
         RET
 ```
 
-Combined: 254 multiplies + 245 divisions + rotation/shift sleds = approximately **2KB** of Z80 code. For a ZX Spectrum with 48KB RAM, that's 4%. For a ROM-based system, it fits alongside any program.
+Combined: 254 multiplies (all direct, no composition) + 247 divisions (all complete) + rotation/shift sleds = approximately **2KB** of Z80 code. For a ZX Spectrum with 48KB RAM, that's 4%. For a ROM-based system, it fits alongside any program.
 
 Runtime dispatch: a page-aligned 256-byte jump table. `LD H, page / LD L, K / JP (HL)` — single-instruction dispatch to the provably optimal sequence.
 

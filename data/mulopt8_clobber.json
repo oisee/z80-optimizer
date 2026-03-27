@@ -3777,6 +3777,56 @@
     "clobber_mask": 7
   },
   {
+    "k": 170,
+    "ops": [
+      "RLA",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 11,
+    "tstates": 44,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 171,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 11,
+    "tstates": 48,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
     "k": 172,
     "ops": [
       "NEG",
@@ -3792,6 +3842,31 @@
     ],
     "length": 10,
     "tstates": 44,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 173,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B"
+    ],
+    "length": 11,
+    "tstates": 48,
     "clobber": [
       "A",
       "B",
@@ -3920,6 +3995,31 @@
     "clobber_mask": 7
   },
   {
+    "k": 179,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,B",
+      "ADD A,A",
+      "RLCA",
+      "SBC A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 11,
+    "tstates": 48,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
     "k": 180,
     "ops": [
       "NEG",
@@ -3935,6 +4035,31 @@
     ],
     "length": 10,
     "tstates": 44,
+    "clobber": [
+      "A",
+      "B",
+      "F",
+      "carry"
+    ],
+    "clobber_mask": 7
+  },
+  {
+    "k": 181,
+    "ops": [
+      "NEG",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "LD B,A",
+      "ADD A,B",
+      "ADD A,B",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,A",
+      "ADD A,B"
+    ],
+    "length": 11,
+    "tstates": 48,
     "clobber": [
       "A",
       "B",

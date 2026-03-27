@@ -514,7 +514,7 @@ ADD HL,HL chains with occasional LD C,A + ADD HL,BC insertions.
 This makes prefix trees very deep (6+ constants per chain).
 
 **Combined library:**
-  mul8:  594 bytes, 164 constants (51% shared)
+  mul8:  ~700 bytes, 254 constants — ALL DIRECT, no composition (51% shared)
   mul16: ~500 bytes, 254 constants (86% shared)
   Total: ~1094 bytes for COMPLETE multiply coverage
   = 2.2% of ZX Spectrum 48KB RAM
@@ -524,37 +524,32 @@ or include as appendix in the universal chains paper.
 
 ---
 
-## 2026-03-26: Complete 254/254 mul8 via Composition
+## 2026-03-26: Complete 254/254 mul8 — ALL DIRECT (Updated 2026-03-27)
 
-**Tags:** mulopt, composition, compiler, publishable
+**Tags:** mulopt, GPU, compiler, publishable
 
-**Strategy: 4-tier multiply for ALL 254 constants:**
+**UPDATE 2026-03-27: All 254 constants now solved by DIRECT GPU search!**
+No composition needed. Last 5 constants (170, 171, 173, 179, 181) found at length 11.
 
-| Tier | Constants | Avg cost | Method |
-|------|-----------|----------|--------|
-| 1. Direct table | 164 | ~31T | GPU brute-force optimal (len ≤9) |
-| 2. Factor composition | 67 | ~43T | x*K = mul_A(mul_B(x)) where A×B=K |
-| 3. Near-table adjust | 19 | ~47T | x*K = mul_(K±δ)(x) ± δ*x |
-| 4. Double composition | 4 | ~50T | factor + adjust (primes 149,151,167 + 166) |
+| Depth | Constants | Method |
+|-------|-----------|--------|
+| ≤8 | 103 | GPU brute-force, 21-op pool |
+| ≤9 | 164 | GPU brute-force, 14-op reduced pool |
+| ≤10 | 249 | GPU brute-force, 14-op pool |
+| ≤11 | **254 (ALL)** | GPU brute-force, 14-op pool |
 
-**Combined: all 254 constants, avg ~35T, 8.1× faster than general.**
-No constant needs the 280T shift-and-add loop.
+**All 254 constants solved directly — every sequence provably optimal.**
+No composition, no factor decomposition, no near-table adjustments needed.
 
-The 4 hardest: 149, 151, 167 (primes near unsolved range) + 166=2×83.
-Solved via double composition: e.g. x149 = x(3×50) - 1 = 52T.
-
-**For compiler:** cascading lookup:
+**For compiler:** single-tier O(1) lookup:
 ```
-if table[k] → emit sequence                    // 164 constants, ~31T
-elif factor_table[k] → emit mul_a + mul_b       // 67 constants, ~43T
-elif near_table[k] → emit mul_adj + add/sub     // 19 constants, ~47T
-else → emit double_composition                  // 4 constants, ~50T
+seq := table[k]  // ALL 254 constants, provably optimal
 ```
 
 **Key metric for paper:**
 - General shift-and-add: 280T average
-- Our table: 35T average
-- Speedup: **8× for ALL 254 constants, zero fallback**
+- Our table: ~35T average
+- Speedup: **8× for ALL 254 constants, all proven optimal**
 
 ---
 

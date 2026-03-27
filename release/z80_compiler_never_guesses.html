@@ -4,8 +4,149 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>The Z80 Compiler That Never Guesses</title>
+  <title>article_draft</title>
   <style>
+    html {
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      overflow-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 12px;
+      }
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+    @media print {
+      html {
+        background-color: white;
+      }
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+      font-size: 85%;
+      margin: 0;
+      hyphens: manual;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+      overflow-wrap: normal;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC ul {
+      padding-left: 1.3em;
+    }
+    #TOC > ul {
+      padding-left: 0;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
     code{white-space: pre-wrap;}
     span.smallcaps{font-variant: small-caps;}
     div.columns{display: flex; gap: min(4vw, 1.5em);}
@@ -86,86 +227,8 @@
     code span.vs { color: #4070a0; } /* VerbatimString */
     code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
   </style>
-  <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css" />
 </head>
 <body>
-<header id="title-block-header">
-<h1 class="title">The Z80 Compiler That Never Guesses</h1>
-</header>
-<nav id="TOC" role="doc-toc">
-<ul>
-<li><a href="#the-z80-compiler-that-never-guesses"
-id="toc-the-z80-compiler-that-never-guesses">The Z80 Compiler That Never
-Guesses</a>
-<ul>
-<li><a href="#part-1-the-brute-force-philosophy"
-id="toc-part-1-the-brute-force-philosophy">Part 1: The Brute-Force
-Philosophy</a>
-<ul>
-<li><a href="#why-it-works-on-z80" id="toc-why-it-works-on-z80">Why It
-Works on Z80</a></li>
-<li><a href="#the-three-stage-pipeline"
-id="toc-the-three-stage-pipeline">The Three-Stage Pipeline</a></li>
-</ul></li>
-<li><a href="#part-2-constant-multiplication-when-3-ops-suffice"
-id="toc-part-2-constant-multiplication-when-3-ops-suffice">Part 2:
-Constant Multiplication — When 3 Ops Suffice</a>
-<ul>
-<li><a href="#the-14-op-discovery" id="toc-the-14-op-discovery">The
-14-Op Discovery</a></li>
-<li><a href="#the-3-op-miracle" id="toc-the-3-op-miracle">The 3-Op
-Miracle</a></li>
-</ul></li>
-<li><a href="#part-3-division-when-abstract-chains-guide-the-gpu"
-id="toc-part-3-division-when-abstract-chains-guide-the-gpu">Part 3:
-Division — When Abstract Chains Guide the GPU</a>
-<ul>
-<li><a href="#the-reciprocal-trick" id="toc-the-reciprocal-trick">The
-Reciprocal Trick</a></li>
-<li><a href="#guided-brute-force" id="toc-guided-brute-force">Guided
-Brute-Force</a></li>
-</ul></li>
-<li><a href="#part-4-the-idiom-zoo" id="toc-part-4-the-idiom-zoo">Part
-4: The Idiom Zoo</a></li>
-<li><a href="#part-5-register-allocation-the-feasibility-cliff"
-id="toc-part-5-register-allocation-the-feasibility-cliff">Part 5:
-Register Allocation — The Feasibility Cliff</a>
-<ul>
-<li><a href="#million-exhaustive-solutions"
-id="toc-million-exhaustive-solutions">83.6 Million Exhaustive
-Solutions</a></li>
-<li><a href="#infeasibility-for-real-programs"
-id="toc-infeasibility-for-real-programs">97.7% Infeasibility for Real
-Programs</a></li>
-<li><a href="#the-five-level-pipeline"
-id="toc-the-five-level-pipeline">The Five-Level Pipeline</a></li>
-</ul></li>
-<li><a href="#part-6-the-packed-arithmetic-library"
-id="toc-part-6-the-packed-arithmetic-library">Part 6: The Packed
-Arithmetic Library</a>
-<ul>
-<li><a href="#multi-entry-fall-through-code"
-id="toc-multi-entry-fall-through-code">Multi-Entry Fall-Through
-Code</a></li>
-</ul></li>
-<li><a href="#part-7-universal-computation-chains"
-id="toc-part-7-universal-computation-chains">Part 7: Universal
-Computation Chains</a>
-<ul>
-<li><a href="#isa-independent-search"
-id="toc-isa-independent-search">ISA-Independent Search</a></li>
-</ul></li>
-<li><a href="#part-8-cross-platform-verification"
-id="toc-part-8-cross-platform-verification">Part 8: Cross-Platform
-Verification</a></li>
-<li><a href="#part-9-for-the-compiler"
-id="toc-part-9-for-the-compiler">Part 9: For the Compiler</a></li>
-<li><a href="#conclusion-the-compiler-that-never-guesses"
-id="toc-conclusion-the-compiler-that-never-guesses">Conclusion: The
-Compiler That Never Guesses</a></li>
-</ul></li>
-</ul>
-</nav>
 <h1 id="the-z80-compiler-that-never-guesses">The Z80 Compiler That Never
 Guesses</h1>
 <p><em>How GPU brute-force proved optimal Z80 code — and why 97.7% of
@@ -238,10 +301,11 @@ optimal solution. Seven never did: - <code>SLA A</code> — identical to
 length 9, that’s 38× fewer. At length 10, 57× fewer. This single insight
 — <strong>empirical pool reduction</strong> — is the most powerful
 technique in the entire project.</p>
-<p>With 14 ops, the GPU found 164 constants at length ≤9. The remaining
-90 were solved by composition: <code>×75 = ×3 then ×25</code>, both
-already in the table. <strong>All 254 non-trivial constants have optimal
-sequences.</strong></p>
+<p>With 14 ops, the GPU found 164 constants at length ≤9, 249 at length
+≤10, and the final 5 (170, 171, 173, 179, 181) at length 11. <strong>All
+254 non-trivial constants have provably optimal DIRECT sequences — no
+composition needed.</strong> Every entry in the table was found by GPU
+brute-force search, and each is proven optimal at its length.</p>
 <p>The most beautiful: <code>×255 = NEG</code> — one instruction, 8
 T-states. Because 255 = -1 mod 256, and NEG computes <code>-A</code>.
 The GPU doesn’t know number theory. It just found that NEG produces the
@@ -280,10 +344,10 @@ shift. The technique is well-known from Hacker’s Delight.</p>
 (running on CPU, 8 seconds for all 254 constants) finds the shortest
 multiply-then-shift pattern. Then a focused GPU kernel — with only 6 ops
 instead of 37 — searches the Z80-specific materialization.</p>
-<p>The result: <strong>246 of 247 non-power-of-2 divisors</strong> found
-in 11 seconds each. The GPU’s div10 sequence (14 instructions, 124
-T-states) exactly matches the hand-optimized Hacker’s Delight solution.
-But the GPU found it automatically.</p>
+<p>The result: <strong>all 247 non-power-of-2 divisors</strong> found.
+The GPU’s div10 sequence (14 instructions, 124 T-states) exactly matches
+the hand-optimized Hacker’s Delight solution. But the GPU found it
+automatically. Division is now 247/247 COMPLETE.</p>
 <p>The fastest: <code>÷171 = 4 instructions, 27 T-states</code>. The
 most useful: <code>÷10 = 124T, ÷100 = 105T, ÷3 = 130T</code>.</p>
 <h3 id="guided-brute-force">Guided Brute-Force</h3>
@@ -437,10 +501,10 @@ class="sourceCode asm"><code class="sourceCode fasm"><span id="cb5-1"><a href="#
 <span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="fu">rot2:</span>   RLCA       <span class="co">; 2</span></span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">rot1:</span>   RLCA       <span class="co">; 1</span></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">RET</span></span></code></pre></div>
-<p>Combined: 254 multiplies + 245 divisions + rotation/shift sleds =
-approximately <strong>2KB</strong> of Z80 code. For a ZX Spectrum with
-48KB RAM, that’s 4%. For a ROM-based system, it fits alongside any
-program.</p>
+<p>Combined: 254 multiplies (all direct, no composition) + 247 divisions
+(all complete) + rotation/shift sleds = approximately
+<strong>2KB</strong> of Z80 code. For a ZX Spectrum with 48KB RAM,
+that’s 4%. For a ROM-based system, it fits alongside any program.</p>
 <p>Runtime dispatch: a page-aligned 256-byte jump table.
 <code>LD H, page / LD L, K / JP (HL)</code> — single-instruction
 dispatch to the provably optimal sequence.</p>

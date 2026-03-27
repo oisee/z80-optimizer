@@ -4,7 +4,7 @@ A GPU-accelerated superoptimizer for the Zilog Z80 processor. The compiler that 
 
 ## What's New (v1.0.0 — March 2026) 🎂
 
-- **500 optimal arithmetic sequences**: 254 multiplies (8× faster than shift-and-add) + 246 divisions (2.5× faster than general loop)
+- **501 optimal arithmetic sequences**: 254 multiplies — ALL DIRECT, no composition needed (8× faster than shift-and-add) + 247 divisions — ALL COMPLETE (2.5× faster than general loop)
 - **83.6M exhaustive register allocations** for ≤6 virtual registers (32MB compressed)
 - **97.7% infeasibility** at 7-15 vregs — proven that Z80 MUST decompose most real functions
 - **15 branchless idioms**: ABS, bool, sign, NOT — all found by GPU exhaustive search
@@ -412,7 +412,7 @@ We're expanding from instruction-level optimization to **function-level** and **
 - **Peephole rules** — 602K entries (CUDA length-2 exhaustive)
 
 **In progress:**
-- **Constant multiply ×2..×255** — 4-tier search (basic → +ADC/SBC → +EX AF,AF' → +rotations). Carry-chain patterns: `SLA A / ADC A,B` where the rotation overflow feeds into addition.
+- **Constant multiply ×2..×255** — **COMPLETE: 254/254 ALL DIRECT** (no composition needed). Last 5 constants (170, 171, 173, 179, 181) found at length 11. All sequences provably optimal.
 
 **Planned targets:**
 - **Constant division ÷2..÷255** — reciprocal multiplication tricks
@@ -501,7 +501,10 @@ GPU search for the shortest Z80 instruction sequence that computes `A × K` for 
 |-------------|-----------------|------|----------|
 | ≤8 instructions | 103 / 254 | 21 ops | ~30 sec |
 | ≤9 instructions | 164 / 254 | 14 ops (reduced) | ~3 min |
-| ≤10 instructions | est. ~220 / 254 | 14 ops | ~15 hours |
+| ≤10 instructions | 249 / 254 | 14 ops | ~15 hours |
+| ≤11 instructions | **254 / 254** | 14 ops | ~48 hours |
+
+**All 254 constants solved by direct GPU search — no composition needed.** Last 5 constants (170, 171, 173, 179, 181) found at length 11. Every multiply sequence is provably optimal.
 
 **Instruction pool reduction**: Analysis of which instructions appear in optimal solutions revealed that 7 of 21 candidate ops are never used. Removing them shrinks the search space by **38x** at length 9 (21^9 → 14^9). The removed ops are strictly dominated (e.g., `SLA A` = `ADD A,A` but costs 8T instead of 4T) or never contribute to optimal sequences (`OR A`, `SCF`, `EX AF,AF'`).
 

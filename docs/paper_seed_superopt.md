@@ -8,9 +8,9 @@
 |------|-------|--------|------|
 | Peephole rules (len-2) | 739K | GPU exhaustive | minutes |
 | Dead-flags peephole | 1.4M+ (partial) | GPU with flag masking | running |
-| Constant multiply (u8) | **254/254** | GPU + composition | hours |
+| Constant multiply (u8) | **254/254** | GPU direct (ALL, no composition) | hours |
 | Constant multiply (u16) | **254/254** | 3-op GPU (30 sec!) | seconds |
-| Constant division (u8) | **246/247** | Guided brute-force | 11 sec each |
+| Constant division (u8) | **247/247** | Guided brute-force | 11 sec each |
 | Branchless idioms | **15** | 37-op GPU | 2 sec |
 | 16-bit idioms | **7** | 33-op GPU | 6 sec |
 | Register allocations | **83.6M** | GPU exhaustive | 6 hours |
@@ -116,20 +116,22 @@ Try ALL pairs of Z80 instructions. For each pair, check if a single
 instruction produces the same output for ALL possible inputs. 739K pairs
 found. GPU does this 30× faster than CPU.
 
-### Act II: Constant Multiply (254/254)
+### Act II: Constant Multiply (254/254 ALL DIRECT)
 For each constant K, find the shortest sequence where `A_out = A_in × K`.
 GPU tries all sequences up to length N. 21 ops → analyze which appear →
-only 14 matter → 38× faster → go deeper.
+only 14 matter → 38× faster → go deeper. All 254 constants solved by
+direct GPU search — no composition needed. Last 5 (170, 171, 173, 179, 181)
+found at length 11.
 
 Key discovery: only 3 ops needed for 16-bit multiply (ADD HL,HL + ADD HL,BC + LD C,A).
 This is the minimal basis. 13,600× speedup from pool reduction.
 
-### Act III: Division (246/247)
+### Act III: Division (247/247 COMPLETE)
 Division is HARD — no Z80 hardware divide. But abstract chains predict:
 `n / K = (n × M) >> S`. GPU searches the 6-op materialization space.
 
 div10 = 124T matches Hacker's Delight. Found automatically in 11 seconds.
-245 divisors found total. Only div129 remaining.
+All 247 non-power-of-2 divisors found. Division table is COMPLETE.
 
 ### Act IV: Register Allocation (83.6M + 97.7% infeasibility)
 Enumerate ALL possible constraint shapes. GPU solves each exhaustively.
