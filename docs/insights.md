@@ -930,3 +930,29 @@ State = 2-3 bytes. Pool = 15-20 ops. Depth ≤ 8. Seconds per target.
 The ALGORITHM (add/mul/div) is textbook. The IMPLEMENTATION sub-steps are what
 we brute-force to find Z80-optimal sequences. Then compose sub-steps = complete
 float library with provably optimal sub-operations.
+
+---
+
+## 2026-03-27: Float Sub-Steps — Barrel Shift Already Solved
+
+**Tags:** floating-point, barrel-shift, optimization
+
+**Barrel shift is NOT a brute-force target.** Already solved via:
+- SHR sled: multi-entry SRL chain, `CALL shr_N` for runtime N
+- SHL sled: multi-entry ADD HL,HL chain
+- Inline: SRL×N or ADD HL,HL×N for compile-time N (always faster than CALL)
+
+**This eliminates 15 of 30 originally planned targets.**
+
+Refined brute-force targets for float (~15):
+- 8 format conversions (IEEE↔Z80↔Bfloat↔int↔fixed, each = bit-shuffle)
+- CLZ on 16-bit HL
+- Normalize (shift + adjust exp)
+- Round-to-nearest
+- Compare, is_zero, is_inf
+- General 16×16 mul (textbook, verify not brute-force)
+
+**Virtual op insight:** treating multi-entry sled as single op
+collapses search space. Same principle applies to all "parameterized"
+operations: mul_K, div_K, shr_N, shl_N are all single virtual ops
+in the abstract machine.
