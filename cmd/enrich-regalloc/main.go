@@ -461,10 +461,20 @@ func scoreAssignment(nVregs int, assignment []int) []OpPattern {
 	return patterns
 }
 
+// Pattern indices for binary format (fixed order)
+var patternOrder = []string{
+	"u8_alu_avg", "u8_best_alu", "u8_worst_alu", "u16_add_natural",
+	"u8_mul_avg", "mul8_conflicts", "mul16_conflicts", "call_save_cost",
+	"call_free_saves", "temp_regs_avail", "u16_slots_free", "u8_regs_free",
+}
+
+const numPatterns = 12
+
 func main() {
 	inputPath := flag.String("input", "", "Input .bin file (uncompressed)")
-	outputPath := flag.String("output", "", "Output .json file")
+	outputPath := flag.String("output", "", "Output .json or .enr file")
 	limit := flag.Int("limit", 0, "Max records to process (0=all)")
+	binaryOut := flag.Bool("binary", false, "Output binary .enr format instead of JSON")
 	flag.Parse()
 
 	if *inputPath == "" || *outputPath == "" {
@@ -504,12 +514,24 @@ func main() {
 	}
 	defer out.Close()
 
-	enc := json.NewEncoder(out)
-	out.WriteString("[\n")
+	var enc *json.Encoder
+	if !*binaryOut {
+		enc = json.NewEncoder(out)
+		out.WriteString("[\n")
+	} else {
+		// Write binary header
+		out.Write([]byte("ENRT"))                               // magic
+		binary.Write(out, binary.LittleEndian, uint32(1))       // version
+		binary.Write(out, binary.LittleEndian, uint32(0))       // placeholder for count
+		binary.Write(out, binary.LittleEndian, uint8(0))        // max vregs (filled later)
+		binary.Write(out, binary.LittleEndian, uint8(numPatterns))
+		binary.Write(out, binary.LittleEndian, uint16(0))       // reserved
+	}
 
 	index := 0
 	feasible := 0
 	first := true
+	maxVregs := 0
 
 	for {
 		if *limit > 0 && index >= *limit {
@@ -523,12 +545,17 @@ func main() {
 		}
 
 		if b[0] == 0xFF {
-			// infeasible — skip
+			if *binaryOut {
+				out.Write([]byte{0xFF}) // infeasible marker
+			}
 			index++
 			continue
 		}
 
 		nv := int(b[0])
+		if nv > maxVregs {
+			maxVregs = nv
+		}
 		var cost uint16
 		binary.Read(f, binary.LittleEndian, &cost)
 		assign := make([]byte, nv)
@@ -547,23 +574,70 @@ func main() {
 
 		patterns := scoreAssignment(nv, assignInt)
 
-		entry := Entry{
-			Index:      index,
-			NVregs:     nv,
-			OrigCost:   int(cost),
-			Assignment: assignStr,
-			Patterns:   patterns,
+		if *binaryOut {
+			// Write binary entry
+			out.Write([]byte{byte(nv)})
+			binary.Write(out, binary.LittleEndian, cost)
+			out.Write(assign)
+
+			// Flags bitfield
+			var flags uint16
+			patMap := make(map[string]int)
+			for _, p := range patterns {
+				patMap[p.Name] = p.Cost
+			}
+			if _, ok := patMap["no_accumulator"]; ok {
+				flags |= 1 << 0
+			}
+			if _, ok := patMap["no_hl_pair"]; ok {
+				flags |= 1 << 1
+			}
+			if _, ok := patMap["mul8_safe"]; ok {
+				flags |= 1 << 2
+			}
+			if _, ok := patMap["djnz_conflict"]; ok {
+				flags |= 1 << 3
+			}
+			if v, ok := patMap["u16_pair_count"]; ok && v >= 2 {
+				flags |= 1 << 4
+			}
+			binary.Write(out, binary.LittleEndian, flags)
+
+			// Pattern costs in fixed order
+			for _, pn := range patternOrder {
+				v := uint16(0)
+				if c, ok := patMap[pn]; ok {
+					v = uint16(c)
+				}
+				binary.Write(out, binary.LittleEndian, v)
+			}
+		} else {
+			entry := Entry{
+				Index:      index,
+				NVregs:     nv,
+				OrigCost:   int(cost),
+				Assignment: assignStr,
+				Patterns:   patterns,
+			}
+			if !first {
+				out.WriteString(",\n")
+			}
+			enc.Encode(entry)
+			first = false
 		}
 
-		if !first {
-			out.WriteString(",\n")
-		}
-		enc.Encode(entry)
-		first = false
 		feasible++
 		index++
 	}
 
-	out.WriteString("]\n")
-	fmt.Fprintf(os.Stderr, "Processed %d shapes, %d feasible\n", index, feasible)
+	if !*binaryOut {
+		out.WriteString("]\n")
+	} else {
+		// Patch header with actual count and max vregs
+		out.Seek(8, 0)
+		binary.Write(out, binary.LittleEndian, uint32(index))
+		binary.Write(out, binary.LittleEndian, uint8(maxVregs))
+	}
+
+	fmt.Fprintf(os.Stderr, "Processed %d shapes, %d feasible, maxVregs=%d\n", index, feasible, maxVregs)
 }
