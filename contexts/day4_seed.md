@@ -79,3 +79,15 @@ gpugen ISA definition exists. Generate CUDA kernel for 6502 mul8.
 - Partition: ≤14v <1s, ≤18v <2min, ≤20v ~30min
 - div3 EXACT: A×171>>9
 - gray_decode EXACT: 13 ops, <1s Vulkan
+
+## Priority 9: Image Brute-Force (Introspec + RMDA)
+- z80_image_search.cu ready (exhaustive + hill climbing)
+- Current metric too simple (block Hamming) → need perceptual
+- Introspec: "с нормальной метрикой на VGG можно поднять качество в разы"
+- Ideas: CNN face classifier as fitness, CLIP embeddings, VGG perceptual loss
+- Introspec will send his C++ brute-forcer code (from BB/Big Brother demo)
+- Target: 128×96 mono, pRNG SEED → image → CNN score → find best
+- Also: Introspec's chunk rendering (POP HL; LDD; LD A,(HL); LD (BC),A)
+  = vector quantization problem for optimal conversion table
+- Book: sidebar for Ch.3 (CALL-chain) + Ch.7 (chunky pixels)
+- Maxim (RMDA): Hole #17 source analyzed, CALL-chain + RL(IX+N),R
