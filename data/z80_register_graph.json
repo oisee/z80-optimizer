@@ -1,0 +1,159 @@
+{
+  "description": "Z80 complete register operation graph — costs in T-states",
+  "registers": ["A","F","B","C","D","E","H","L","IXH","IXL","IYH","IYL","A'","F'","B'","C'","D'","E'","H'","L'","SP"],
+
+  "move": {
+    "_doc": "LD dst,src — direct register-to-register move costs. null = impossible direct",
+    "A":   {"B":4,"C":4,"D":4,"E":4,"H":4,"L":4,"IXH":8,"IXL":8,"IYH":8,"IYL":8,"(HL)":7,"(BC)":7,"(DE)":7,"n":7,"(nn)":13},
+    "B":   {"A":4,"C":4,"D":4,"E":4,"H":4,"L":4,"IXH":8,"IXL":8,"IYH":8,"IYL":8,"(HL)":7,"n":7},
+    "C":   {"A":4,"B":4,"D":4,"E":4,"H":4,"L":4,"IXH":8,"IXL":8,"IYH":8,"IYL":8,"(HL)":7,"n":7},
+    "D":   {"A":4,"B":4,"C":4,"E":4,"H":4,"L":4,"IXH":8,"IXL":8,"IYH":8,"IYL":8,"(HL)":7,"n":7},
+    "E":   {"A":4,"B":4,"C":4,"D":4,"H":4,"L":4,"IXH":8,"IXL":8,"IYH":8,"IYL":8,"(HL)":7,"n":7},
+    "H":   {"A":4,"B":4,"C":4,"D":4,"E":4,"L":4,"(HL)":7,"n":7},
+    "L":   {"A":4,"B":4,"C":4,"D":4,"E":4,"H":4,"(HL)":7,"n":7},
+    "IXH": {"A":8,"B":8,"C":8,"D":8,"E":8,"IXL":8,"n":11},
+    "IXL": {"A":8,"B":8,"C":8,"D":8,"E":8,"IXH":8,"n":11},
+    "IYH": {"A":8,"B":8,"C":8,"D":8,"E":8,"IYL":8,"n":11},
+    "IYL": {"A":8,"B":8,"C":8,"D":8,"E":8,"IYH":8,"n":11},
+    "_note_HL_IX": "H,L cannot LD to/from IXH,IXL,IYH,IYL — DD prefix hijacks H/L encoding"
+  },
+
+  "move_tricks": {
+    "_doc": "Multi-instruction move paths for impossible direct moves",
+    "H→IXH": {"seq": ["EX DE,HL","LD IXH,D","EX DE,HL"], "cost": 16, "clobber": []},
+    "H→IXL": {"seq": ["EX DE,HL","LD IXL,D","EX DE,HL"], "cost": 16, "clobber": []},
+    "L→IXH": {"seq": ["EX DE,HL","LD IXH,E","EX DE,HL"], "cost": 16, "clobber": []},
+    "L→IXL": {"seq": ["EX DE,HL","LD IXL,E","EX DE,HL"], "cost": 16, "clobber": []},
+    "IXH→H": {"seq": ["EX DE,HL","LD D,IXH","EX DE,HL"], "cost": 16, "clobber": []},
+    "IXL→L": {"seq": ["EX DE,HL","LD E,IXL","EX DE,HL"], "cost": 16, "clobber": []},
+    "H→IYH": {"seq": ["EX DE,HL","LD IYH,D","EX DE,HL"], "cost": 16, "clobber": []},
+    "L→IYL": {"seq": ["EX DE,HL","LD IYL,E","EX DE,HL"], "cost": 16, "clobber": []},
+    "_via_A":  {"pattern": "r→A→IX*", "cost": 12, "clobber": ["A"], "note": "LD A,H; LD IXH,A = 12T but clobbers A"},
+    "_via_stack": {"pattern": "rr→stack→rr", "cost": 22, "clobber": [], "note": "PUSH rr; POP IX = 22T, moves 16 bits"}
+  },
+
+  "swap": {
+    "_doc": "Register swap operations (both directions simultaneously)",
+    "DE↔HL":  {"instr": "EX DE,HL", "cost": 4, "clobber": []},
+    "AF↔AF'": {"instr": "EX AF,AF'", "cost": 4, "clobber": []},
+    "BC↔BC' + DE↔DE' + HL↔HL'": {"instr": "EXX", "cost": 4, "clobber": [], "note": "swaps ALL three pairs"},
+    "HL↔(SP)": {"instr": "EX (SP),HL", "cost": 19, "clobber": [], "note": "exchange HL with top of stack"},
+    "IX↔(SP)": {"instr": "EX (SP),IX", "cost": 23, "clobber": []},
+    "IY↔(SP)": {"instr": "EX (SP),IY", "cost": 23, "clobber": []}
+  },
+
+  "alu_8bit": {
+    "_doc": "8-bit ALU: always dst=A, src=register. Cost includes the ALU op only.",
+    "ADD": {"A":4,"B":4,"C":4,"D":4,"E":4,"H":4,"L":4,"(HL)":7,"IXH":8,"IXL":8,"IYH":8,"IYL":8,"n":7},
+    "ADC": {"A":4,"B":4,"C":4,"D":4,"E":4,"H":4,"L":4,"(HL)":7,"n":7},
+    "SUB": {"A":4,"B":4,"C":4,"D":4,"E":4,"H":4,"L":4,"(HL)":7,"IXH":8,"IXL":8,"IYH":8,"IYL":8,"n":7},
+    "SBC": {"A":4,"B":4,"C":4,"D":4,"E":4,"H":4,"L":4,"(HL)":7,"n":7},
+    "AND": {"A":4,"B":4,"C":4,"D":4,"E":4,"H":4,"L":4,"(HL)":7,"IXH":8,"IXL":8,"n":7},
+    "OR":  {"A":4,"B":4,"C":4,"D":4,"E":4,"H":4,"L":4,"(HL)":7,"IXH":8,"IXL":8,"n":7},
+    "XOR": {"A":4,"B":4,"C":4,"D":4,"E":4,"H":4,"L":4,"(HL)":7,"IXH":8,"IXL":8,"n":7},
+    "CP":  {"A":4,"B":4,"C":4,"D":4,"E":4,"H":4,"L":4,"(HL)":7,"IXH":8,"IXL":8,"n":7},
+    "_constraint": "dst MUST be A. To ADD B,C need: LD A,B; ADD C; LD B,A = 12T"
+  },
+
+  "alu_unary": {
+    "_doc": "Unary ops on A only (unless CB-prefixed)",
+    "NEG":  {"reg": "A", "cost": 8, "flags": true},
+    "CPL":  {"reg": "A", "cost": 4, "flags": "H,N only"},
+    "DAA":  {"reg": "A", "cost": 4, "flags": true},
+    "RLCA": {"reg": "A", "cost": 4, "flags": "CY only"},
+    "RRCA": {"reg": "A", "cost": 4, "flags": "CY only"},
+    "RLA":  {"reg": "A", "cost": 4, "flags": "CY only"},
+    "RRA":  {"reg": "A", "cost": 4, "flags": "CY only"},
+    "SCF":  {"cost": 4, "sets": "CY=1"},
+    "CCF":  {"cost": 4, "sets": "CY=~CY"}
+  },
+
+  "cb_prefix": {
+    "_doc": "CB-prefixed: work on ANY register (8T) or (HL) (15T)",
+    "ops": ["RLC","RRC","RL","RR","SLA","SRA","SRL","SLL","BIT","SET","RES"],
+    "cost_reg": 8,
+    "cost_hl": 15,
+    "cost_ixd": 23,
+    "registers": ["A","B","C","D","E","H","L","(HL)","(IX+d)","(IY+d)"],
+    "_note": "SRL B = 8T. SRL A via RLCA/RRCA = 4T (cheaper!). BIT doesn't modify reg."
+  },
+
+  "inc_dec": {
+    "_doc": "INC/DEC — works on any 8-bit reg, doesn't affect CY",
+    "cost_reg": 4,
+    "cost_hl_indirect": 11,
+    "cost_ix_indirect": 23,
+    "registers_8bit": ["A","B","C","D","E","H","L","IXH","IXL","IYH","IYL"],
+    "cost_16bit": 6,
+    "registers_16bit": ["BC","DE","HL","SP","IX","IY"],
+    "_note": "INC/DEC 16-bit: NO flag changes! INC 8-bit: changes all flags except CY."
+  },
+
+  "alu_16bit": {
+    "_doc": "16-bit arithmetic — dst=HL (or IX/IY)",
+    "ADD_HL": {"BC":11,"DE":11,"HL":11,"SP":11, "flags": "CY,H only"},
+    "ADC_HL": {"BC":15,"DE":15,"HL":15,"SP":15, "flags": "all", "_note": "ED prefix"},
+    "SBC_HL": {"BC":15,"DE":15,"HL":15,"SP":15, "flags": "all", "_note": "ED prefix"},
+    "ADD_IX": {"BC":15,"DE":15,"IX":15,"SP":15},
+    "ADD_IY": {"BC":15,"DE":15,"IY":15,"SP":15}
+  },
+
+  "dual_accumulator": {
+    "_doc": "EX AF,AF' gives two accumulators — patterns for parallel computation",
+    "pattern_parallel_add": {
+      "desc": "Compute A+B and A'+C in parallel",
+      "seq": ["ADD B","EX AF,AF'","ADD C","EX AF,AF'"],
+      "cost": 16,
+      "note": "Two independent 8-bit results: A=A+B, A'=A'+C"
+    },
+    "pattern_save_flags": {
+      "desc": "Save A+flags before CALL, restore after",
+      "seq": ["EX AF,AF'","CALL nn","EX AF,AF'"],
+      "cost": "8+CALL",
+      "note": "Preserves both A and F across CALL without stack"
+    },
+    "pattern_two_comparisons": {
+      "desc": "Compare two values without losing first result",
+      "seq": ["CP B","EX AF,AF'","CP C","EX AF,AF'"],
+      "cost": 16,
+      "note": "A'F' holds second comparison, AF holds first"
+    }
+  },
+
+  "shadow_32bit": {
+    "_doc": "32-bit arithmetic using main+shadow banks",
+    "add32_hlhl_dede": {
+      "desc": "HLH'L' += DED'E' (32-bit add)",
+      "seq": ["ADD HL,DE","EXX","ADC HL,DE","EXX"],
+      "cost": 23,
+      "registers": "HL:H'L' = accumulator, DE:D'E' = operand"
+    },
+    "sub32_hlhl_dede": {
+      "desc": "HLH'L' -= DED'E' (32-bit sub)",
+      "seq": ["OR A","SBC HL,DE","EXX","SBC HL,DE","EXX"],
+      "cost": 27
+    },
+    "shift32_right": {
+      "desc": "HLH'L' >>= 1 (32-bit shift right)",
+      "seq": ["EXX","SRL H","RR L","EXX","RR H","RR L"],
+      "cost": 36
+    },
+    "available_32bit_regs": {
+      "HL:H'L'": "32-bit accumulator (ADD HL,rr + EXX + ADC HL,rr)",
+      "DE:D'E'": "32-bit operand",
+      "BC:B'C'": "32-bit free / counter",
+      "_total": "96 bits across 3 pairs × 2 banks"
+    }
+  },
+
+  "cross_bank_channels": {
+    "_doc": "Ways to pass data between main and shadow register banks",
+    "A": {"cost": 0, "width": 8, "note": "A is shared until EX AF,AF'"},
+    "EX_AF": {"cost": 4, "width": 16, "note": "Swap A+F with A'+F'"},
+    "stack": {"cost": 22, "width": 16, "note": "PUSH rr; EXX; POP rr"},
+    "IX_bridge": {"cost": 16, "width": 8, "note": "LD IXH,r; EXX; LD r,IXH — IX not affected by EXX"},
+    "IY_bridge": {"cost": 16, "width": 8, "note": "Same via IY"},
+    "direct_mem": {"cost": 26, "width": 8, "note": "LD (nn),A; EXX; LD A,(nn)"},
+    "_note": "IX/IY are the cheapest non-destructive bridge (16T per byte, no side effects)"
+  }
+}
