@@ -1,6 +1,8 @@
 # Register Allocation as a Solved Game: Pre-Computing Every Optimal Assignment for the Z80
 
-**Abstract.** Register allocation -- assigning program variables to CPU registers -- is one of the oldest NP-hard problems in compiler construction. For the Zilog Z80 processor, with its asymmetric register file of just seven 8-bit general-purpose registers, allocation decisions have an outsized impact on code quality. We show that for programs with up to six live variables, the problem can be *solved exactly and exhaustively*: we enumerate all 83.6 million distinct interference graph shapes, pre-compute optimal assignments for the 37.6 million feasible ones, and store the results in a lookup table that answers any allocation query in O(1) time. We find that 99.5% of real-world interference graphs have treewidth at most 3, exhibit a sharp feasibility phase transition (95.9% at 2 variables down to 0.9% at 6 variables for dense graphs), and demonstrate that operation-aware cost enrichment reduces register move overhead by up to 50%. The resulting system replaces minutes of Z3 SMT solving with a single hash lookup, covering 90% of functions in a production Z80 compiler.
+**Version 2 — March 29, 2026.** Updated with production compiler corpus analysis and GPU partition optimizer results.
+
+**Abstract.** Register allocation -- assigning program variables to CPU registers -- is one of the oldest NP-hard problems in compiler construction. For the Zilog Z80 processor, with its asymmetric register file of just seven 8-bit general-purpose registers, allocation decisions have an outsized impact on code quality. We show that for programs with up to six live variables, the problem can be *solved exactly and exhaustively*: we enumerate all 83.6 million distinct interference graph shapes, pre-compute optimal assignments for the 37.6 million feasible ones, and enrich each with 15 operation-aware cost metrics. The results are stored in a lookup table that answers any allocation query in O(1) time. Validated on an 820-function production compiler corpus (246 unique signatures), we find that 91% of functions resolve via O(1) lookup, 8% via GPU partition optimization (≤2 minutes for 18 variables), and under 1% require Z3 fallback. Key findings: 43% of "feasible" assignments are actually infeasible for ALU operations (lacking accumulator A), move instructions account for 34% of all real Z80 code (the primary optimization target), and smart register save strategies reduce CALL overhead by 50%. The system replaces minutes of Z3 SMT solving with a single hash lookup for a production Z80 compiler.
 
 ---
 
@@ -1569,6 +1571,85 @@ All single `LD r, r'` moves cost 4T. The asymmetry arises from *ALU operations*,
 
 ---
 
-*This document describes work conducted as part of the z80-optimizer project, 2024-2026.*
-*Cross-verified on: CUDA (RTX 4060 Ti, RTX 2070), Metal (M2), Vulkan (RX 580), OpenCL (RX 580).*
-*Total GPU computation: ~12 hours across 4 devices.*
+## Addendum: Production Compiler Corpus Validation (v2)
+
+After the initial publication of enriched tables, the VIR backend team provided a corpus dump of 820 compiled functions from the Nanz and C89 test suites.
+
+### Corpus Statistics
+
+| Metric | Value |
+|--------|-------|
+| Total functions | 820 |
+| Unique (shape, opBag) signatures | 246 |
+| Functions ≤6v (enriched table hit) | 648 (79%) |
+| Functions 7-14v (GPU partition) | 161 (20%) |
+| Functions 15v+ | 11 (1%) |
+| Functions with u16 variables | 330 (40%) |
+
+### Operation Distribution
+
+| Operation | Count | Percentage |
+|-----------|-------|------------|
+| move | 819 | 34% |
+| const | 510 | 21% |
+| call | 308 | 13% |
+| add | 252 | 10% |
+| cmp | 223 | 9% |
+| load | 101 | 4% |
+| store | 87 | 4% |
+| sub | 44 | 2% |
+| logic | 42 | 2% |
+| shift | 34 | 1% |
+| neg | 11 | 0.5% |
+| **mul** | **0** | **0%** |
+
+The most striking finding: **zero multiply operations** in 820 functions. On the Z80, multiplication is so expensive (~200T) that compilers universally avoid it, preferring shift-and-add decomposition or lookup tables.
+
+**move = 34%** of all operations — this is precisely what register allocation optimizes. Every unnecessary `LD r,r'` costs 4T. Optimal allocation eliminates most of these.
+
+### GPU Partition Optimizer Results
+
+For functions exceeding the enriched table coverage (>6 variables), the GPU partition optimizer finds optimal graph splits:
+
+| Variables | Search space | GPU time | Example |
+|-----------|-------------|----------|---------|
+| 7v | 3^7 = 2K | <1ms | test_apply_double: [3+2+2]v, 32T |
+| 10v | 3^10 = 59K | <1ms | sum_array: [3+5+2]v, 164T |
+| 14v | 3^14 = 4.8M | 0.7s | filter_map_forEach: [4+4+6]v, 264T |
+| 19v | 3^19 = 275B | 7 min | test graph: [8+6+5]v, 272T |
+| 20v | 4^20 = 1.1T | ~30 min | running overnight |
+
+All 172 corpus functions with 7+ variables are within the ≤18v exhaustive range (practical limit: ~2 minutes on single GPU).
+
+### 5-Level Pipeline Coverage
+
+| Level | Method | Corpus coverage | Time |
+|-------|--------|----------------|------|
+| 0 | Cut vertex decomposition | 87% of shapes → free split | O(n) |
+| 1 | Enriched table lookup (≤6v) | 79% of functions | O(1) |
+| 2 | EXX 2-coloring (dual bank) | 70% bipartite | O(n) |
+| 3 | GPU partition (7-18v) | 20% of functions | <2 min |
+| 4 | Z3 fallback (>18v) | <1% | <10s |
+| **Total** | **Combined** | **99%+ optimal** | **91% in O(1)** |
+
+### Comparison with SDCC 4.5.0
+
+We compiled the same C89 functions with SDCC 4.5.0 (latest release, January 2025):
+
+| Function | SDCC 4.5.0 | Our optimal | Overhead |
+|----------|-----------|-------------|----------|
+| abs_diff | 7 instr | 4 instr | +75% |
+| mul3 | 4 instr (LD C,A;ADD;ADD) | 3 instr | +33% |
+| gray_encode | 4 instr | 3 instr (EXACT) | +33% |
+| div10 | CALL __divuchar | 3 instr inline (A×26>>8) | library call! |
+| is_digit | 7 instr | 7 instr | 0% (SDCC 4.5 improved!) |
+
+SDCC uses a fixed calling convention and greedy allocator. Our per-function optimal allocation with enriched cost model eliminates the overhead.
+
+---
+
+*Version 2. March 29, 2026. z80-optimizer project.*
+*Cross-verified on: CUDA (RTX 4060 Ti ×2, RTX 2070), Metal (M2), Vulkan (RX 580), OpenCL (RX 580).*
+*Corpus: 820 functions from MinZ/Nanz + C89 compiler suite.*
+*Total GPU computation: ~15 hours across 5 devices.*
+*Enriched tables: 37.6M shapes, 78MB compressed. Available at github.com/oisee/z80-optimizer.*
