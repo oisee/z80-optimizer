@@ -90,6 +90,86 @@ type OpPattern struct {
 	Cost int    `json:"cost"`
 }
 
+// 16-bit pair indices in location table
+const (
+	locBC = 7
+	locDE = 8
+	locHL = 9
+)
+
+// Is this location a 16-bit pair?
+func is16bitPair(loc int) bool { return loc >= 7 && loc <= 9 }
+
+// Is this location an 8-bit register (A-L)?
+func is8bitReg(loc int) bool { return loc <= 6 }
+
+// Is this location an IX/IY half?
+func isIXIY(loc int) bool { return loc >= 10 && loc <= 13 }
+
+// 16-bit ALU cost: ADD HL,rr / SBC HL,rr
+// dst MUST be HL (loc 9). src can be BC(7), DE(8), HL(9), SP.
+func alu16AddCost(dstLoc, srcLoc int) int {
+	if dstLoc == locHL && is16bitPair(srcLoc) {
+		return 11 // ADD HL,rr (natural)
+	}
+	if dstLoc == locHL {
+		// src is not a pair — need to build it
+		return 11 + 8 // LD rr,src pair + ADD HL,rr
+	}
+	// dst is not HL — need EX DE,HL trick or move
+	if dstLoc == locDE {
+		// EX DE,HL; ADD HL,rr; EX DE,HL = 4+11+4 = 19T
+		return 19
+	}
+	// dst is BC or other — very expensive
+	return 30 // need multiple moves
+}
+
+func alu16SbcCost(dstLoc, srcLoc int) int {
+	if dstLoc == locHL && is16bitPair(srcLoc) {
+		return 15 // SBC HL,rr (ED prefix)
+	}
+	if dstLoc == locDE {
+		return 23 // EX DE,HL; SBC HL,rr; EX DE,HL
+	}
+	return 35
+}
+
+// 16-bit MUL cost via our mul16 table
+// mul16 requires input in A, result in HL. ~26T average.
+func mul16Cost(dstLoc, srcLoc int) int {
+	cost := 0
+	if srcLoc != 0 { // source not in A
+		cost += 4 // LD A,src_low
+	}
+	cost += 26 // mul16 from table (average)
+	if dstLoc != locHL {
+		cost += 8 // move HL result to dst pair
+	}
+	return cost
+}
+
+// u8 MUL cost via our mul8 table
+// mul8 requires input in A, uses various regs. ~20T average.
+func mul8Cost(dstLoc, srcLoc int) int {
+	cost := 0
+	if dstLoc != 0 {
+		cost += 4 // LD A,dst
+	}
+	cost += 20 // mul8 average from table
+	if dstLoc != 0 {
+		cost += 4 // LD dst,A
+	}
+	return cost
+}
+
+// u16 ADD via u8 decomposition: ADD low bytes, ADC high bytes
+// Works with ANY register pairs, not just HL+rr
+func alu16ViaU8Cost(dstLoc, srcLoc int) int {
+	// LD A,src_lo; ADD A,dst_lo; LD dst_lo,A; LD A,src_hi; ADC A,dst_hi; LD dst_hi,A
+	return 24 // 6 instructions × 4T
+}
+
 func scoreAssignment(nVregs int, assignment []int) []OpPattern {
 	patterns := []OpPattern{}
 
@@ -97,45 +177,34 @@ func scoreAssignment(nVregs int, assignment []int) []OpPattern {
 		return patterns
 	}
 
-	// Pattern: ALU_HEAVY — all pairs do binary ALU
+	// === u8 patterns ===
+
+	// u8 ALU average cost across all pairs
 	aluTotal := 0
 	aluCount := 0
 	for i := 0; i < nVregs; i++ {
 		for j := i + 1; j < nVregs; j++ {
-			if assignment[i] < 7 && assignment[j] < 7 {
-				aluTotal += aluBinaryCost(assignment[i], assignment[j])
+			if is8bitReg(assignment[i]) && is8bitReg(assignment[j]) {
+				c1 := aluBinaryCost(assignment[i], assignment[j])
+				c2 := aluBinaryCost(assignment[j], assignment[i])
+				if c2 < c1 {
+					c1 = c2
+				}
+				aluTotal += c1
 				aluCount++
 			}
 		}
 	}
 	if aluCount > 0 {
-		patterns = append(patterns, OpPattern{"alu_avg", aluTotal / aluCount})
+		patterns = append(patterns, OpPattern{"u8_alu_avg", aluTotal / aluCount})
 	}
 
-	// Pattern: A_centric — one var in A does ALU with all others
-	aIdx := -1
-	for i := 0; i < nVregs; i++ {
-		if assignment[i] == 0 {
-			aIdx = i
-			break
-		}
-	}
-	if aIdx >= 0 {
-		aCost := 0
-		for i := 0; i < nVregs; i++ {
-			if i != aIdx && assignment[i] < 7 {
-				aCost += aluBinaryCost(0, assignment[i])
-			}
-		}
-		patterns = append(patterns, OpPattern{"a_centric", aCost})
-	}
-
-	// Pattern: best/worst pair for binary ALU
+	// u8 best/worst pair
 	bestPair := 9999
 	worstPair := 0
 	for i := 0; i < nVregs; i++ {
 		for j := i + 1; j < nVregs; j++ {
-			if assignment[i] < 7 && assignment[j] < 7 {
+			if is8bitReg(assignment[i]) && is8bitReg(assignment[j]) {
 				c1 := aluBinaryCost(assignment[i], assignment[j])
 				c2 := aluBinaryCost(assignment[j], assignment[i])
 				c := c1
@@ -152,18 +221,77 @@ func scoreAssignment(nVregs int, assignment []int) []OpPattern {
 		}
 	}
 	if bestPair < 9999 {
-		patterns = append(patterns, OpPattern{"best_alu_pair", bestPair})
-		patterns = append(patterns, OpPattern{"worst_alu_pair", worstPair})
+		patterns = append(patterns, OpPattern{"u8_best_alu", bestPair})
+		patterns = append(patterns, OpPattern{"u8_worst_alu", worstPair})
 	}
 
-	// Pattern: total INC/DEC cost
-	incTotal := 0
+	// u8 MUL cost (via mul8 table)
+	if aluCount > 0 {
+		patterns = append(patterns, OpPattern{"u8_mul_avg", mul8Cost(assignment[0], assignment[1])})
+	}
+
+	// === u16 patterns (treating consecutive pairs of vregs as 16-bit) ===
+
+	// Count 16-bit pair slots
+	n16pairs := 0
+	pairSlots := []int{} // which vregs are in 16-bit pair slots
 	for i := 0; i < nVregs; i++ {
-		incTotal += incDecCost(assignment[i])
+		if is16bitPair(assignment[i]) {
+			n16pairs++
+			pairSlots = append(pairSlots, i)
+		}
 	}
-	patterns = append(patterns, OpPattern{"inc_dec_total", incTotal})
+	patterns = append(patterns, OpPattern{"u16_pair_count", n16pairs})
 
-	// Has A? (important for ALU feasibility)
+	// u16 ADD natural: needs HL as dst
+	hasHL := false
+	for _, loc := range assignment {
+		if loc == locHL {
+			hasHL = true
+			break
+		}
+	}
+
+	if n16pairs >= 2 {
+		// Best u16 ADD cost between any two pair-assigned vregs
+		best16Add := 9999
+		worst16Add := 0
+		for i := 0; i < len(pairSlots); i++ {
+			for j := i + 1; j < len(pairSlots); j++ {
+				li, lj := assignment[pairSlots[i]], assignment[pairSlots[j]]
+				// Try both directions
+				c1 := alu16AddCost(li, lj)
+				c2 := alu16AddCost(lj, li)
+				c := c1
+				if c2 < c1 {
+					c = c2
+				}
+				if c < best16Add {
+					best16Add = c
+				}
+				if c > worst16Add {
+					worst16Add = c
+				}
+			}
+		}
+		if best16Add < 9999 {
+			patterns = append(patterns, OpPattern{"u16_add_natural", best16Add})
+			patterns = append(patterns, OpPattern{"u16_add_worst", worst16Add})
+		}
+	}
+
+	// u16 ADD via u8 decomposition (always available, always 24T)
+	patterns = append(patterns, OpPattern{"u16_add_via_u8", 24})
+
+	// u16 SBC natural
+	if hasHL && n16pairs >= 2 {
+		patterns = append(patterns, OpPattern{"u16_sbc_natural", 15})
+	} else {
+		patterns = append(patterns, OpPattern{"u16_sbc_via_u8", 24})
+	}
+
+	// === Feasibility flags ===
+
 	hasA := false
 	for _, loc := range assignment {
 		if loc == 0 {
@@ -172,7 +300,130 @@ func scoreAssignment(nVregs int, assignment []int) []OpPattern {
 		}
 	}
 	if !hasA {
-		patterns = append(patterns, OpPattern{"no_accumulator", 1})
+		patterns = append(patterns, OpPattern{"no_accumulator", 1}) // u8 ALU needs A
+	}
+	if !hasHL {
+		patterns = append(patterns, OpPattern{"no_hl_pair", 1}) // u16 natural ADD needs HL
+	}
+
+	// Max u16 vars feasible (without IX/IY)
+	// Only 3 pairs: BC, DE, HL
+	maxU16 := 0
+	usedPairs := map[int]bool{}
+	for _, loc := range assignment {
+		if is16bitPair(loc) && !usedPairs[loc] {
+			usedPairs[loc] = true
+			maxU16++
+		}
+	}
+	patterns = append(patterns, OpPattern{"u16_slots_used", maxU16})
+	patterns = append(patterns, OpPattern{"u16_slots_free", 3 - maxU16})
+
+	// INC/DEC total cost
+	incTotal := 0
+	for i := 0; i < nVregs; i++ {
+		incTotal += incDecCost(assignment[i])
+	}
+	patterns = append(patterns, OpPattern{"inc_dec_total", incTotal})
+
+	// === Width-dependent feasibility tiers ===
+	// Tier 1: all u8 — any assignment works
+	// Tier 2: mixed u8/u16 — u16 vars constrained to pairs
+	// Tier 3: all u16 — max 3 without IX/IY
+	// Tier 4: needs u32 — requires EXX (shadow)
+
+	// How many 8-bit regs are available for u8 vars?
+	usedRegs := map[int]bool{}
+	for _, loc := range assignment {
+		usedRegs[loc] = true
+	}
+	freeU8 := 0
+	for i := 0; i <= 6; i++ {
+		if !usedRegs[i] {
+			freeU8++
+		}
+	}
+	patterns = append(patterns, OpPattern{"u8_regs_free", freeU8})
+
+	// Clobber pressure: how many regs are left for temporaries?
+	// mul8 needs ~2 temp regs, mul16 needs ~3
+	totalUsed := len(usedRegs)
+	patterns = append(patterns, OpPattern{"temp_regs_avail", 15 - totalUsed})
+
+	// === mul8/mul16 compatibility ===
+	// mul8 clobbers: {C,F,H,L} (from our data: all 254 preserve A, all DE-safe)
+	// Check if any live vreg sits in a mul8 clobber slot
+	mul8Clobber := map[int]bool{2: true, 5: true, 6: true} // C=2, H=5, L=6 (F implicit)
+	mul8Conflict := 0
+	for _, loc := range assignment {
+		if mul8Clobber[loc] {
+			mul8Conflict++
+		}
+	}
+	patterns = append(patterns, OpPattern{"mul8_conflicts", mul8Conflict})
+	if mul8Conflict == 0 {
+		patterns = append(patterns, OpPattern{"mul8_safe", 1}) // can call mul8 without save/restore
+	}
+
+	// mul16 clobbers: {A,C,F,H,L} — only DE-safe (from our enriched data)
+	mul16Clobber := map[int]bool{0: true, 2: true, 5: true, 6: true} // A,C,H,L
+	mul16Conflict := 0
+	for _, loc := range assignment {
+		if mul16Clobber[loc] {
+			mul16Conflict++
+		}
+	}
+	patterns = append(patterns, OpPattern{"mul16_conflicts", mul16Conflict})
+
+	// === Shadow bank (EXX) enrichment ===
+	// If no accumulator in assignment, estimate cost of EXX-based ALU:
+	// EXX (4T) + ALU in shadow bank (4T) + EXX back (4T) = 12T per op
+	// vs moving to A and back (8T) — EXX is 4T more expensive but doesn't clobber A
+	if !hasA {
+		// EXX cost for one ALU op: 4T + 4T(op) + 4T = 12T
+		// vs via-A cost: 4T(LD A,r) + 4T(op) + 4T(LD r,A) = 12T
+		// Same cost! But EXX preserves A' (useful if A used elsewhere in shadow)
+		patterns = append(patterns, OpPattern{"exx_alu_cost", 12})
+
+		// If we had an EXX-split schedule: put ALU-heavy vars in shadow bank
+		// Cost: one EXX pair (8T) amortized over N ops
+		// For N>=3 ops: 8T/3 = 2.7T overhead per op (cheaper than individual via-A)
+		if nVregs >= 3 {
+			patterns = append(patterns, OpPattern{"exx_amortized_3ops", 8 / 3})
+		}
+	}
+
+	// === CALL overhead ===
+	// CALL clobbers: return in A, F destroyed. CALL itself = 17T.
+	// If vregs in A or F, they need save/restore around CALL.
+	// PUSH AF (11T) + CALL (17T) + POP AF (10T) = 38T vs bare CALL 17T.
+	callOverhead := 0
+	if hasA {
+		callOverhead += 21 // PUSH AF + POP AF around CALL
+	}
+	// Also: if vregs in BC/DE/HL, callee might clobber them.
+	// Convention: caller-save. Count regs that need PUSH/POP.
+	pushCount := 0
+	for _, loc := range assignment {
+		if loc >= 1 && loc <= 6 { // B-L (not A, A handled via PUSH AF)
+			pushCount++
+		}
+	}
+	// Each pair needs PUSH+POP = 21T. Estimate pairs = pushCount/2 rounded up.
+	callOverhead += ((pushCount + 1) / 2) * 21
+	patterns = append(patterns, OpPattern{"call_save_cost", callOverhead})
+
+	// === DJNZ compatibility ===
+	// DJNZ uses B as counter. If B is occupied, DJNZ needs save/restore (8T extra).
+	bOccupied := false
+	for _, loc := range assignment {
+		if loc == 1 { // B
+			bOccupied = true
+			break
+		}
+	}
+	if bOccupied {
+		patterns = append(patterns, OpPattern{"djnz_conflict", 1})
 	}
 
 	return patterns
