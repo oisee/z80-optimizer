@@ -9,8 +9,8 @@
 #include <cstdlib>
 #include <cstring>
 
-#define MAX_VREGS 16
-#define MAX_PARTS 3       // max 3 partitions (for N≤18 = 3×6)
+#define MAX_VREGS 24
+#define MAX_PARTS 4       // max 4 partitions (for N≤24 = 4×6)
 #define MAX_PART_SIZE 6   // each partition ≤6 vregs
 #define MAX_EDGES 128
 #define MAX_LOCS 9        // A,B,C,D,E,H,L,BC,DE (for cost model)
