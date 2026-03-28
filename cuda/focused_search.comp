@@ -1,0 +1,116 @@
+#version 450
+// Generic focused brute-force — remapped op pool via SSBO
+layout(local_size_x = 256) in;
+
+layout(push_constant) uniform PC {
+    uint seqLen;
+    uint offsetLo;
+    uint offsetHi;
+    uint count;
+};
+
+layout(std430, binding = 0) buffer DataBuf {
+    uint target[64];     // packed uint8×4 = 256 entries
+    uint opMap[4];       // packed: up to 16 op indices
+    uint numOps;
+    uint bestScore;
+    uint bestIdxLo;
+    uint bestIdxHi;
+};
+
+uint getTarget(uint i) {
+    return (target[i >> 2] >> ((i & 3) * 8)) & 0xFF;
+}
+
+uint getOp(uint i) {
+    return (opMap[i >> 2] >> ((i & 3) * 8)) & 0xFF;
+}
+
+uint runSeq(uint ops[24], uint len, uint inp) {
+    uint a = inp, b = 0, carry = 0;
+    for (uint i = 0; i < len; i++) {
+        uint op = getOp(ops[i]);
+        switch (op) {
+        case 0:  { uint r = a * 3; carry = (r > 255) ? 1 : 0; a = r & 0xFF; } break;
+        case 1:  { uint r = a * 5; carry = (r > 255) ? 1 : 0; a = r & 0xFF; } break;
+        case 2:  { uint r = a * 7; carry = (r > 255) ? 1 : 0; a = r & 0xFF; } break;
+        case 3:  carry = a & 1; a = a >> 1; break;
+        case 4:  carry = (a != 0) ? 1 : 0; a = (0 - a) & 0xFF; break;
+        case 5:  b = a; break;
+        case 6:  carry = (a < b) ? 1 : 0; a = (a - b) & 0xFF; break;
+        case 7:  a = (carry != 0) ? 0xFF : 0x00; break;
+        case 8:  a = a & 0x0F; carry = 0; break;
+        case 9:  a = a ^ b; carry = 0; break;
+        case 10: a = a & 0xF0; carry = 0; break;
+        case 11: carry = (a >> 7) & 1; a = ((a << 1) | (a >> 7)) & 0xFF; break;
+        case 12: carry = a & 1; a = ((a >> 1) | (a << 7)) & 0xFF; break;
+        }
+    }
+    return a & 0xFF;
+}
+
+void add64(uint aHi, uint aLo, uint b, out uint rHi, out uint rLo) {
+    rLo = aLo + b;
+    rHi = aHi + ((rLo < aLo) ? 1u : 0u);
+}
+
+void divmodN(uint hi, uint lo, uint n, out uint qHi, out uint qLo, out uint rem) {
+    qHi = hi / n;
+    uint r1 = hi % n;
+    uint loHi = lo >> 16;
+    uint loLo = lo & 0xFFFF;
+    uint c1 = (r1 << 16) | loHi;
+    uint q1 = c1 / n;
+    uint r2 = c1 % n;
+    uint c2 = (r2 << 16) | loLo;
+    uint q2 = c2 / n;
+    rem = c2 % n;
+    qLo = (q1 << 16) | q2;
+}
+
+void main() {
+    uint tid = gl_GlobalInvocationID.x;
+    if (tid >= count) return;
+
+    uint idxLo, idxHi;
+    add64(offsetHi, offsetLo, tid, idxHi, idxLo);
+
+    uint nOps = numOps;
+    uint ops[24];
+    uint tmpHi = idxHi, tmpLo = idxLo;
+    for (int i = int(seqLen) - 1; i >= 0; i--) {
+        uint qHi, qLo, rem;
+        divmodN(tmpHi, tmpLo, nOps, qHi, qLo, rem);
+        ops[i] = rem;
+        tmpHi = qHi; tmpLo = qLo;
+    }
+
+    uint curBest = bestScore;
+    int bestErr = (curBest == 0xFFFFFFFF) ? 255 : int(curBest >> 16);
+
+    uint qc[5] = {0, 1, 64, 128, 255};
+    int maxErr = 0;
+    for (int q = 0; q < 5; q++) {
+        uint out_val = runSeq(ops, seqLen, qc[q]);
+        int e = int(out_val) - int(getTarget(qc[q]));
+        if (e < 0) e = -e;
+        if (e > maxErr) maxErr = e;
+        if (maxErr >= bestErr) return;
+    }
+
+    maxErr = 0;
+    for (uint i = 0; i < 256; i++) {
+        uint out_val = runSeq(ops, seqLen, i);
+        int e = int(out_val) - int(getTarget(i));
+        if (e < 0) e = -e;
+        if (e > maxErr) maxErr = e;
+        if (maxErr >= bestErr) return;
+    }
+
+    uint score = (uint(maxErr) << 16) | (seqLen << 8);
+    uint old = atomicMin(bestScore, score);
+    if (score <= old) {
+        atomicExchange(bestIdxLo, idxLo);
+        atomicExchange(bestIdxHi, idxHi);
+    }
+}

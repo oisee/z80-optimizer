@@ -1,0 +1,122 @@
+#version 450
+// Gray decode brute-force — 5-op pool, Vulkan compute
+// Each thread tests one candidate sequence
+// Pure 32-bit arithmetic (no int64 extension needed)
+
+layout(local_size_x = 256) in;
+
+layout(push_constant) uniform PC {
+    uint seqLen;
+    uint offsetLo;   // low 32 bits of offset
+    uint offsetHi;   // high 32 bits
+    uint count;
+};
+
+// target[256] + bestScore + bestIdxLo + bestIdxHi
+layout(std430, binding = 0) buffer DataBuf {
+    uint target[64];    // packed 4 bytes each = 256 entries
+    uint bestScore;     // max_error << 16 | seqLen << 8
+    uint bestIdxLo;
+    uint bestIdxHi;
+};
+
+uint getTarget(uint i) {
+    uint word = target[i >> 2];
+    uint shift = (i & 3) * 8;
+    return (word >> shift) & 0xFF;
+}
+
+uint runSeq(uint ops[20], uint len, uint inp) {
+    uint a = inp, b = 0;
+    for (uint i = 0; i < len; i++) {
+        switch (ops[i]) {
+        case 0: b = a; break;                              // SAVE
+        case 1: a = a >> 1; break;                         // SHR
+        case 2: a = a ^ b; break;                          // XOR_B
+        case 3: a = ((a << 1) | (a >> 7)) & 0xFF; break;  // RLCA
+        case 4: a = ((a >> 1) | (a << 7)) & 0xFF; break;  // RRCA
+        }
+    }
+    return a & 0xFF;
+}
+
+// 64-bit add: (aHi:aLo) + b => (rHi:rLo)
+void add64(uint aHi, uint aLo, uint b, out uint rHi, out uint rLo) {
+    rLo = aLo + b;
+    rHi = aHi + ((rLo < aLo) ? 1u : 0u);
+}
+
+// 64-bit divmod by 5: (hi:lo) / 5 => (qHi:qLo), remainder
+void divmod5(uint hi, uint lo, out uint qHi, out uint qLo, out uint rem) {
+    // Process hi:lo as two 32-bit divisions
+    qHi = hi / 5;
+    uint r1 = hi % 5;
+    // Now divide (r1 << 32 | lo) by 5
+    // r1 is 0..4, so r1 * (2^32 / 5) fits in 32 bits approximately
+    // Use: (r1 * 2^32 + lo) / 5
+    // = r1 * 858993459 + r1 * 1/5 + lo/5 ... too messy
+    // Simpler: iterate two 32-bit divisions
+    // (r1 * 2^16 + lo_hi) and then remainder with lo_lo
+    uint loHi = lo >> 16;
+    uint loLo = lo & 0xFFFF;
+    uint combined1 = (r1 << 16) | loHi;
+    uint q1 = combined1 / 5;
+    uint r2 = combined1 % 5;
+    uint combined2 = (r2 << 16) | loLo;
+    uint q2 = combined2 / 5;
+    rem = combined2 % 5;
+    qLo = (q1 << 16) | q2;
+}
+
+void main() {
+    uint tid = gl_GlobalInvocationID.x;
+    if (tid >= count) return;
+
+    // seqIdx = offset + tid (64-bit)
+    uint idxLo, idxHi;
+    add64(offsetHi, offsetLo, tid, idxHi, idxLo);
+
+    // Decode index to ops via repeated divmod5
+    uint ops[20];
+    uint tmpHi = idxHi, tmpLo = idxLo;
+    for (int i = int(seqLen) - 1; i >= 0; i--) {
+        uint qHi, qLo, rem;
+        divmod5(tmpHi, tmpLo, qHi, qLo, rem);
+        ops[i] = rem;
+        tmpHi = qHi;
+        tmpLo = qLo;
+    }
+
+    // Read current best error
+    uint curBest = bestScore;
+    int bestErr = (curBest == 0xFFFFFFFF) ? 255 : int(curBest >> 16);
+
+    // Quick check: 0, 1, 128, 255
+    uint qc[4] = {0, 1, 128, 255};
+    int maxErr = 0;
+    for (int q = 0; q < 4; q++) {
+        uint out_val = runSeq(ops, seqLen, qc[q]);
+        int e = int(out_val) - int(getTarget(qc[q]));
+        if (e < 0) e = -e;
+        if (e > maxErr) maxErr = e;
+        if (maxErr >= bestErr) return;
+    }
+
+    // Full verify
+    maxErr = 0;
+    for (uint i = 0; i < 256; i++) {
+        uint out_val = runSeq(ops, seqLen, i);
+        int e = int(out_val) - int(getTarget(i));
+        if (e < 0) e = -e;
+        if (e > maxErr) maxErr = e;
+        if (maxErr >= bestErr) return;
+    }
+
+    // Pack score: error << 16 | len << 8
+    uint score = (uint(maxErr) << 16) | (seqLen << 8);
+    uint old = atomicMin(bestScore, score);
+    if (score <= old) {
+        atomicExchange(bestIdxLo, idxLo);
+        atomicExchange(bestIdxHi, idxHi);
+    }
+}
