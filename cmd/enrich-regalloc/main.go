@@ -394,24 +394,56 @@ func scoreAssignment(nVregs int, assignment []int) []OpPattern {
 	}
 
 	// === CALL overhead ===
-	// CALL clobbers: return in A, F destroyed. CALL itself = 17T.
-	// If vregs in A or F, they need save/restore around CALL.
-	// PUSH AF (11T) + CALL (17T) + POP AF (10T) = 38T vs bare CALL 17T.
-	callOverhead := 0
+	// CALL clobbers: return in A, F destroyed. Callee may clobber BC/DE/HL.
+	// Save strategies (cheapest first):
+	//   1. Free reg:     LD free,r + ... + LD r,free = 8T (cheapest!)
+	//   2. IX/IY half:   LD IXH,r + ... + LD r,IXH = 16T (no stack)
+	//   3. EX AF,AF':    EX AF,AF' + ... + EX AF,AF' = 8T (A+F only)
+	//   4. PUSH/POP:     PUSH rr + POP rr = 21T (pair, classic)
+
+	// Count regs that need saving around CALL
+	regsToSave := 0
 	if hasA {
-		callOverhead += 21 // PUSH AF + POP AF around CALL
+		regsToSave++ // A will be clobbered by CALL return
 	}
-	// Also: if vregs in BC/DE/HL, callee might clobber them.
-	// Convention: caller-save. Count regs that need PUSH/POP.
-	pushCount := 0
 	for _, loc := range assignment {
-		if loc >= 1 && loc <= 6 { // B-L (not A, A handled via PUSH AF)
-			pushCount++
+		if loc >= 1 && loc <= 6 { // B-L
+			regsToSave++
 		}
 	}
-	// Each pair needs PUSH+POP = 21T. Estimate pairs = pushCount/2 rounded up.
-	callOverhead += ((pushCount + 1) / 2) * 21
+
+	// Assign cheapest save method to each reg
+	callOverhead := 0
+	savesRemaining := regsToSave
+
+	// Strategy 1: use free regs (8T per save)
+	freeSaves := freeU8
+	if freeSaves > savesRemaining {
+		freeSaves = savesRemaining
+	}
+	callOverhead += freeSaves * 8
+	savesRemaining -= freeSaves
+
+	// Strategy 2: EX AF,AF' for A (8T, if A needs saving and hasn't been saved)
+	if hasA && savesRemaining > 0 {
+		callOverhead += 8 // EX AF,AF' before + after
+		savesRemaining--
+	}
+
+	// Strategy 3: IX/IY halves (16T per save, up to 4 slots)
+	ixSaves := 4 // IXH, IXL, IYH, IYL
+	if ixSaves > savesRemaining {
+		ixSaves = savesRemaining
+	}
+	callOverhead += ixSaves * 16
+	savesRemaining -= ixSaves
+
+	// Strategy 4: PUSH/POP pairs for rest (21T per pair)
+	callOverhead += ((savesRemaining + 1) / 2) * 21
+
 	patterns = append(patterns, OpPattern{"call_save_cost", callOverhead})
+	patterns = append(patterns, OpPattern{"call_regs_to_save", regsToSave})
+	patterns = append(patterns, OpPattern{"call_free_saves", freeSaves})
 
 	// === DJNZ compatibility ===
 	// DJNZ uses B as counter. If B is occupied, DJNZ needs save/restore (8T extra).
