@@ -447,7 +447,16 @@ Not all shapes need brute force. We use a five-level pipeline that applies progr
 | 4 | CPU backtracking | 1.5% | < 1 second | <= 15 variables |
 | 5 | Island decomposition + Z3 | 0.5% | Seconds to minutes | Any size |
 
-**Level 1: Table Lookup.** A hash table keyed by the interference graph's canonical form. Contains 17.4 million entries covering all shapes up to 6 variables (and common 7-variable shapes). Hit rate: 87% of functions encountered in practice.
+**Level 1: Table Lookup.** A hash table keyed by the interference graph's canonical form. Contains 37.6 million feasible entries across three tiers:
+
+| Tier | Variables | Total shapes | Feasible | Enriched | Compressed |
+|------|-----------|-------------|----------|----------|------------|
+| 4v | 2-4 | 156,506 | 123,453 (78.9%) | 123,453 | 168 KB |
+| 5v | 5 | 17,366,874 | 11,762,983 (67.7%) | 11,762,983 | 22 MB |
+| 6v dense | 6 (tw≥4) | 66,118,738 | 25,772,093 (38.9%) | 25,772,093 | 56 MB |
+| **Total** | **2-6** | **83,642,118** | **37,658,529** | **37,658,529** | **78 MB** |
+
+Each feasible entry contains the optimal register assignment plus 15 operation-aware cost metrics (u8/u16 ALU costs, mul8 compatibility, CALL save overhead, DJNZ conflict flag, etc.). The remaining 98.3% of 6-variable shapes have treewidth ≤3 and decompose to 5v via cut vertices. Hit rate: 87% of functions in practice resolve at this level.
 
 **Level 2: Composition.** If the interference graph has a *cut vertex* (a node whose removal disconnects the graph), the problem decomposes into independent subproblems. Each component is looked up separately, and results are combined. Since 99.5% of graphs have low treewidth, most graphs decompose into small components that are already in the table.
 
