@@ -91,3 +91,15 @@ gpugen ISA definition exists. Generate CUDA kernel for 6502 mul8.
   = vector quantization problem for optimal conversion table
 - Book: sidebar for Ch.3 (CALL-chain) + Ch.7 (chunky pixels)
 - Maxim (RMDA): Hole #17 source analyzed, CALL-chain + RL(IX+N),R
+
+## CRITICAL: Corpus Bias Discovery
+- VIR corpus: 820 funcs, 79% ≤6v (leaf/small) — BIASED toward simple functions
+- FatFS (ff.c, 7249 lines): 16 funcs, ALL >10v, est 10-35 vregs
+  - f_write: 764 instr, ~33 vregs
+  - f_mkdir: 259 instr, ~35 vregs
+  - LD=55% (vs VIR 34%), STACK=10% (vs VIR 7%)
+- Our enriched tables (≤6v) cover 0% of FatFS functions!
+- Partition optimizer (≤18v) covers ~30% of FatFS
+- Need: FatFS + z88dk stdlib + Fuzix kernel in corpus
+- z88dk: 905 C files, regexp.c = 1136 lines
+- MinZ will dump FatFS via VIR_DUMP_GPU_BATCH next session
