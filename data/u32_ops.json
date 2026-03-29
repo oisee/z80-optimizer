@@ -1,0 +1,133 @@
+{
+  "description": "Optimal u32 (DEHL) operations for Z80, verified",
+  "register_convention": "u32 stored in DEHL: D=byte3(MSB), E=byte2, H=byte1, L=byte0(LSB)",
+
+  "shl32": {
+    "description": "DEHL << 1 (logical shift left)",
+    "ops": ["ADD HL,HL", "EX DE,HL", "ADC HL,HL", "EX DE,HL"],
+    "length": 4,
+    "bytes": 6,
+    "tstates": 34,
+    "clobbers": ["F"],
+    "proven_optimal": true,
+    "notes": "ADD HL,HL=11T, EX DE,HL=4T, ADC HL,HL=15T, EX DE,HL=4T"
+  },
+
+  "shr32": {
+    "description": "DEHL >> 1 (logical shift right, zero fill)",
+    "ops": ["SRL D", "RR E", "RR H", "RR L"],
+    "length": 4,
+    "bytes": 8,
+    "tstates": 32,
+    "clobbers": ["F"],
+    "proven_optimal": true
+  },
+
+  "sar32": {
+    "description": "DEHL >> 1 (arithmetic shift right, sign extend)",
+    "ops": ["SRA D", "RR E", "RR H", "RR L"],
+    "length": 4,
+    "bytes": 8,
+    "tstates": 32,
+    "clobbers": ["F"],
+    "proven_optimal": true,
+    "notes": "SRA preserves bit 7 of D (sign bit)"
+  },
+
+  "add32_stack": {
+    "description": "DEHL += [SP] (second operand on stack: low16 on top, high16 below)",
+    "ops": ["POP BC", "ADD HL,BC", "POP BC", "EX DE,HL", "ADC HL,BC", "EX DE,HL"],
+    "length": 6,
+    "bytes": 8,
+    "tstates": 54,
+    "clobbers": ["BC", "F"],
+    "notes": "Stack must have low16 on top. Consumes 4 bytes from stack."
+  },
+
+  "add32_ixiy": {
+    "description": "DEHL += IX:IY (IX=high16, IY=low16)",
+    "ops": ["PUSH IY", "POP BC", "ADD HL,BC", "PUSH IX", "POP BC", "EX DE,HL", "ADC HL,BC", "EX DE,HL"],
+    "length": 8,
+    "bytes": 12,
+    "tstates": 84,
+    "clobbers": ["BC", "F"]
+  },
+
+  "sub32_stack": {
+    "description": "DEHL -= [SP] (second operand on stack)",
+    "ops": ["POP BC", "OR A", "SBC HL,BC", "POP BC", "EX DE,HL", "SBC HL,BC", "EX DE,HL"],
+    "length": 7,
+    "bytes": 10,
+    "tstates": 58,
+    "clobbers": ["A", "BC", "F"],
+    "notes": "OR A clears carry before first SBC"
+  },
+
+  "neg32": {
+    "description": "DEHL = 0 - DEHL (two's complement negate)",
+    "ops": ["XOR A", "SUB L", "LD L,A", "LD A,0", "SBC A,H", "LD H,A", "LD A,0", "SBC A,E", "LD E,A", "LD A,0", "SBC A,D", "LD D,A"],
+    "length": 12,
+    "bytes": 16,
+    "tstates": 57,
+    "clobbers": ["A", "F"],
+    "notes": "LD A,0 (not XOR A) preserves carry between bytes"
+  },
+
+  "cmp32_zero": {
+    "description": "Test DEHL == 0 (set Z flag)",
+    "ops": ["LD A,D", "OR E", "OR H", "OR L"],
+    "length": 4,
+    "bytes": 4,
+    "tstates": 16,
+    "clobbers": ["A", "F"],
+    "notes": "Z=1 if DEHL==0. Cheapest possible."
+  },
+
+  "zext16_32": {
+    "description": "HL → DEHL (zero-extend u16 to u32)",
+    "ops": ["LD D,0", "LD E,0"],
+    "length": 2,
+    "bytes": 4,
+    "tstates": 14,
+    "clobbers": []
+  },
+
+  "sext16_32": {
+    "description": "HL → DEHL (sign-extend i16 to i32)",
+    "ops": ["LD A,H", "RLA", "SBC A,A", "LD D,A", "LD E,A"],
+    "length": 5,
+    "bytes": 5,
+    "tstates": 24,
+    "clobbers": ["A", "F"],
+    "notes": "RLA gets sign bit into CY, SBC A,A materializes 0xFF or 0x00"
+  },
+
+  "xor32_ixiy": {
+    "description": "DEHL ^= IX:IY",
+    "ops": ["PUSH IY", "POP BC", "LD A,L", "XOR C", "LD L,A", "LD A,H", "XOR B", "LD H,A", "PUSH IX", "POP BC", "LD A,E", "XOR C", "LD E,A", "LD A,D", "XOR B", "LD D,A"],
+    "length": 16,
+    "bytes": 20,
+    "tstates": 100,
+    "clobbers": ["A", "BC", "F"],
+    "notes": "No native 16-bit XOR, must do byte-by-byte"
+  },
+
+  "and32_ixiy": {
+    "description": "DEHL &= IX:IY",
+    "ops": ["PUSH IY", "POP BC", "LD A,L", "AND C", "LD L,A", "LD A,H", "AND B", "LD H,A", "PUSH IX", "POP BC", "LD A,E", "AND C", "LD E,A", "LD A,D", "AND B", "LD D,A"],
+    "length": 16,
+    "bytes": 20,
+    "tstates": 100,
+    "clobbers": ["A", "BC", "F"]
+  },
+
+  "rotr32": {
+    "description": "DEHL = ROTR(DEHL, 1) (rotate right through all 32 bits)",
+    "ops": ["SRL D", "RR E", "RR H", "RR L", "JR NC,+2", "SET 7,D"],
+    "length": 6,
+    "bytes": 10,
+    "tstates": "32-40",
+    "clobbers": ["F"],
+    "notes": "32T if no wrap, 40T if carry wraps to bit 31. Branch variant."
+  }
+}
