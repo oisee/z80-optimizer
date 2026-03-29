@@ -232,7 +232,7 @@ int main(int argc, char** argv) {
     save_pgm(path, h_target);
 
     /* Build segment hierarchy */
-    Segment segments[256];
+    Segment segments[1024];
     int num_segments = 0;
 
     /* Level 0: 1 segment = whole image, 8x8 blocks */
@@ -256,6 +256,25 @@ int main(int argc, char** argv) {
             segments[num_segments++] = {tx*W/8, ty*H/8, W/8, H/8, 1,
                                         (W/8)*(H/8)*pts_per_pixel/4, 3};
 
+    /* Level 4: 256 tiles (16x16 grid), 1x1 pixels, fine correction */
+    for (int ty = 0; ty < 16; ty++)
+        for (int tx = 0; tx < 16; tx++)
+            segments[num_segments++] = {tx*W/16, ty*H/16, W/16, H/16, 1,
+                                        (W/16)*(H/16)*pts_per_pixel/3, 4};
+
+    /* Level 5: 256 more tiles (shifted by half), 1x1, overlap correction */
+    for (int ty = 0; ty < 16; ty++)
+        for (int tx = 0; tx < 16; tx++) {
+            int rx = tx*W/16 + W/32;  /* shifted by half-tile */
+            int ry = ty*H/16 + H/32;
+            int rw = W/16, rh = H/16;
+            if (rx + rw > W) rw = W - rx;
+            if (ry + rh > H) rh = H - ry;
+            if (rw > 0 && rh > 0)
+                segments[num_segments++] = {rx, ry, rw, rh, 1,
+                                            rw*rh*pts_per_pixel/4, 5};
+        }
+
     printf("Segments: %d (L0=1, L1=4, L2=16, L3=64)\n", num_segments);
     printf("Data: %d seeds × 2 bytes = %d bytes\n", num_segments, num_segments * 2);
 
@@ -269,7 +288,7 @@ int main(int argc, char** argv) {
 
     uint8_t h_canvas[PACKED_SIZE];
     memset(h_canvas, 0, sizeof(h_canvas));
-    uint16_t best_seeds[256];
+    uint16_t best_seeds[1024];
     uint32_t h_errors[65536];
 
     struct timespec t0, t1;
