@@ -1,0 +1,2 @@
+{"op": "div", "k": 2, "initB": 0, "ops": ["SRL A"], "length": 1, "tstates": 8}
+{"op": "div", "k": 4, "initB": 0, "ops": ["SLA A", "RLC A"], "length": 2, "tstates": 16}
