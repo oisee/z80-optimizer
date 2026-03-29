@@ -6,16 +6,40 @@ A GPU-accelerated superoptimizer for the Zilog Z80 processor. The compiler that 
 
 ### Week 1 Highlights
 
-- **div8 254/254 COMPLETE** — 6 methods, avg **79T** (beats SDCC's 80–200T). GPU-discovered `carry_compare` trick: 5 ops, 26T for K≥128.
+- **div8 254/254 COMPLETE** — 6 methods, avg **79T** (beats SDCC's 80–200T). GPU-discovered `carry_compare` trick: 5 ops, 26T for K≥128
 - **1500+ optimal arithmetic sequences**: 254 mul8 + 254 mul16 + 254 div8 + 254 mod8 + 13 u32 ops + 25 branchless idioms
 - **sat_add8 = 16T** — `ADD A,B; LD C,A; SBC A,A; OR C` — 4-instruction branchless saturating add
 - **SHA-256 on Z80**: 58ms/block @3.5MHz from proven u32 primitives (13 operations, SHL32/SHR32 optimal)
-- **3 CUDA image generators**: dual-layer evolutionary (cat 4.9%), segmented LFSR (Che 15%), Introspec BB port
+- **3 CUDA image generators** for ZX Spectrum demoscene: cat 4.9%, Che Guevara 15%, Einstein 15.1% — [gallery](media/prng_images/README.md)
+- **O(1) regalloc integrated** into MinZ-VIR compiler — 156K enriched table entries, zero Z3
 - **4× cross-verified**: z80-optimizer + MinZ + MinZ-VIR + MinZ-ABAP
+
+### Day-by-Day
+
+| Day | Date | Theme | Key Achievement |
+|-----|------|-------|-----------------|
+| 1 | Mar 26 | Release | [v1.0.0](https://github.com/oisee/z80-optimizer/releases/tag/v1.0.0), article, 500+ sequences |
+| 2 | Mar 27 | Expansion | FP16/BCD, 21-op universal pool, multi-target search — [log](contexts/day4_wisdom.md) |
+| 3 | Mar 28 | Proofs | 37.6M enriched shapes, Z flag proof, SBC A,A library — [log](contexts/day3_wisdom.md) |
+| 4 | Mar 28 | Regalloc | Five-level pipeline, backtracking solver, phase cliff — [log](contexts/day4_wisdom.md) |
+| 5 | Mar 29 | Images+u32 | 3 CUDA generators, u32 library, Introspec BB port — [log](contexts/day5_wisdom.md) |
+| 6 | Mar 29 | Division | div8 v3 (−49%), carry_compare, sign/sat/arith16 — [log](contexts/day6_wisdom.md) |
+
+### pRNG Image Search — ZX Spectrum Demoscene
+
+GPU-accelerated search for recognizable images from minimal data generators (128–1194 bytes). Three methods, all CUDA. See the **[full gallery](media/prng_images/README.md)** (29 experiments).
+
+| Cat (4.9%, 128B) | Che Guevara (15%, 1194B) | Einstein (15.1%, 128B) |
+|---|---|---|
+| ![cat](media/prng_images/dual_cat_long/final_compare.png) | ![che](media/prng_images/segmented_che/level3_compare.png) | ![einstein](media/prng_images/dual_einstein_v3/final_compare.png) |
+
+- **Dual-layer evolutionary**: 5 layers (3 additive OR + 2 subtractive AND NOT), island model, 557K img/s
+- **Segmented hierarchical LFSR**: brute-force 65536 seeds per segment, guaranteed convergence
+- **Introspec BB port**: 24-bit Galois LFSR, 66 layers, CUDA port runs 4 min vs days on CPU
 
 ### v1.0.0 Foundation (March 26)
 
-- **83.6M exhaustive register allocations** for ≤6 virtual registers (78MB enriched)
+- **83.6M exhaustive register allocations** for ≤6 virtual registers (78MB enriched, 15 metrics per shape)
 - **97.7% infeasibility** at 7-15 vregs — proven that Z80 MUST decompose most real functions
 - **Multi-backend DSL**: one ISA definition → CUDA / Metal / OpenCL / Vulkan kernels
 - **Cross-verified** on 6 platforms, 4 APIs, 3 GPU vendors (NVIDIA CUDA + AMD Vulkan/OpenCL + Apple Metal 3)
@@ -28,6 +52,8 @@ A GPU-accelerated superoptimizer for the Zilog Z80 processor. The compiler that 
 📊 **Week 1 report**: [Birthday marathon results](contexts/week1_report.md) — 1500+ sequences, 12 data files, 4× cross-verified
 
 📋 **Roadmap**: [TODO.md](TODO.md) — full task list with effort estimates and priority matrix
+
+📓 **Daily logs**: [day 3](contexts/day3_wisdom.md) · [day 4](contexts/day4_wisdom.md) · [day 5](contexts/day5_wisdom.md) · [day 6](contexts/day6_wisdom.md) · [day 7 seed](contexts/day7_seed.md)
 
 ---
 
@@ -421,19 +447,17 @@ Length 5+: combinatorial explosion → STOKE only
 
 We're expanding from instruction-level optimization to **function-level** and **algorithmic-level** bruteforce. See **[BRUTEFORCE_ROADMAP.md](BRUTEFORCE_ROADMAP.md)** for the full plan.
 
-**Already shipped:**
-- **Register allocation table** — 61 entries, provably optimal (CUDA 15-loc search)
-- **Peephole rules** — 602K entries (CUDA length-2 exhaustive)
-
-**In progress:**
-- **Constant multiply ×2..×255** — **COMPLETE: 254/254 ALL DIRECT** (no composition needed). Last 5 constants (170, 171, 173, 179, 181) found at length 11. All sequences provably optimal.
-
-**Shipped (Day 6):**
-- **Constant division ÷2..÷255** — **COMPLETE: 254/254** via multiply-and-shift (A×M>>S). 8–208T.
-- **Sign, saturating add/sub** — sign8 (43T), sat_add8 (16T, branchless!), sat_sub8 (20T)
+**Shipped — complete:**
+- **Peephole rules** — 739K len-2→len-1 (complete), 37M len-3 (partial)
+- **Register allocation** — 83.6M shapes (37.6M feasible), enriched with 15 op-aware metrics. O(1) lookup integrated into MinZ-VIR compiler
+- **Constant multiply ×2..×255** — 254/254 ALL DIRECT, 8-bit and 16-bit tables
+- **Constant division ÷2..÷255** — 254/254, 6 methods, avg 79T. GPU-discovered `carry_compare` for K≥128
+- **Modulo ÷2..÷255** — 254/254 mod8, 254/254 divmod8
+- **Branchless library** — sign8 (43T), sat_add8 (16T!), sat_sub8 (20T), ABS/MIN/MAX/CMOV
 - **16-bit arithmetic** — abs16 (44T), neg16 (27T), min16/max16 (41T), sign16 (20–34T)
 - **32-bit arithmetic** — 13 u32 operations (DEHL convention), SHL32/SHR32 proven optimal
 - **SHA-256 decomposition** — 58ms/block @3.5MHz from u32 primitives
+- **Image search** — 3 CUDA generators, [29-experiment gallery](media/prng_images/README.md)
 
 **Planned targets:**
 - **ZX Spectrum screen address** — Y→VRAM address, the holy grail of Spectrum programming
