@@ -1,0 +1,109 @@
+{
+  "description": "SHA-256 single round decomposition into Z80 u32 operations",
+  "reference": "FIPS 180-4, Section 6.2.2",
+
+  "round_function": {
+    "formula": "T1 = h + Σ1(e) + Ch(e,f,g) + K[i] + W[i]; T2 = Σ0(a) + Maj(a,b,c); h=g; g=f; f=e; e=d+T1; d=c; c=b; b=a; a=T1+T2",
+    "bitwise_ops": {
+      "Ch(e,f,g)":  "(e AND f) XOR (NOT e AND g)",
+      "Maj(a,b,c)": "(a AND b) XOR (a AND c) XOR (b AND c)",
+      "Σ0(a)":      "ROTR(a,2) XOR ROTR(a,13) XOR ROTR(a,22)",
+      "Σ1(e)":      "ROTR(e,6) XOR ROTR(e,11) XOR ROTR(e,25)"
+    }
+  },
+
+  "z80_implementation_notes": {
+    "register_convention": "u32 in DEHL (D=MSB). Second u32 via IX:IY, stack, or shadow EXX bank.",
+    "rotr_tricks": {
+      "ROTR8":  "Free! Just rename bytes: DEHL→LHDE (byte rotation)",
+      "ROTR16": "EX DE,HL (4T!) — swaps high/low word",
+      "ROTR1":  "SRL D; RR E; RR H; RR L; JR NC,+2; SET 7,D (32-40T)",
+      "ROTR_N": "Compose: ROTR8 + ROTR1×k, or ROTR16 + ROTR8 + ROTR1×k"
+    },
+    "rotr_decomposition": {
+      "ROTR2":  "ROTR1 × 2 = 64-80T",
+      "ROTR6":  "ROTR8 + ROTL1 × 2 = 0T + 68T = 68T (ROTL1 = shl32 + adc trick)",
+      "ROTR11": "ROTR8 + ROTR1 × 3 = 0T + 96-120T = ~108T. Or: ROTR16 + ROTL1 × 5 = 4T + 170T. Former better.",
+      "ROTR13": "ROTR16 + ROTR1 × 3... wait, ROTR16=ROTR(16). 13 = 16-3 → ROTL3 after ROTR16? No, ROTR13 = ROTR16 + ROTL3 = EX DE,HL + 3×SHL32_wrap",
+      "ROTR22": "ROTR24 + ROTL2 = byte_rot_3 + 2×SHL32_wrap. byte_rot_3: DEHL→EDLH? Need careful byte shuffle.",
+      "ROTR25": "ROTR24 + ROTR1 = byte_rot_3 + 32-40T"
+    }
+  },
+
+  "Sigma1_e": {
+    "formula": "ROTR(e,6) XOR ROTR(e,11) XOR ROTR(e,25)",
+    "z80_plan": [
+      "Load e into DEHL",
+      "Copy DEHL to IX:IY (or stack)",
+      "ROTR(DEHL, 6): ROTR8 (free byte rename) + ROTL2 (~68T)",
+      "Save result, reload e",
+      "ROTR(DEHL, 11): ROTR8 + ROTR3 (~96-120T)",
+      "XOR with saved ROTR6 result (100T)",
+      "Save result, reload e",
+      "ROTR(DEHL, 25): ROTR24 (byte rename) + ROTR1 (32-40T)",
+      "XOR with accumulated (100T)"
+    ],
+    "estimated_tstates": "~600T"
+  },
+
+  "Sigma0_a": {
+    "formula": "ROTR(a,2) XOR ROTR(a,13) XOR ROTR(a,22)",
+    "estimated_tstates": "~600T"
+  },
+
+  "Ch_efg": {
+    "formula": "(e AND f) XOR (NOT_e AND g)",
+    "z80_plan": [
+      "Load e, f into DEHL, IX:IY",
+      "AND32(DEHL, IX:IY) → DEHL = e&f (100T)",
+      "Save to stack",
+      "Load e, invert all 4 bytes: CPL on each via A (~32T)",
+      "Load g into IX:IY",
+      "AND32 → ~e & g (100T)",
+      "POP saved e&f",
+      "XOR32 → result (100T)"
+    ],
+    "estimated_tstates": "~400T"
+  },
+
+  "Maj_abc": {
+    "formula": "(a AND b) XOR (a AND c) XOR (b AND c)",
+    "z80_plan": "3× AND32 + 2× XOR32 = 3×100 + 2×100 = ~500T",
+    "optimization": "Maj = (a AND b) OR (c AND (a XOR b)) — same op count but only 2 temps",
+    "estimated_tstates": "~400T"
+  },
+
+  "round_total_estimate": {
+    "Sigma1": "~600T",
+    "Ch": "~400T",
+    "Sigma0": "~600T",
+    "Maj": "~400T",
+    "adds": "5× ADD32 = 5×54 = 270T",
+    "K_W_loads": "~100T (from table)",
+    "register_shuffles": "~200T (a→b→c...→h rotation)",
+    "total_per_round": "~2570T",
+    "total_64_rounds": "~164K T-states",
+    "time_at_3_5MHz": "~47ms per block",
+    "notes": "Previous estimate of 800T/round was optimistic. Real cost dominated by ROTR decomposition and lack of native 32-bit XOR/AND."
+  },
+
+  "message_schedule": {
+    "W_expansion": {
+      "formula": "W[i] = σ1(W[i-2]) + W[i-7] + σ0(W[i-15]) + W[i-16], for i=16..63",
+      "sigma0": "ROTR(x,7) XOR ROTR(x,18) XOR SHR(x,3)",
+      "sigma1": "ROTR(x,17) XOR ROTR(x,19) XOR SHR(x,10)",
+      "per_word": "~800T (two sigma + two adds)",
+      "total_48_words": "~38K T-states"
+    }
+  },
+
+  "full_block_estimate": {
+    "init": "~200T (load H0..H7)",
+    "rounds": "~164K T-states",
+    "message_schedule": "~38K T-states (interleaved with rounds)",
+    "final_add": "8× ADD32 = ~430T",
+    "total": "~202K T-states",
+    "time_at_3_5MHz": "~58ms per block",
+    "throughput": "~17 blocks/sec = ~1.1 KB/s (64 bytes/block)"
+  }
+}

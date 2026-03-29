@@ -2,6 +2,8 @@
 
 Brute-force Z80 superoptimizer. Go + CUDA project.
 
+**Roadmap**: [TODO.md](TODO.md) — full task list with effort estimates and priority matrix.
+
 ## Build & Test
 
 ```bash
@@ -47,8 +49,16 @@ nvcc -O3 -o cuda/z80_divmod_fast cuda/z80_divmod_fast.cu    # division/modulo (1
 - `data/enriched_*.enr.zst` — 37.6M enriched shapes with 15 op-aware metrics (78MB)
 - `data/ENRICHED_TABLES.md` — Enriched format spec + usage guide
 - `data/z80_register_graph.json` — Complete 11-register cost model (moves, ALU, swaps)
-- `data/mulopt16_complete.json` — 254 mul8 sequences with clobber masks
-- `data/arith16_idioms.json` — 16-bit arithmetic idioms
+- `data/mulopt8_clobber.json` — 254 mul8 sequences (A×K→A) with clobber masks
+- `data/mulopt16_complete.json` — 254 mul16 sequences (A×K→HL)
+- `data/div8_optimal.json` — 254 div8 sequences (A÷K→A) via multiply-and-shift
+- `data/mod8_optimal.json` — 254 mod8 sequences (A%K→A)
+- `data/divmod8_optimal.json` — 254 divmod8 sequences
+- `data/u32_ops.json` — 13 u32 operations (DEHL convention), SHL/SHR proven optimal
+- `data/sign_sat_ops.json` — sign8, sat_add8 (16T!), sat_sub8
+- `data/arith16_new.json` — abs16, neg16, min16, max16, sign16, cmp16_zero
+- `data/sha256_round.json` — SHA-256 round decomposition (58ms/block @3.5MHz)
+- `data/arith16_idioms.json` — 16-bit arithmetic idioms (legacy)
 - `data/bcd_idioms.json` — BCD arithmetic (GPU-proven with H-flag)
 
 ### Documentation

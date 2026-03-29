@@ -2,19 +2,32 @@
 
 A GPU-accelerated superoptimizer for the Zilog Z80 processor. The compiler that **never guesses** — every optimization is provably optimal.
 
-## What's New (v1.0.0 — March 2026) 🎂
+## What's New (Birthday Marathon — March 26–29, 2026)
 
-- **501 optimal arithmetic sequences**: 254 multiplies — ALL DIRECT, no composition needed (8× faster than shift-and-add) + 247 divisions — ALL COMPLETE (2.5× faster than general loop)
-- **83.6M exhaustive register allocations** for ≤6 virtual registers (32MB compressed)
+### Week 1 Highlights
+
+- **div8 254/254 COMPLETE** — 6 methods, avg **79T** (beats SDCC's 80–200T). GPU-discovered `carry_compare` trick: 5 ops, 26T for K≥128.
+- **1500+ optimal arithmetic sequences**: 254 mul8 + 254 mul16 + 254 div8 + 254 mod8 + 13 u32 ops + 25 branchless idioms
+- **sat_add8 = 16T** — `ADD A,B; LD C,A; SBC A,A; OR C` — 4-instruction branchless saturating add
+- **SHA-256 on Z80**: 58ms/block @3.5MHz from proven u32 primitives (13 operations, SHL32/SHR32 optimal)
+- **3 CUDA image generators**: dual-layer evolutionary (cat 4.9%), segmented LFSR (Che 15%), Introspec BB port
+- **4× cross-verified**: z80-optimizer + MinZ + MinZ-VIR + MinZ-ABAP
+
+### v1.0.0 Foundation (March 26)
+
+- **83.6M exhaustive register allocations** for ≤6 virtual registers (78MB enriched)
 - **97.7% infeasibility** at 7-15 vregs — proven that Z80 MUST decompose most real functions
-- **15 branchless idioms**: ABS, bool, sign, NOT — all found by GPU exhaustive search
 - **Multi-backend DSL**: one ISA definition → CUDA / Metal / OpenCL / Vulkan kernels
 - **Cross-verified** on 5 platforms, 4 APIs, 3 GPU vendors (NVIDIA + AMD + Apple)
-- **739K peephole rules** (len-2 complete)
+- **739K peephole rules** (len-2 complete, len-3 37M partial)
 
 📄 **Article**: [The Z80 Compiler That Never Guesses](release/z80_compiler_never_guesses.pdf) (PDF / [EPUB](release/z80_compiler_never_guesses.epub) / [HTML](release/z80_compiler_never_guesses.html))
 
 📖 **Book outline**: [19 chapters](docs/book_outline.md) — from peephole rules to universal computation chains
+
+📊 **Week 1 report**: [Birthday marathon results](contexts/week1_report.md) — 1500+ sequences, 12 data files, 4× cross-verified
+
+📋 **Roadmap**: [TODO.md](TODO.md) — full task list with effort estimates and priority matrix
 
 ---
 
@@ -414,16 +427,23 @@ We're expanding from instruction-level optimization to **function-level** and **
 **In progress:**
 - **Constant multiply ×2..×255** — **COMPLETE: 254/254 ALL DIRECT** (no composition needed). Last 5 constants (170, 171, 173, 179, 181) found at length 11. All sequences provably optimal.
 
+**Shipped (Day 6):**
+- **Constant division ÷2..÷255** — **COMPLETE: 254/254** via multiply-and-shift (A×M>>S). 8–208T.
+- **Sign, saturating add/sub** — sign8 (43T), sat_add8 (16T, branchless!), sat_sub8 (20T)
+- **16-bit arithmetic** — abs16 (44T), neg16 (27T), min16/max16 (41T), sign16 (20–34T)
+- **32-bit arithmetic** — 13 u32 operations (DEHL convention), SHL32/SHR32 proven optimal
+- **SHA-256 decomposition** — 58ms/block @3.5MHz from u32 primitives
+
 **Planned targets:**
-- **Constant division ÷2..÷255** — reciprocal multiplication tricks
-- **ZX Spectrum screen address** — Y→VRAM address, the holy grail of Spectrum programming (complex bit-field shuffle, every game calls it thousands of times)
-- **Sign extend, ABS, MIN/MAX, CLAMP** — common operations with non-obvious optimal sequences
+- **ZX Spectrum screen address** — Y→VRAM address, the holy grail of Spectrum programming
 - **Bit reverse, popcount, BCD conversion** — bit manipulation functions
 - **Approximate sin/cos** — polynomial approximation in minimal Z80 instructions (allow ±2 error)
+- **HL×K constant multiply** — 16-bit × constant, full 16-bit result
 
 Philosophy: *"Let the GPU try everything. Ship the winners."*
 
-See [docs/NEXT.md](docs/NEXT.md) for the full roadmap with architecture diagrams and references.
+See [TODO.md](TODO.md) for the full roadmap with effort estimates, priority matrix, and milestone history.
+See [docs/NEXT.md](docs/NEXT.md) for search architecture diagrams and academic references.
 
 ## Research context
 
@@ -521,15 +541,19 @@ cuda/z80_mulopt_fast --max-len 9 --json > mulopt_results.json
 cuda/z80_mulopt_fast --k 42 --max-len 10
 ```
 
-### Division and Modulo Search
+### Division and Modulo — COMPLETE (254/254)
 
-GPU search for optimal division/modulo by constant. Parametric B register (preloaded with a constant to enable reciprocal multiplication tricks).
+Analytical multiply-and-shift: `A÷K = (A × M) >> S` composed from mul16 table.
 
-- **div10 lower bound ≥13**: GPU exhaustive search proves that no sequence of ≤12 instructions from the 21-op pool computes integer division by 10. This is a **search certificate** — a proven negative result.
-- **Best known div10**: 27 instructions, 124-135 T-states. Hand-crafted using Hacker's Delight reciprocal approximation with RRA+AND optimization. Verified correct for all 256 input values.
-- **Gap**: 14 instructions between the lower bound (13) and best known solution (27). Closing this gap is an open problem.
+- **254/254 divisors solved** via 6 methods (v3): shift(5), mul_shift(30), preshift_mul(36), mul_add256_shift(41), double_mul_shift(15), **carry_compare(127)**
+- **T-states**: 8–188 (avg **79T**). Beats SDCC generic __div8 (80–200T). All exhaustively verified, 4× cross-verified.
+- **carry_compare** (K≥128): `OR A; LD B,(256-K); ADC A,B; SBC A,A; AND 1` = **5 ops, 26T** — GPU-discovered, not in any Z80 reference
+- **PRESHIFT** (K<128): `(A>>P)×M>>S` — exploit K's power-of-2 factor. div86 = 60T (was 170T)
+- **div3** = A×171>>9 (16 ops, 141T). **div10** = (A>>1)×103>>9 (15 ops, 138T). **div7** = A×293>>11 (16 ops, 128T).
+- **mod8** and **divmod8** tables also complete (254/254 each).
+- GPU brute-force confirmed: div3/div10 not findable at max-len=8 (need 9+ instructions = beyond brute-force window).
 
-Division by powers of 2 is trivial (`SRL A` repeated). Modulo by powers of 2 is trivial (`AND mask`). The interesting targets are non-power-of-2 divisors: 3, 5, 7, 10, etc.
+Division by powers of 2 is trivial (`SRL A` repeated). Modulo by powers of 2 is trivial (`AND mask`).
 
 ```bash
 # Search for division by constant

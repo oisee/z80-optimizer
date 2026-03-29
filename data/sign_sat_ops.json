@@ -1,0 +1,46 @@
+{
+  "description": "Branchless sign, saturating add/sub for Z80 (u8/i8)",
+
+  "sign8": {
+    "description": "signed A → -1/0/+1 in A (signum function)",
+    "ops": ["LD B,A", "RLCA", "SBC A,A", "LD C,A", "LD A,B", "NEG", "SBC A,A", "AND 1", "OR C"],
+    "length": 9,
+    "tstates": 43,
+    "clobbers": ["A", "B", "C", "F"],
+    "algorithm": "neg_mask = (bit7→CY, SBC A,A); nz_mask = (NEG→CY, SBC A,A); result = (nz_mask AND 1) OR neg_mask",
+    "verified": "exhaustive 256 inputs",
+    "notes": "neg→0xFF, zero→0x00, pos→0x01. NEG sets CY iff A≠0."
+  },
+
+  "sat_add8": {
+    "description": "A+B saturating → A, unsigned (clamp 255)",
+    "ops": ["ADD A,B", "LD C,A", "SBC A,A", "OR C"],
+    "length": 4,
+    "tstates": 16,
+    "clobbers": ["A", "C", "F"],
+    "algorithm": "sum = A+B (CY on overflow); mask = SBC A,A (0xFF if overflow); result = mask | sum",
+    "verified": "exhaustive 65536 inputs",
+    "notes": "If overflow: 0xFF | anything = 0xFF. If no overflow: 0x00 | sum = sum."
+  },
+
+  "sat_sub8": {
+    "description": "A-B saturating → A, unsigned (clamp 0)",
+    "ops": ["SUB B", "LD C,A", "SBC A,A", "CPL", "AND C"],
+    "length": 5,
+    "tstates": 20,
+    "clobbers": ["A", "C", "F"],
+    "algorithm": "diff = A-B (CY on borrow); mask = ~(SBC A,A) (0xFF if no borrow, 0x00 if borrow); result = mask & diff",
+    "verified": "exhaustive 65536 inputs",
+    "notes": "If borrow: AND 0x00 = 0. If no borrow: AND 0xFF = diff."
+  },
+
+  "sat_add8_signed": {
+    "description": "A+B saturating → A, signed (clamp -128..+127)",
+    "ops": ["LD C,A", "ADD A,B", "JP PO,done", "LD A,C", "RLA", "SBC A,A", "XOR 0x80"],
+    "length": 7,
+    "tstates": "24-31",
+    "clobbers": ["A", "C", "F"],
+    "algorithm": "If no overflow (P/V clear): sum is correct. If overflow: clamp to +127 if A was positive, -128 if negative.",
+    "notes": "Uses branch (JP PO). Overflow flag detects signed overflow. Branch version since branchless signed sat is very expensive."
+  }
+}

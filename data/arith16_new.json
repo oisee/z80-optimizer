@@ -1,0 +1,64 @@
+{
+  "description": "16-bit arithmetic operations for Z80 (signed/unsigned)",
+
+  "abs16": {
+    "description": "HL = |HL| (signed absolute value)",
+    "ops": ["LD A,H", "RLA", "SBC A,A", "LD B,A", "XOR L", "SUB B", "LD L,A", "LD A,B", "XOR H", "SBC A,B", "LD H,A"],
+    "length": 11,
+    "tstates": 44,
+    "clobbers": ["A", "B", "F", "H", "L"],
+    "algorithm": "mask = sign_extend(H>>7); HL = (HL ^ mask16) - mask16",
+    "verified": "exhaustive 65536 inputs",
+    "notes": "Branchless. Classic 2s complement absolute value trick."
+  },
+
+  "min16_unsigned": {
+    "description": "HL = min(HL, DE) unsigned",
+    "ops": ["OR A", "SBC HL,DE", "ADD HL,DE", "JR C,+1", "EX DE,HL"],
+    "length": 5,
+    "tstates": "41-46",
+    "clobbers": ["F", "H", "L"],
+    "algorithm": "Compare via SBC, restore via ADD, conditional swap",
+    "verified": "100K random inputs",
+    "notes": "Branch version. JR C skips EX DE,HL when HL was already smaller."
+  },
+
+  "max16_unsigned": {
+    "description": "HL = max(HL, DE) unsigned",
+    "ops": ["OR A", "SBC HL,DE", "ADD HL,DE", "JR NC,+1", "EX DE,HL"],
+    "length": 5,
+    "tstates": "41-46",
+    "clobbers": ["F", "H", "L"],
+    "algorithm": "Compare via SBC, restore via ADD, conditional swap",
+    "verified": "100K random inputs",
+    "notes": "Branch version. JR NC skips EX DE,HL when HL was already larger."
+  },
+
+  "neg16": {
+    "description": "HL = -HL (negate 16-bit)",
+    "ops": ["XOR A", "SUB L", "LD L,A", "LD A,0", "SBC A,H", "LD H,A"],
+    "length": 6,
+    "tstates": 27,
+    "clobbers": ["A", "F", "H", "L"],
+    "notes": "LD A,0 (not XOR A) preserves carry between bytes."
+  },
+
+  "cmp16_zero": {
+    "description": "Test HL == 0 (set Z flag)",
+    "ops": ["LD A,H", "OR L"],
+    "length": 2,
+    "tstates": 8,
+    "clobbers": ["A", "F"],
+    "notes": "Z=1 if HL==0."
+  },
+
+  "sign16": {
+    "description": "signed HL → -1/0/+1 in A",
+    "ops": ["LD A,H", "OR L", "JR Z,done", "LD A,H", "RLA", "SBC A,A", "OR 1"],
+    "length": 7,
+    "tstates": "20-34",
+    "clobbers": ["A", "F"],
+    "algorithm": "If HL==0: early exit with A=0. Otherwise: sign from H bit 7 via RLA;SBC A,A, then OR 1 to get +1/-1.",
+    "notes": "Zero: 20T, nonzero: 34T. OR 1 maps 0x00→0x01 (pos) and 0xFF→0xFF (neg)."
+  }
+}
