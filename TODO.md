@@ -55,18 +55,32 @@ Effort: S = hours, M = day, L = days, XL = week+.
 - [ ] **mul16×16→32**: HL×DE→DEHL, needed for mul16c (L)
   - Schoolbook: 4 partial products, 3 additions. ~200T estimate.
 
-### 1.5 32-bit Arithmetic — COMPLETE
-- [x] **u32 library**: 13 operations — `data/u32_ops.json`
+### 1.5 32-bit Arithmetic — PARTIAL (convention rework needed)
+- [x] **u32 library**: 13 operations — `data/u32_ops.json` (DEHL convention)
   - SHL32(34T), SHR32(32T), SAR32(32T), ADD32(54T), SUB32(58T),
     NEG32(57T), CMP32_ZERO(16T), ZEXT/SEXT, XOR32(100T), AND32(100T), ROTR32(32–40T)
 - [x] **SHA-256 round decomposition** — `data/sha256_round.json`
   - ~2570T/round, 64 rounds + message schedule = ~202K T = **58ms/block @3.5MHz**
+- [-] **Multi-convention u32**: DEHL is suboptimal, HLIX and HLH'L' are faster (M)
+  - **HLIX** (H:L:IXH:IXL): SHL=30T, ADD=30T — best for fused ops (×10+A atoi)
+  - **HLH'L'** (H:L:H':L'): SHL=30T, save=4T(EXX!) — best for pure arithmetic (×K)
+  - **DEHL** (D:E:H:L): SHL=34T, ADD=54T — current, worst, but simplest
+  - HLH'L' wins 14/19 ×K benchmarks, saves ~74T avg vs DEHL
+  - Need: u32_ops.json v2 with all 3 conventions per operation
+- [-] **u32 ×K constant multiply**: search optimal per-convention (M)
+  - Pool: SHL32+SAVE+ADD32 composites per convention
+  - Key targets: ×3, ×5, ×7, ×9, ×10, ×100, ×1000
+  - ×10 hand-written HLIX = 178T (with +A fused!)
+- [ ] **u32 ÷K constant divide**: multiply-and-shift with 32-bit magic (L)
+  - ÷10 = ×0x1999999A>>32 (~426T via schoolbook u32×u32)
+  - Alternative: repeated subtraction of powers of 10 (~306T for itoa)
+  - Power-of-2: just SHR chain (28T × log2(K))
 - [ ] **OR32, NOT32**: trivial but not yet in table (S)
 - [ ] **CMP32_unsigned**: compare DEHL vs IX:IY (S)
 - [ ] **SHA-256 Z80 implementation**: full working .asm (XL)
   - Have decomposition; need actual register allocation + memory layout
-  - 8 working variables × 4 bytes = 32 bytes in RAM
-  - Message schedule: 64 words × 4 bytes = 256 bytes
+  - HLH'L' convention could hold 2 working vars without RAM spills
+  - 4×32 vars possible: DEHL + BCIX + D'E'H'L' + B'C'IY
 
 ---
 

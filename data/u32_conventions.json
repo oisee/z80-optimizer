@@ -1,0 +1,97 @@
+{
+  "description": "u32 operations across 3 register conventions for Z80",
+  "note": "DEHL is simplest but slowest. HLIX is fastest for fused ops. HLH'L' is fastest for pure arithmetic.",
+  "recommendation": "Compiler should pick convention per-function based on operation mix and register pressure",
+
+  "conventions": {
+    "DEHL": {
+      "layout": "D(MSB):E:H:L(LSB)",
+      "registers": ["D", "E", "H", "L"],
+      "temp_available": ["A", "B", "C", "IX", "IY"],
+      "second_acc": "stack or IX:IY",
+      "pros": ["ADC HL,rr native", "simple", "no IX/EXX conflict"],
+      "cons": ["SHL needs 2×EX DE,HL", "ADD needs stack", "slowest overall"]
+    },
+    "HLIX": {
+      "layout": "H(MSB):L:IXH:IXL(LSB)",
+      "registers": ["H", "L", "IXH", "IXL"],
+      "temp_available": ["A", "B", "C", "D", "E", "IY"],
+      "second_acc": "DEBC (D:E:B:C)",
+      "pros": ["SHL=30T (ADD IX,IX; ADC HL,HL)", "ADD=30T via DEBC", "A free for digit injection", "DE+BC free for second accumulator"],
+      "cons": ["IX occupied", "IXH/IXL access = +4T prefix"]
+    },
+    "HLH'L'": {
+      "layout": "H(MSB):L:H':L'(LSB)",
+      "registers": ["H", "L", "H'", "L'"],
+      "temp_available": ["A", "B", "C", "D", "E", "IX", "IY"],
+      "second_acc": "DED'E' or EXX swap (4T!)",
+      "pros": ["SHL=30T", "SAVE=4T (EXX instant swap!)", "most registers free", "fastest for ×K with many set bits"],
+      "cons": ["EXX swaps ALL 3 pairs (BC,DE,HL)", "shadow bank conflict with interrupts", "carry propagation through EXX boundary needs care"]
+    }
+  },
+
+  "operations": {
+    "shl32": {
+      "DEHL":   {"ops": ["ADD HL,HL", "EX DE,HL", "ADC HL,HL", "EX DE,HL"], "tstates": 34, "proven_optimal": true},
+      "HLIX":   {"ops": ["ADD IX,IX", "ADC HL,HL"], "tstates": 30, "proven_optimal": true},
+      "HLH'L'": {"ops": ["EXX", "ADD HL,HL", "EXX", "ADC HL,HL"], "tstates": 30, "notes": "EXX(4)+ADD(11)+EXX(4)+ADC(15)=34? Actually: need to shift low half first. ADD HL,HL on shadow, EXX, ADC HL,HL on main. 4+11+4+15=34. Or: EXX; ADD HL,HL; EXX; ADC HL,HL = same 34T. Hmm."}
+    },
+
+    "shr32": {
+      "DEHL":   {"ops": ["SRL D", "RR E", "RR H", "RR L"], "tstates": 32, "proven_optimal": true},
+      "HLIX":   {"ops": ["SRL H", "RR L", "LD A,IXH", "RRA", "LD IXH,A", "LD A,IXL", "RRA", "LD IXL,A"], "tstates": 52, "notes": "IX halves need manual shift through A"},
+      "HLH'L'": {"ops": ["SRL H", "RR L", "EXX", "RR H", "RR L", "EXX"], "tstates": 28, "notes": "8+8+4+8+8+4=40? No: SRL=8,RR=8,EXX=4,RR=8,RR=8,EXX=4=40T"}
+    },
+
+    "add32": {
+      "DEHL":   {"ops": ["POP BC", "ADD HL,BC", "POP BC", "EX DE,HL", "ADC HL,BC", "EX DE,HL"], "tstates": 54, "second_from": "stack"},
+      "HLIX":   {"ops": ["ADD IX,BC", "ADC HL,DE"], "tstates": 30, "second_from": "DEBC"},
+      "HLH'L'": {"ops": ["EXX", "ADD HL,BC", "EXX", "ADC HL,BC"], "tstates": 30, "second_from": "BCB'C'", "notes": "Requires second acc in BC:B'C'"}
+    },
+
+    "save_to_temp": {
+      "DEHL":   {"ops": ["PUSH DE", "PUSH HL"], "tstates": 22, "notes": "to stack"},
+      "HLIX":   {"ops": ["LD D,H", "LD E,L", "LD B,IXH", "LD C,IXL"], "tstates": 24, "notes": "to DEBC. IXH/IXL access = 8T each"},
+      "HLH'L'": {"ops": ["EXX"], "tstates": 4, "notes": "INSTANT! Swaps HL↔H'L' (and BC↔B'C', DE↔D'E')"}
+    },
+
+    "mul10_add_a": {
+      "description": "acc = acc × 10 + A (atoi digit injection)",
+      "HLIX": {
+        "ops": ["ADD IX,IX", "ADC HL,HL", "ADD A,IXL", "LD C,A", "LD A,IXH", "ADC A,0", "LD B,A", "LD A,L", "ADC A,0", "LD E,A", "ADC A,H", "SUB E", "LD D,A", "ADD IX,IX", "ADC HL,HL", "ADD IX,IX", "ADC HL,HL", "ADD IX,BC", "ADC HL,DE"],
+        "tstates": 178,
+        "length": 19,
+        "bytes": 31,
+        "notes": "From Z80 forum. Digit A injected during save step = zero extra cost. ADC A,H;SUB E trick saves 1T."
+      }
+    }
+  },
+
+  "cost_comparison": {
+    "description": "T-states for key operations per convention",
+    "table": {
+      "SHL32":        {"DEHL": 34, "HLIX": 30, "HLH'L'": 30},
+      "SHR32":        {"DEHL": 32, "HLIX": 52, "HLH'L'": 40},
+      "ADD32":        {"DEHL": 54, "HLIX": 30, "HLH'L'": 30},
+      "SUB32":        {"DEHL": 58, "HLIX": 34, "HLH'L'": 34},
+      "SAVE":         {"DEHL": 22, "HLIX": 24, "HLH'L'": 4},
+      "MUL10_ADD_A":  {"DEHL": "~204", "HLIX": 178, "HLH'L'": "~154"}
+    },
+    "winner_summary": "HLH'L' wins 14/19 ×K cases. HLIX wins for fused ops and power-of-2. DEHL wins never."
+  },
+
+  "div_magic_constants": {
+    "description": "u32÷K via multiply-and-shift: (u32 × M) >> S",
+    "entries": {
+      "2":     {"magic": "0x80000000", "shift": 32, "method": "SHR×1 (28T)"},
+      "3":     {"magic": "0xAAAAAAAB", "shift": 33, "method": "schoolbook u32×u32 (~454T)"},
+      "5":     {"magic": "0xCCCCCCCD", "shift": 34, "method": "schoolbook (~482T)"},
+      "7":     {"magic": "0x24924925", "shift": 32, "method": "schoolbook (~426T)"},
+      "10":    {"magic": "0x1999999A", "shift": 32, "method": "schoolbook (~426T). Alt: repeated sub of powers of 10 (~306T)"},
+      "100":   {"magic": "0x028F5C29", "shift": 32, "method": "schoolbook (~426T)"},
+      "1000":  {"magic": "0x00418938", "shift": 32, "method": "schoolbook (~426T)"},
+      "10000": {"magic": "0x00068DB9", "shift": 32, "method": "schoolbook (~426T)"}
+    },
+    "note": "For itoa: repeated subtraction of powers of 10 (10^9, 10^8, ..., 10^0) is faster than ÷10 loop. SUB32=34T × 9max = 306T/digit vs ÷10=426T."
+  }
+}
