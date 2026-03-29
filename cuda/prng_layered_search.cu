@@ -46,7 +46,7 @@ __device__ void draw_layer(
     int block_size
 ) {
     /* Initialize LFSR from seed + layer index */
-    uint32_t state = ((uint32_t)seed << 16) | ((uint32_t)(layer_idx * 7 + 0x1337));
+    uint32_t state = ((uint32_t)seed << 16) | 0x1337;
     /* Warm up LFSR */
     for (int i = 0; i < 8; i++) state = lfsr_step(state);
 
@@ -134,7 +134,7 @@ void make_schedule(LayerSpec* spec, int num_layers) {
 
 /* ====== Host: apply a layer to canvas ====== */
 void host_draw_layer(uint8_t* canvas, uint16_t seed, int layer_idx, int num_points, int block_size) {
-    uint32_t state = ((uint32_t)seed << 16) | ((uint32_t)(layer_idx * 7 + 0x1337));
+    uint32_t state = ((uint32_t)seed << 16) | 0x1337;
     for (int i = 0; i < 8; i++) {
         uint32_t bit = state & 1;
         state >>= 1;
