@@ -29,33 +29,47 @@
 #define PIXELS (W * H)   /* 12288 */
 #define THREADS 256
 
-/* ====== Genome: 128 bytes (dual-layer) ====== */
+/* ====== Genome: 128 bytes (dual-layer + subtractive) ====== */
 /*
- * Dual-layer architecture:
- *   Layer A: seed_a + tile_mask_a → H-mirror (vertical axis symmetry)
- *            → eyes, ears, nose, facial symmetry
- *   Layer B: seed_b + tile_mask_b → configurable sym (V-mirror, none, etc.)
- *            → mouth, brow lines, horizontal features
- *   Result:  A | B | circle | stripes → threshold → final
+ * Dual-layer architecture with subtractive carving:
+ *   Layer A: seed_a + tile_mask_a → H-mirror (additive)
+ *            → overall head shape, hair, body outline
+ *   Layer B: seed_b + tile_mask_b → configurable sym (additive)
+ *            → horizontal features, brow lines, mouth
+ *   Layer C: seed_c → no symmetry, fine detail (additive)
+ *   Layer D: seed_d + tile_mask_d → H-mirror (SUBTRACTIVE)
+ *            → carves out eyes, nostrils, mouth cavity, mustache
+ *   Layer E: seed_e → configurable sym (SUBTRACTIVE)
+ *            → horizontal cuts, wrinkles, teeth gaps
+ *   Result:  (A | B | C | shapes) AND NOT (D | E) → threshold → final
  *
- * Each layer has independent noise, independent symmetry.
- * OR blend = additive (draw on black), natural for demoscene.
+ * Additive layers (OR): draw white on black
+ * Subtractive layers (AND NOT): erase holes in white areas
  */
 struct __align__(16) Genome {
-    /* Layer A: H-mirror (left-right symmetry, faces) */
+    /* Layer A: H-mirror additive (left-right symmetry) */
     uint64_t seed_a;          /*  8 bytes */
     uint8_t  tile_mask_a[12]; /* 12 bytes (96 tiles = half, mirrored) */
     uint8_t  density_a;       /*  1 byte: noise density */
 
-    /* Layer B: configurable symmetry */
+    /* Layer B: configurable symmetry additive */
     uint64_t seed_b;          /*  8 bytes */
     uint8_t  tile_mask_b[12]; /* 12 bytes */
     uint8_t  density_b;       /*  1 byte */
     uint8_t  sym_b;           /*  1 byte: 0=none, 1=V-mirror, 2=4-fold */
 
-    /* Layer C: no symmetry, fine detail */
+    /* Layer C: no symmetry, fine detail additive */
     uint64_t seed_c;          /*  8 bytes */
     uint8_t  density_c;       /*  1 byte */
+
+    /* Layer D: H-mirror SUBTRACTIVE (carves eyes, mouth, nose) */
+    uint64_t seed_d;          /*  8 bytes */
+    uint8_t  density_d;       /*  1 byte: carve density */
+
+    /* Layer E: configurable sym SUBTRACTIVE (horizontal cuts) */
+    uint64_t seed_e;          /*  8 bytes */
+    uint8_t  density_e;       /*  1 byte */
+    uint8_t  sym_e;           /*  1 byte: 0=none, 1=V-mirror, 2=H-mirror */
 
     /* Shared basis shapes (always H-mirrored) */
     uint8_t  circle[4];       /*  4 bytes: cx, cy, r, fill */
@@ -69,7 +83,7 @@ struct __align__(16) Genome {
     /* Legacy single-layer mode */
     uint8_t  symmetry;        /*  1 byte: used in single-layer mode */
     uint8_t  mode;            /*  1 byte: 0=single-layer, 1=dual-layer */
-    uint8_t  _pad[30];        /*  padding to 128 */
+    uint8_t  _pad[10];        /*  padding to 128 */
 };
 
 /* ====== GPU: splitmix64-based hash noise (parallel-friendly) ====== */
@@ -155,27 +169,26 @@ __global__ void generate_and_score_kernel(
                 }
             }
 
-            /* Layer B: configurable symmetry noise */
-            int bx = x, by = y;
-            if (g->sym_b == 1) { if (by > H/2) by = H - 1 - by; }  /* V-mirror */
-            if (g->sym_b == 2) { /* 4-fold */
-                if (bx >= W/2) bx = W - 1 - bx;
-                if (by >= H/2) by = H - 1 - by;
+            /* Layer B: no symmetry additive (asymmetric features) */
+            {
+                int b_byte = y * BW + (x / 8);
+                int b_bit  = 7 - (x % 8);
+                uint32_t nb = hash_noise(g->seed_b, b_byte);
+                float db = g->density_b / 255.0f;
+                if (((nb >> b_bit) & 1) && ((nb & 0xFF00) >> 8) < (uint32_t)(db * 256))
+                    val = fmaxf(val, 1.0f);  /* OR */
             }
-            int b_byte = by * BW + (bx / 8);
-            int b_bit  = 7 - (bx % 8);
-            uint32_t nb = hash_noise(g->seed_b, b_byte);
-            float db = g->density_b / 255.0f;
-            if (((nb >> b_bit) & 1) && ((nb & 0xFF00) >> 8) < (uint32_t)(db * 256))
-                val = fmaxf(val, 1.0f);  /* OR */
 
-            /* Layer B tile mask */
-            int btx = bx / 8, bty = by / 8;
-            int b_tile = bty * 8 + (btx < 8 ? btx : 15 - btx);
-            if (b_tile/8 < 12) {
-                if ((g->tile_mask_b[b_tile/8] >> (b_tile%8)) & 1) {
-                    uint32_t tn = hash_noise(g->seed_b + 0xBB, by * W + bx);
-                    if ((tn & 0xFF) < 100u) val = fmaxf(val, 1.0f);
+            /* Layer B tile mask (no symmetry) */
+            {
+                int btx = x / 8, bty = y / 8;
+                int b_tile = bty * 16 + btx;
+                int b_byte_idx = b_tile / 8;
+                if (b_byte_idx < 12) {
+                    if ((g->tile_mask_b[b_byte_idx] >> (b_tile % 8)) & 1) {
+                        uint32_t tn = hash_noise(g->seed_b + 0xBB, y * W + x);
+                        if ((tn & 0xFF) < 100u) val = fmaxf(val, 1.0f);
+                    }
                 }
             }
 
@@ -208,6 +221,33 @@ __global__ void generate_and_score_kernel(
                 float sth = g->shapes[3] / 255.0f;
                 if (swv > sth) val = fmaxf(val, 0.6f);
             }
+
+            /* ---- SUBTRACTIVE LAYERS: carve holes ---- */
+            float sub = 0.0f;
+
+            /* Layer D: H-mirror subtractive (eyes, nostrils, mouth) */
+            {
+                int dx2 = (x > W/2) ? (W - 1 - x) : x;  /* H-mirror fold */
+                int d_byte = y * BW + (dx2 / 8);
+                int d_bit  = 7 - (dx2 % 8);
+                uint32_t nd = hash_noise(g->seed_d, d_byte);
+                float dd = g->density_d / 255.0f;
+                if (((nd >> d_bit) & 1) && ((nd & 0xFF00) >> 8) < (uint32_t)(dd * 256))
+                    sub = 1.0f;
+            }
+
+            /* Layer E: no-sym subtractive (asymmetric cuts, fine detail) */
+            {
+                int e_byte = y * BW + (x / 8);
+                int e_bit  = 7 - (x % 8);
+                uint32_t ne = hash_noise(g->seed_e, e_byte);
+                float de = g->density_e / 255.0f;
+                if (((ne >> e_bit) & 1) && ((ne & 0xFF00) >> 8) < (uint32_t)(de * 256))
+                    sub = fmaxf(sub, 1.0f);
+            }
+
+            /* Apply: additive AND NOT subtractive */
+            if (sub > 0.5f) val = 0.0f;
 
         } else {
             /* ======== SINGLE-LAYER MODE (legacy) ======== */
@@ -336,12 +376,17 @@ static void random_genome(Genome* g, unsigned long long base, int dual_mode) {
     g->seed_a = ((uint64_t)lrand48() << 32) | (uint64_t)lrand48();
     g->seed_b = ((uint64_t)lrand48() << 32) | (uint64_t)lrand48();
     g->seed_c = ((uint64_t)lrand48() << 32) | (uint64_t)lrand48();
+    g->seed_d = ((uint64_t)lrand48() << 32) | (uint64_t)lrand48();
+    g->seed_e = ((uint64_t)lrand48() << 32) | (uint64_t)lrand48();
     for (int i = 0; i < 12; i++) g->tile_mask_a[i] = lrand48() & 0xFF;
     for (int i = 0; i < 12; i++) g->tile_mask_b[i] = lrand48() & 0xFF;
     g->density_a = 80 + lrand48() % 176;   /* 80-255: H-mirror layer */
     g->density_b = 40 + lrand48() % 176;   /* 40-215: secondary layer */
     g->density_c = lrand48() % 80;          /* 0-79: detail (sparse) */
+    g->density_d = 30 + lrand48() % 120;   /* 30-149: subtractive H-mirror */
+    g->density_e = lrand48() % 80;          /* 0-79: subtractive secondary */
     g->sym_b = lrand48() % 3;              /* 0=none, 1=V-mirror, 2=4-fold */
+    g->sym_e = lrand48() % 3;              /* 0=none, 1=V-mirror, 2=H-mirror */
     for (int i = 0; i < 4; i++)  g->circle[i]    = lrand48() & 0xFF;
     for (int i = 0; i < 4; i++)  g->gradient[i]   = lrand48() & 0xFF;
     for (int i = 0; i < 4; i++)  g->stripes[i]    = lrand48() & 0xFF;
@@ -354,23 +399,27 @@ static void random_genome(Genome* g, unsigned long long base, int dual_mode) {
 static void mutate_genome(const Genome* parent, Genome* child, int strength) {
     *child = *parent;
     for (int s = 0; s < strength; s++) {
-        int what = rand() % 14;
+        int what = rand() % 18;
         int idx;
         switch (what) {
         case 0:  child->seed_a ^= 1ULL << (rand() % 64); break;
         case 1:  child->seed_b ^= 1ULL << (rand() % 64); break;
         case 2:  child->seed_c ^= 1ULL << (rand() % 64); break;
-        case 3:  child->tile_mask_a[rand() % 12] ^= 1 << (rand() % 8); break;
-        case 4:  child->tile_mask_b[rand() % 12] ^= 1 << (rand() % 8); break;
-        case 5:  child->density_a = (child->density_a + rand()%41 - 20) & 0xFF; break;
-        case 6:  child->density_b = (child->density_b + rand()%41 - 20) & 0xFF; break;
-        case 7:  child->density_c = (child->density_c + rand()%31 - 15) & 0xFF; break;
-        case 8:  child->sym_b = rand() % 3; break;
-        case 9:  idx = rand()%4; child->circle[idx]   = (child->circle[idx]   + rand()%41 - 20) & 0xFF; break;
-        case 10: idx = rand()%4; child->gradient[idx]  = (child->gradient[idx]  + rand()%41 - 20) & 0xFF; break;
-        case 11: idx = rand()%4; child->stripes[idx]   = (child->stripes[idx]   + rand()%41 - 20) & 0xFF; break;
-        case 12: idx = rand()%6; child->threshold[idx]  = (child->threshold[idx]  + rand()%61 - 30) & 0xFF; break;
-        case 13: idx = rand()%4; child->shapes[idx]    = (child->shapes[idx]    + rand()%41 - 20) & 0xFF; break;
+        case 3:  child->seed_d ^= 1ULL << (rand() % 64); break;
+        case 4:  child->seed_e ^= 1ULL << (rand() % 64); break;
+        case 5:  child->tile_mask_a[rand() % 12] ^= 1 << (rand() % 8); break;
+        case 6:  child->tile_mask_b[rand() % 12] ^= 1 << (rand() % 8); break;
+        case 7:  child->density_a = (child->density_a + rand()%41 - 20) & 0xFF; break;
+        case 8:  child->density_b = (child->density_b + rand()%41 - 20) & 0xFF; break;
+        case 9:  child->density_c = (child->density_c + rand()%31 - 15) & 0xFF; break;
+        case 10: child->density_d = (child->density_d + rand()%41 - 20) & 0xFF; break;
+        case 11: child->density_e = (child->density_e + rand()%31 - 15) & 0xFF; break;
+        case 12: child->sym_b = rand() % 3; break;
+        case 13: child->sym_e = rand() % 3; break;
+        case 14: idx = rand()%4; child->circle[idx]   = (child->circle[idx]   + rand()%41 - 20) & 0xFF; break;
+        case 15: idx = rand()%6; child->threshold[idx]  = (child->threshold[idx]  + rand()%61 - 30) & 0xFF; break;
+        case 16: idx = rand()%4; child->stripes[idx]   = (child->stripes[idx]   + rand()%41 - 20) & 0xFF; break;
+        case 17: idx = rand()%4; child->shapes[idx]    = (child->shapes[idx]    + rand()%41 - 20) & 0xFF; break;
         }
     }
 }
