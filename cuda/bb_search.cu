@@ -23,7 +23,7 @@
 
 #define SCR_SIZE 6144     /* ZX Spectrum screen: 256x192, 1 bit/pixel */
 #define NLAYERS 66
-#define POINTS_MULT 2     /* points per layer = layer_num * POINTS_MULT */
+#define POINTS_MULT 4     /* points per layer = layer_num * POINTS_MULT */
 
 /* ====== 24-bit Galois LFSR (exact copy from Introspec) ====== */
 /* State: FG24a (8-bit high) + FG24b (16-bit low) */
@@ -176,22 +176,22 @@ int pgm_to_scr(const char* pgm_path, uint8_t* scr) {
     fread(raw, 1, w * h, f); fclose(f);
 
     memset(scr, 0, SCR_SIZE);
+    /* Map 128x96 PGM to 256x192 Spectrum screen (2x scale, 2x2 blocks) */
     for (int y = 0; y < 96; y++) {
         for (int x = 0; x < 128; x++) {
             if (raw[y * 128 + x] > maxval / 2) {
-                /* Plot 2×2 at (x*2, y*2) — but actually map to Spectrum addr */
-                for (int dy = 0; dy < 2; dy++) {
-                    int sy = y * 2 + dy;
-                    int sx = x; /* NOT *2 — Spectrum is 256 wide, our image maps to left 128 */
-                    /* Actually: for 128x96→256x192, double both */
-                    sx = x * 2;
-                    int addr = line2addr(sy) + (sx >> 3);
-                    /* Set 2 bits for 2x horizontal */
-                    int bit = 6 - (sx & 6);
-                    if (addr < SCR_SIZE) {
-                        scr[addr] |= (0xC0 >> (sx & 6));
-                    }
-                }
+                /* Each source pixel → 2×2 block at (x*2, y*2) */
+                int sx = x * 2;
+                int sy = y * 2;
+                /* Use exact same plot as BB: 2×2 XOR using pnts table */
+                static const uint8_t pnts[4] = {0xC0, 0x30, 0x0C, 0x03};
+                int byte_col = sx >> 3;
+                int bit_pair = (sx & 0x06) >> 1;
+                uint8_t mask = pnts[bit_pair];
+                int addr0 = line2addr(sy) + byte_col;
+                int addr1 = line2addr(sy + 1) + byte_col;
+                if (addr0 < SCR_SIZE) scr[addr0] |= mask;
+                if (addr1 < SCR_SIZE) scr[addr1] |= mask;
             }
         }
     }
