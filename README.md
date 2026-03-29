@@ -18,7 +18,7 @@ A GPU-accelerated superoptimizer for the Zilog Z80 processor. The compiler that 
 - **83.6M exhaustive register allocations** for ≤6 virtual registers (78MB enriched)
 - **97.7% infeasibility** at 7-15 vregs — proven that Z80 MUST decompose most real functions
 - **Multi-backend DSL**: one ISA definition → CUDA / Metal / OpenCL / Vulkan kernels
-- **Cross-verified** on 5 platforms, 4 APIs, 3 GPU vendors (NVIDIA + AMD + Apple)
+- **Cross-verified** on 6 platforms, 4 APIs, 3 GPU vendors (NVIDIA CUDA + AMD Vulkan/OpenCL + Apple Metal 3)
 - **739K peephole rules** (len-2 complete, len-3 37M partial)
 
 📄 **Article**: [The Z80 Compiler That Never Guesses](release/z80_compiler_never_guesses.pdf) (PDF / [EPUB](release/z80_compiler_never_guesses.epub) / [HTML](release/z80_compiler_never_guesses.html))
@@ -150,8 +150,9 @@ The Z80 executor is an ideal GPU workload: fixed-size 11-byte state (10 register
 
 | Approach | Length-2 time | Results | Speedup |
 |----------|-------------|---------|---------|
-| CPU brute force (Apple M2) | 3h 16m | 602,008 | 1x |
+| CPU brute force (Apple M2, 24GB) | 3h 16m | 602,008 | 1x |
 | CPU brute force (i7, projected) | ~6h | 602,008 | 0.5x |
+| Metal compute (Apple M2, 10-core GPU) | cross-verification | — | — |
 | **CUDA v2 (RTX 4060 Ti)** | **~6.5 min** (95.5% of search) | **743,309** | **~30x** |
 | CUDA v2 (2x RTX 4060 Ti) | ~90 min (100% incl. BIT/SET/RES) | est. ~950K | — |
 
@@ -572,9 +573,10 @@ Three GPUs across three machines, running searches in parallel:
 
 | Machine | GPU | VRAM | API | Use |
 |---------|-----|------|-----|-----|
-| main | 2× RTX 4060 Ti | 16GB each | CUDA | Regalloc tables, peephole search |
-| secondary | RTX 2070 | 8GB | CUDA | Mulopt, divmod search |
+| main | 2× RTX 4060 Ti | 16GB each | CUDA 12.0 | Regalloc tables, peephole search |
+| secondary | RTX 2070 | 8GB | CUDA 12.0 | Mulopt, divmod search |
 | AMD node | Radeon RX 580 | 8GB | OpenCL + Vulkan | Cross-vendor verification |
+| Apple M2 | M2 (10-core GPU) | 24GB unified | Metal 3 | CPU baseline, Metal cross-verification |
 
 ### Research Documents
 

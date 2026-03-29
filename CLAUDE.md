@@ -104,10 +104,12 @@ Register count: 7 main (A,B,C,D,E,H,L) + 4 IX/IY halves = **11 registers** for a
 - NEG trick: ×255 = NEG (1 instruction, 8T)
 - All 254 mul8 preserve A, all DE-safe
 
-### Division/Modulo
-- div10 lower bound ≥13 instructions (GPU search certificate)
-- Best known div10: 27 instructions, 124-135T (Hacker's Delight + RRA+AND)
-- **div3 = A×171>>9: EXACT for all 256 inputs** (no lookup table!)
+### Division/Modulo — COMPLETE (254/254)
+- **div8 v3**: 6 methods, avg **79T** (−49% from v1). All exhaustively verified.
+- **carry_compare** (K≥128): `OR A; LD B,(256-K); ADC A,B; SBC A,A; AND 1` = 5 ops, 26T. GPU-discovered.
+- **PRESHIFT** (K<128): `(A>>P)×M>>S` — 80 entries. div86=60T, div172=49T.
+- div3 = A×171>>9 (141T), div10 = (A>>1)×103>>9 (138T)
+- mod8 254/254, divmod8 254/254
 
 ### Branchless Library (exhaustive verified)
 - ABS(A) signed: 6i, 24T — `LD B,A; RLCA; SBC A,A; LD C,A; XOR B; SUB C`
@@ -147,7 +149,7 @@ Register count: 7 main (A,B,C,D,E,H,L) + 4 IX/IY halves = **11 registers** for a
 main:  2× RTX 4060 Ti 16GB (CUDA 12.0) — primary search, regalloc, partition optimizer
 i5:    1× RTX 2070 8GB (CUDA 12.0) — focused search, mul16, image search
 i3:    1× Radeon RX 580 8GB (Vulkan/Mesa) — gray_decode EXACT found here!
-M2:    Apple M2 MacBook Air (Metal) — cross-verification
+M2:    Apple M2 MacBook Air 24GB, 10-core GPU (Metal 3) — CPU baseline, cross-verification
 ```
 
 ### Remote GPU setup
