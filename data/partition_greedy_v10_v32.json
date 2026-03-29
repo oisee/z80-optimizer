@@ -1,0 +1,94 @@
+{
+  "10": {
+    "edges": 25,
+    "n_parts": 2
+  },
+  "11": {
+    "edges": 27,
+    "n_parts": 2
+  },
+  "12": {
+    "edges": 30,
+    "n_parts": 2
+  },
+  "13": {
+    "edges": 32,
+    "n_parts": 3
+  },
+  "14": {
+    "edges": 35,
+    "n_parts": 3
+  },
+  "15": {
+    "edges": 37,
+    "n_parts": 3
+  },
+  "16": {
+    "edges": 40,
+    "n_parts": 3
+  },
+  "17": {
+    "edges": 42,
+    "n_parts": 3
+  },
+  "18": {
+    "edges": 45,
+    "n_parts": 3
+  },
+  "19": {
+    "edges": 47,
+    "n_parts": 4
+  },
+  "20": {
+    "edges": 50,
+    "n_parts": 4
+  },
+  "21": {
+    "edges": 52,
+    "n_parts": 4
+  },
+  "22": {
+    "edges": 55,
+    "n_parts": 4
+  },
+  "23": {
+    "edges": 57,
+    "n_parts": 4
+  },
+  "24": {
+    "edges": 60,
+    "n_parts": 4
+  },
+  "25": {
+    "edges": 62,
+    "n_parts": 5
+  },
+  "26": {
+    "edges": 65,
+    "n_parts": 5
+  },
+  "27": {
+    "edges": 67,
+    "n_parts": 5
+  },
+  "28": {
+    "edges": 70,
+    "n_parts": 5
+  },
+  "29": {
+    "edges": 72,
+    "n_parts": 5
+  },
+  "30": {
+    "edges": 75,
+    "n_parts": 5
+  },
+  "31": {
+    "edges": 77,
+    "n_parts": 6
+  },
+  "32": {
+    "edges": 80,
+    "n_parts": 6
+  }
+}
