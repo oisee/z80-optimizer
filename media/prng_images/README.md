@@ -1,208 +1,110 @@
-# pRNG Image Search Gallery
+# pRNG Image Search — GPU Evolutionary Generator
 
-Z80 pRNG seeds that generate recognizable patterns from pure noise.
-Each image = 8-byte SEED → Patrik Rak CMWC pRNG → 128×96 mono → OR horizontal flip → grayscale.
+Finding recognizable images from minimal generators on Z80 hardware.
+128x96 mono (1536 bytes), target: fit in 256-byte ZX Spectrum intro.
 
-## Pipeline
+## Best Results
+
+### Dual-Layer Generator (CUDA, ~500K img/s)
+
+5-layer architecture: 3 additive (OR) + 2 subtractive (AND NOT), independent symmetries.
+
+| Target | Best | Result | Details |
+|--------|------|--------|---------|
+| Cat | f=0.049 | ![cat](dual_cat_long/final_compare.png) | [evolution](dual_cat_long/) |
+| Skull | f=0.147 | ![skull](dual_skull_long/final_compare.png) | [evolution](dual_skull_long/) |
+| Einstein | f=0.151 | ![einstein](dual_einstein_v3/final_compare.png) | [v3](dual_einstein_v3/), [v4 (subtractive)](dual_einstein_v4/) |
+
+### Evolution Mosaics
+
+| Cat (5000 gens) | Skull (5000 gens) |
+|---|---|
+| ![cat_evo](dual_cat_evolution.png) | ![skull_evo](dual_skull_evolution.png) |
+
+## Architecture
+
 ```
-SEED (8 bytes)
-  → CMWC pRNG (×253, period ~2^66)
-  → 1536 bytes (128×96 mono, 1 bit/pixel)
-  → OR with horizontal flip (vertical symmetry)
-  → 4×4 block average → 32×24 grayscale
-  → MobileNetV2 (ImageNet) → class probability
+Layer A ── H-mirror, additive ──────── head shape, hair, outline
+Layer B ── no-sym, additive ─────────  asymmetric features, fill
+Layer C ── no-sym, additive (sparse) ─ fine detail, texture
+Layer D ── H-mirror, SUBTRACTIVE ────  carves eyes, nose, mouth
+Layer E ── no-sym, SUBTRACTIVE ──────  asymmetric cuts, wrinkles
+
+Result = (A | B | C | shapes) AND NOT (D | E) → regional threshold → binary
 ```
+
+Each layer: independent pRNG seed (8 bytes) + density control + tile masks.
+Basis shapes (circle, gradient, stripes) always H-mirrored.
+Regional threshold: 2x3 grid with per-region density.
+
+**Key insight**: faces need H-mirror (eyes symmetric) but NOT V-mirror (forehead != chin).
+Subtractive layers carve dark features (eye sockets, mouth) from white mass.
 
 ## Search Methods
-- **Exhaustive**: 4-byte seed, 4.3B candidates, ~2 min on RTX 4060 Ti
-- **Hill climbing**: 8-byte seed, 1500 population × 300 generations × mutations
-- **Multi-target**: 7 ImageNet classes searched simultaneously
-- **Top-10**: best 10 seeds kept per target class
 
-## Leaderboard (all targets, sorted by CNN score)
+### Method 3: CUDA Dual-Layer Evolutionary (current best)
 
-| Rank | Score | Target | Seed | Mono | Grayscale |
-|------|-------|--------|------|------|-----------|
-| 1 | 0.0172 | cat | `0x7776B0B492A3C25E` | ![m](cat/00_mono_0x7776B0B492A3C25E.png) | ![g](cat/00_gray_0x7776B0B492A3C25E.png) |
-| 2 | 0.0172 | cat | `0x7776B0B492A3C25E` | ![m](cat/01_mono_0x7776B0B492A3C25E.png) | ![g](cat/01_gray_0x7776B0B492A3C25E.png) |
-| 3 | 0.0172 | cat | `0x7776B0B492A3C25E` | ![m](cat/02_mono_0x7776B0B492A3C25E.png) | ![g](cat/02_gray_0x7776B0B492A3C25E.png) |
-| 4 | 0.0172 | cat | `0x7776B0B492A3C25E` | ![m](cat/03_mono_0x7776B0B492A3C25E.png) | ![g](cat/03_gray_0x7776B0B492A3C25E.png) |
-| 5 | 0.0172 | cat | `0x7776B0B492A3C25E` | ![m](cat/04_mono_0x7776B0B492A3C25E.png) | ![g](cat/04_gray_0x7776B0B492A3C25E.png) |
-| 6 | 0.0172 | cat | `0x7776B0B492A3C25E` | ![m](cat/05_mono_0x7776B0B492A3C25E.png) | ![g](cat/05_gray_0x7776B0B492A3C25E.png) |
-| 7 | 0.0172 | cat | `0x7776B0B492A3C25E` | ![m](cat/06_mono_0x7776B0B492A3C25E.png) | ![g](cat/06_gray_0x7776B0B492A3C25E.png) |
-| 8 | 0.0172 | cat | `0x7776B0B492A3C25E` | ![m](cat/07_mono_0x7776B0B492A3C25E.png) | ![g](cat/07_gray_0x7776B0B492A3C25E.png) |
-| 9 | 0.0172 | cat | `0x7776B0B492A3C25E` | ![m](cat/08_mono_0x7776B0B492A3C25E.png) | ![g](cat/08_gray_0x7776B0B492A3C25E.png) |
-| 10 | 0.0172 | cat | `0x7776B0B492A3C25E` | ![m](cat/09_mono_0x7776B0B492A3C25E.png) | ![g](cat/09_gray_0x7776B0B492A3C25E.png) |
-| 11 | 0.0171 | maze | `0xB21E93F1CC4B8BC9` | ![m](maze/00_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/00_gray_0xB21E93F1CC4B8BC9.png) |
-| 12 | 0.0171 | maze | `0xB21E93F1CC4B8BC9` | ![m](maze/01_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/01_gray_0xB21E93F1CC4B8BC9.png) |
-| 13 | 0.0171 | maze | `0xB21E93F1CC4B8BC9` | ![m](maze/02_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/02_gray_0xB21E93F1CC4B8BC9.png) |
-| 14 | 0.0171 | maze | `0xB21E93F1CC4B8BC9` | ![m](maze/03_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/03_gray_0xB21E93F1CC4B8BC9.png) |
-| 15 | 0.0171 | maze | `0xB21E93F1CC4B8BC9` | ![m](maze/04_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/04_gray_0xB21E93F1CC4B8BC9.png) |
-| 16 | 0.0171 | maze | `0xB21E93F1CC4B8BC9` | ![m](maze/05_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/05_gray_0xB21E93F1CC4B8BC9.png) |
-| 17 | 0.0171 | maze | `0xB21E93F1CC4B8BC9` | ![m](maze/06_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/06_gray_0xB21E93F1CC4B8BC9.png) |
-| 18 | 0.0171 | maze | `0xB21E93F1CC4B8BC9` | ![m](maze/07_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/07_gray_0xB21E93F1CC4B8BC9.png) |
-| 19 | 0.0171 | maze | `0xB21E93F1CC4B8BC9` | ![m](maze/08_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/08_gray_0xB21E93F1CC4B8BC9.png) |
-| 20 | 0.0171 | maze | `0xB21E93F1CC4B8BC9` | ![m](maze/09_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/09_gray_0xB21E93F1CC4B8BC9.png) |
-| 21 | 0.0077 | mask | `0x1297C68AA981FB60` | ![m](mask/00_mono_0x1297C68AA981FB60.png) | ![g](mask/00_gray_0x1297C68AA981FB60.png) |
-| 22 | 0.0077 | mask | `0x1297C68AA981FB60` | ![m](mask/01_mono_0x1297C68AA981FB60.png) | ![g](mask/01_gray_0x1297C68AA981FB60.png) |
-| 23 | 0.0077 | mask | `0x1297C68AA981FB60` | ![m](mask/02_mono_0x1297C68AA981FB60.png) | ![g](mask/02_gray_0x1297C68AA981FB60.png) |
-| 24 | 0.0077 | mask | `0x1297C68AA981FB60` | ![m](mask/03_mono_0x1297C68AA981FB60.png) | ![g](mask/03_gray_0x1297C68AA981FB60.png) |
-| 25 | 0.0077 | mask | `0x1297C68AA981FB60` | ![m](mask/04_mono_0x1297C68AA981FB60.png) | ![g](mask/04_gray_0x1297C68AA981FB60.png) |
-| 26 | 0.0077 | mask | `0x1297C68AA981FB60` | ![m](mask/05_mono_0x1297C68AA981FB60.png) | ![g](mask/05_gray_0x1297C68AA981FB60.png) |
-| 27 | 0.0077 | mask | `0x1297C68AA981FB60` | ![m](mask/06_mono_0x1297C68AA981FB60.png) | ![g](mask/06_gray_0x1297C68AA981FB60.png) |
-| 28 | 0.0077 | mask | `0x1297C68AA981FB60` | ![m](mask/07_mono_0x1297C68AA981FB60.png) | ![g](mask/07_gray_0x1297C68AA981FB60.png) |
-| 29 | 0.0077 | mask | `0x1297C68AA981FB60` | ![m](mask/08_mono_0x1297C68AA981FB60.png) | ![g](mask/08_gray_0x1297C68AA981FB60.png) |
-| 30 | 0.0077 | mask | `0x1297C68AA981FB60` | ![m](mask/09_mono_0x1297C68AA981FB60.png) | ![g](mask/09_gray_0x1297C68AA981FB60.png) |
+- `cuda/prng_hybrid_gpu.cu` — all-GPU generator + fitness
+- Population: 4096-8192 genomes, 16 islands with migration
+- Fitness: MSE + edge similarity + block-level MSE (no neural network needed)
+- Island model: ring migration every 30-50 gens, stall restart at 50-120 gens
+- Speed: ~500K images/sec on RTX 4060 Ti
+- `--dual` flag for 5-layer mode, `--synthetic cat/skull` or `--target file.pgm`
 
-## Cat
+### Method 2: Python Hybrid Generator (slower predecessor)
 
-Best score: 0.0172
+- `cuda/prng_hybrid_search.py` — 57-byte genome, VGG16 perceptual loss
+- ~10 img/sec (Python per-pixel loops), superseded by CUDA version
 
-| Rank | Score | Seed | Mono | Grayscale |
-|------|-------|------|------|-----------|
-| 1 | 0.0172 | `0x7776B0B492A3C25E` | ![m](cat/00_mono_0x7776B0B492A3C25E.png) | ![g](cat/00_gray_0x7776B0B492A3C25E.png) |
-| 2 | 0.0172 | `0x7776B0B492A3C25E` | ![m](cat/01_mono_0x7776B0B492A3C25E.png) | ![g](cat/01_gray_0x7776B0B492A3C25E.png) |
-| 3 | 0.0172 | `0x7776B0B492A3C25E` | ![m](cat/02_mono_0x7776B0B492A3C25E.png) | ![g](cat/02_gray_0x7776B0B492A3C25E.png) |
-| 4 | 0.0172 | `0x7776B0B492A3C25E` | ![m](cat/03_mono_0x7776B0B492A3C25E.png) | ![g](cat/03_gray_0x7776B0B492A3C25E.png) |
-| 5 | 0.0172 | `0x7776B0B492A3C25E` | ![m](cat/04_mono_0x7776B0B492A3C25E.png) | ![g](cat/04_gray_0x7776B0B492A3C25E.png) |
-| 6 | 0.0172 | `0x7776B0B492A3C25E` | ![m](cat/05_mono_0x7776B0B492A3C25E.png) | ![g](cat/05_gray_0x7776B0B492A3C25E.png) |
-| 7 | 0.0172 | `0x7776B0B492A3C25E` | ![m](cat/06_mono_0x7776B0B492A3C25E.png) | ![g](cat/06_gray_0x7776B0B492A3C25E.png) |
-| 8 | 0.0172 | `0x7776B0B492A3C25E` | ![m](cat/07_mono_0x7776B0B492A3C25E.png) | ![g](cat/07_gray_0x7776B0B492A3C25E.png) |
-| 9 | 0.0172 | `0x7776B0B492A3C25E` | ![m](cat/08_mono_0x7776B0B492A3C25E.png) | ![g](cat/08_gray_0x7776B0B492A3C25E.png) |
-| 10 | 0.0172 | `0x7776B0B492A3C25E` | ![m](cat/09_mono_0x7776B0B492A3C25E.png) | ![g](cat/09_gray_0x7776B0B492A3C25E.png) |
+### Method 1: Seed-Only CNN Search (original, limited)
 
-## Maze
+- `cuda/prng_cat_search.py` — MobileNetV2 classifier as fitness
+- 8-byte seed → CMWC pRNG → 128x96 mono → OR H-flip → CNN score
+- **Fundamental limit**: 10-byte state cannot encode 1536-byte image
+- Best: chain_mail 7%, cat 1.7% — textures, not objects
 
-Best score: 0.0171
+## All Experiments
 
-| Rank | Score | Seed | Mono | Grayscale |
-|------|-------|------|------|-----------|
-| 1 | 0.0171 | `0xB21E93F1CC4B8BC9` | ![m](maze/00_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/00_gray_0xB21E93F1CC4B8BC9.png) |
-| 2 | 0.0171 | `0xB21E93F1CC4B8BC9` | ![m](maze/01_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/01_gray_0xB21E93F1CC4B8BC9.png) |
-| 3 | 0.0171 | `0xB21E93F1CC4B8BC9` | ![m](maze/02_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/02_gray_0xB21E93F1CC4B8BC9.png) |
-| 4 | 0.0171 | `0xB21E93F1CC4B8BC9` | ![m](maze/03_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/03_gray_0xB21E93F1CC4B8BC9.png) |
-| 5 | 0.0171 | `0xB21E93F1CC4B8BC9` | ![m](maze/04_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/04_gray_0xB21E93F1CC4B8BC9.png) |
-| 6 | 0.0171 | `0xB21E93F1CC4B8BC9` | ![m](maze/05_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/05_gray_0xB21E93F1CC4B8BC9.png) |
-| 7 | 0.0171 | `0xB21E93F1CC4B8BC9` | ![m](maze/06_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/06_gray_0xB21E93F1CC4B8BC9.png) |
-| 8 | 0.0171 | `0xB21E93F1CC4B8BC9` | ![m](maze/07_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/07_gray_0xB21E93F1CC4B8BC9.png) |
-| 9 | 0.0171 | `0xB21E93F1CC4B8BC9` | ![m](maze/08_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/08_gray_0xB21E93F1CC4B8BC9.png) |
-| 10 | 0.0171 | `0xB21E93F1CC4B8BC9` | ![m](maze/09_mono_0xB21E93F1CC4B8BC9.png) | ![g](maze/09_gray_0xB21E93F1CC4B8BC9.png) |
+### Dual-Layer (CUDA)
 
-## Mask
+| Directory | Target | Mode | Best | Notes |
+|-----------|--------|------|------|-------|
+| [dual_cat_long/](dual_cat_long/) | cat | dual, 5000g 8K pop | **0.049** | best cat |
+| [dual_skull_long/](dual_skull_long/) | skull | dual, 5000g 8K pop | **0.147** | best skull |
+| [dual_einstein_v4/](dual_einstein_v4/) | einstein | dual+sub, no V-mirror | 0.242 | eyes+mustache visible |
+| [dual_einstein_v3/](dual_einstein_v3/) | einstein | dual+sub, aggressive restart | **0.151** | best einstein numerically |
+| [dual_einstein_v2/](dual_einstein_v2/) | einstein | dual+sub, first test | 0.167 | |
+| [hybrid_dual_cat/](hybrid_dual_cat/) | cat | dual, 500g quick | 0.059 | first dual proof |
+| [hybrid_gpu/](hybrid_gpu/) | cat | single-layer baseline | 0.284 | superseded |
+| [hybrid_gpu_skull/](hybrid_gpu_skull/) | skull | single-layer baseline | 0.345 | superseded |
 
-Best score: 0.0077
+### Seed-Only (Python+CNN)
 
-| Rank | Score | Seed | Mono | Grayscale |
-|------|-------|------|------|-----------|
-| 1 | 0.0077 | `0x1297C68AA981FB60` | ![m](mask/00_mono_0x1297C68AA981FB60.png) | ![g](mask/00_gray_0x1297C68AA981FB60.png) |
-| 2 | 0.0077 | `0x1297C68AA981FB60` | ![m](mask/01_mono_0x1297C68AA981FB60.png) | ![g](mask/01_gray_0x1297C68AA981FB60.png) |
-| 3 | 0.0077 | `0x1297C68AA981FB60` | ![m](mask/02_mono_0x1297C68AA981FB60.png) | ![g](mask/02_gray_0x1297C68AA981FB60.png) |
-| 4 | 0.0077 | `0x1297C68AA981FB60` | ![m](mask/03_mono_0x1297C68AA981FB60.png) | ![g](mask/03_gray_0x1297C68AA981FB60.png) |
-| 5 | 0.0077 | `0x1297C68AA981FB60` | ![m](mask/04_mono_0x1297C68AA981FB60.png) | ![g](mask/04_gray_0x1297C68AA981FB60.png) |
-| 6 | 0.0077 | `0x1297C68AA981FB60` | ![m](mask/05_mono_0x1297C68AA981FB60.png) | ![g](mask/05_gray_0x1297C68AA981FB60.png) |
-| 7 | 0.0077 | `0x1297C68AA981FB60` | ![m](mask/06_mono_0x1297C68AA981FB60.png) | ![g](mask/06_gray_0x1297C68AA981FB60.png) |
-| 8 | 0.0077 | `0x1297C68AA981FB60` | ![m](mask/07_mono_0x1297C68AA981FB60.png) | ![g](mask/07_gray_0x1297C68AA981FB60.png) |
-| 9 | 0.0077 | `0x1297C68AA981FB60` | ![m](mask/08_mono_0x1297C68AA981FB60.png) | ![g](mask/08_gray_0x1297C68AA981FB60.png) |
-| 10 | 0.0077 | `0x1297C68AA981FB60` | ![m](mask/09_mono_0x1297C68AA981FB60.png) | ![g](mask/09_gray_0x1297C68AA981FB60.png) |
+| Directory | Target | Method | Score |
+|-----------|--------|--------|-------|
+| [cat/](cat/) | cat | MobileNetV2 | 1.7% |
+| [maze/](maze/) | maze | MobileNetV2 | 1.7% |
+| [mask/](mask/) | mask | MobileNetV2 | 0.8% |
+| [butterfly/](butterfly/) | butterfly | MobileNetV2 | 0.3% |
+| [spider_web/](spider_web/) | spider_web | MobileNetV2 | 0.3% |
+| [starfish/](starfish/) | starfish | MobileNetV2 | 0.1% |
+| [jellyfish/](jellyfish/) | jellyfish | MobileNetV2 | 0.03% |
+| [dithered/](dithered/) | various | VGG perceptual | loss 25.3 |
 
-## Butterfly
+### Targets
 
-Best score: 0.0032
+| Target | Preview |
+|--------|---------|
+| [targets/](targets/) | cat, skull, smiley, heart, star, tree, fish, einstein |
 
-| Rank | Score | Seed | Mono | Grayscale |
-|------|-------|------|------|-----------|
-| 1 | 0.0032 | `0x2E327A5B1E28ED96` | ![m](butterfly/00_mono_0x2E327A5B1E28ED96.png) | ![g](butterfly/00_gray_0x2E327A5B1E28ED96.png) |
-| 2 | 0.0032 | `0x2E327A5B1E28ED96` | ![m](butterfly/01_mono_0x2E327A5B1E28ED96.png) | ![g](butterfly/01_gray_0x2E327A5B1E28ED96.png) |
-| 3 | 0.0032 | `0x2E327A5B1E28ED96` | ![m](butterfly/02_mono_0x2E327A5B1E28ED96.png) | ![g](butterfly/02_gray_0x2E327A5B1E28ED96.png) |
-| 4 | 0.0032 | `0x2E327A5B1E28ED96` | ![m](butterfly/03_mono_0x2E327A5B1E28ED96.png) | ![g](butterfly/03_gray_0x2E327A5B1E28ED96.png) |
-| 5 | 0.0032 | `0x2E327A5B1E28ED96` | ![m](butterfly/04_mono_0x2E327A5B1E28ED96.png) | ![g](butterfly/04_gray_0x2E327A5B1E28ED96.png) |
-| 6 | 0.0032 | `0x2E327A5B1E28ED96` | ![m](butterfly/05_mono_0x2E327A5B1E28ED96.png) | ![g](butterfly/05_gray_0x2E327A5B1E28ED96.png) |
-| 7 | 0.0032 | `0x2E327A5B1E28ED96` | ![m](butterfly/06_mono_0x2E327A5B1E28ED96.png) | ![g](butterfly/06_gray_0x2E327A5B1E28ED96.png) |
-| 8 | 0.0032 | `0x2E327A5B1E28ED96` | ![m](butterfly/07_mono_0x2E327A5B1E28ED96.png) | ![g](butterfly/07_gray_0x2E327A5B1E28ED96.png) |
-| 9 | 0.0032 | `0x2E327A5B1E28ED96` | ![m](butterfly/08_mono_0x2E327A5B1E28ED96.png) | ![g](butterfly/08_gray_0x2E327A5B1E28ED96.png) |
-| 10 | 0.0032 | `0x2E327A5B1E28ED96` | ![m](butterfly/09_mono_0x2E327A5B1E28ED96.png) | ![g](butterfly/09_gray_0x2E327A5B1E28ED96.png) |
+## Hardware
 
-## Spider_Web
+- **GPU0**: RTX 4060 Ti 16GB — primary search
+- **GPU1**: RTX 4060 Ti 16GB — parallel search / different targets
+- Speed: ~500K-950K img/s (dual-layer / single-layer)
 
-Best score: 0.0025
+## Inspired By
 
-| Rank | Score | Seed | Mono | Grayscale |
-|------|-------|------|------|-----------|
-| 1 | 0.0025 | `0x6DF2B5E4D04A8B8B` | ![m](spider_web/00_mono_0x6DF2B5E4D04A8B8B.png) | ![g](spider_web/00_gray_0x6DF2B5E4D04A8B8B.png) |
-| 2 | 0.0025 | `0x6DF2B5E4D04A8B8B` | ![m](spider_web/01_mono_0x6DF2B5E4D04A8B8B.png) | ![g](spider_web/01_gray_0x6DF2B5E4D04A8B8B.png) |
-| 3 | 0.0025 | `0x6DF2B5E4D04A8B8B` | ![m](spider_web/02_mono_0x6DF2B5E4D04A8B8B.png) | ![g](spider_web/02_gray_0x6DF2B5E4D04A8B8B.png) |
-| 4 | 0.0025 | `0x6DF2B5E4D04A8B8B` | ![m](spider_web/03_mono_0x6DF2B5E4D04A8B8B.png) | ![g](spider_web/03_gray_0x6DF2B5E4D04A8B8B.png) |
-| 5 | 0.0025 | `0x6DF2B5E4D04A8B8B` | ![m](spider_web/04_mono_0x6DF2B5E4D04A8B8B.png) | ![g](spider_web/04_gray_0x6DF2B5E4D04A8B8B.png) |
-| 6 | 0.0025 | `0x6DF2B5E4D04A8B8B` | ![m](spider_web/05_mono_0x6DF2B5E4D04A8B8B.png) | ![g](spider_web/05_gray_0x6DF2B5E4D04A8B8B.png) |
-| 7 | 0.0025 | `0x6DF2B5E4D04A8B8B` | ![m](spider_web/06_mono_0x6DF2B5E4D04A8B8B.png) | ![g](spider_web/06_gray_0x6DF2B5E4D04A8B8B.png) |
-| 8 | 0.0025 | `0x6DF2B5E4D04A8B8B` | ![m](spider_web/07_mono_0x6DF2B5E4D04A8B8B.png) | ![g](spider_web/07_gray_0x6DF2B5E4D04A8B8B.png) |
-| 9 | 0.0025 | `0x6DF2B5E4D04A8B8B` | ![m](spider_web/08_mono_0x6DF2B5E4D04A8B8B.png) | ![g](spider_web/08_gray_0x6DF2B5E4D04A8B8B.png) |
-| 10 | 0.0025 | `0x6DF2B5E4D04A8B8B` | ![m](spider_web/09_mono_0x6DF2B5E4D04A8B8B.png) | ![g](spider_web/09_gray_0x6DF2B5E4D04A8B8B.png) |
-
-## Starfish
-
-Best score: 0.0010
-
-| Rank | Score | Seed | Mono | Grayscale |
-|------|-------|------|------|-----------|
-| 1 | 0.0010 | `0x5CC19777153A41FD` | ![m](starfish/00_mono_0x5CC19777153A41FD.png) | ![g](starfish/00_gray_0x5CC19777153A41FD.png) |
-| 2 | 0.0010 | `0x5CC19777153A41FD` | ![m](starfish/01_mono_0x5CC19777153A41FD.png) | ![g](starfish/01_gray_0x5CC19777153A41FD.png) |
-| 3 | 0.0010 | `0x5CC19777153A41FD` | ![m](starfish/02_mono_0x5CC19777153A41FD.png) | ![g](starfish/02_gray_0x5CC19777153A41FD.png) |
-| 4 | 0.0010 | `0x5CC19777153A41FD` | ![m](starfish/03_mono_0x5CC19777153A41FD.png) | ![g](starfish/03_gray_0x5CC19777153A41FD.png) |
-| 5 | 0.0010 | `0x5CC19777153A41FD` | ![m](starfish/04_mono_0x5CC19777153A41FD.png) | ![g](starfish/04_gray_0x5CC19777153A41FD.png) |
-| 6 | 0.0010 | `0x5CC19777153A41FD` | ![m](starfish/05_mono_0x5CC19777153A41FD.png) | ![g](starfish/05_gray_0x5CC19777153A41FD.png) |
-| 7 | 0.0010 | `0x5CC19777153A41FD` | ![m](starfish/06_mono_0x5CC19777153A41FD.png) | ![g](starfish/06_gray_0x5CC19777153A41FD.png) |
-| 8 | 0.0010 | `0x5CC19777153A41FD` | ![m](starfish/07_mono_0x5CC19777153A41FD.png) | ![g](starfish/07_gray_0x5CC19777153A41FD.png) |
-| 9 | 0.0010 | `0x5CC19777153A41FD` | ![m](starfish/08_mono_0x5CC19777153A41FD.png) | ![g](starfish/08_gray_0x5CC19777153A41FD.png) |
-| 10 | 0.0010 | `0x5CC19777153A41FD` | ![m](starfish/09_mono_0x5CC19777153A41FD.png) | ![g](starfish/09_gray_0x5CC19777153A41FD.png) |
-
-## Jellyfish
-
-Best score: 0.0003
-
-| Rank | Score | Seed | Mono | Grayscale |
-|------|-------|------|------|-----------|
-| 1 | 0.0003 | `0xC6CF1C693BB89CDE` | ![m](jellyfish/00_mono_0xC6CF1C693BB89CDE.png) | ![g](jellyfish/00_gray_0xC6CF1C693BB89CDE.png) |
-| 2 | 0.0003 | `0xC6CF1C693BB89CDE` | ![m](jellyfish/01_mono_0xC6CF1C693BB89CDE.png) | ![g](jellyfish/01_gray_0xC6CF1C693BB89CDE.png) |
-| 3 | 0.0003 | `0xC6CF1C693BB89CDE` | ![m](jellyfish/02_mono_0xC6CF1C693BB89CDE.png) | ![g](jellyfish/02_gray_0xC6CF1C693BB89CDE.png) |
-| 4 | 0.0003 | `0xC6CF1C693BB89CDE` | ![m](jellyfish/03_mono_0xC6CF1C693BB89CDE.png) | ![g](jellyfish/03_gray_0xC6CF1C693BB89CDE.png) |
-| 5 | 0.0003 | `0xC6CF1C693BB89CDE` | ![m](jellyfish/04_mono_0xC6CF1C693BB89CDE.png) | ![g](jellyfish/04_gray_0xC6CF1C693BB89CDE.png) |
-| 6 | 0.0003 | `0xC6CF1C693BB89CDE` | ![m](jellyfish/05_mono_0xC6CF1C693BB89CDE.png) | ![g](jellyfish/05_gray_0xC6CF1C693BB89CDE.png) |
-| 7 | 0.0003 | `0xC6CF1C693BB89CDE` | ![m](jellyfish/06_mono_0xC6CF1C693BB89CDE.png) | ![g](jellyfish/06_gray_0xC6CF1C693BB89CDE.png) |
-| 8 | 0.0003 | `0xC6CF1C693BB89CDE` | ![m](jellyfish/07_mono_0xC6CF1C693BB89CDE.png) | ![g](jellyfish/07_gray_0xC6CF1C693BB89CDE.png) |
-| 9 | 0.0003 | `0xC6CF1C693BB89CDE` | ![m](jellyfish/08_mono_0xC6CF1C693BB89CDE.png) | ![g](jellyfish/08_gray_0xC6CF1C693BB89CDE.png) |
-| 10 | 0.0003 | `0xC6CF1C693BB89CDE` | ![m](jellyfish/09_mono_0xC6CF1C693BB89CDE.png) | ![g](jellyfish/09_gray_0xC6CF1C693BB89CDE.png) |
-
-## Original Seeds (pre-search)
-
-| Name | Seed | CNN Top-1 | Mono | Grayscale |
-|------|------|-----------|------|-----------|
-| chainmail | `0x5CF45186D99C20C8` | chain mail (7%) | ![m](prng_chainmail_mono.png) | ![g](prng_chainmail_gray.png) |
-| deadbeef | `0xDEADBEEFCAFEBABE` | — | ![m](prng_deadbeef_mono.png) | ![g](prng_deadbeef_gray.png) |
-| random1 | `0x1234567890ABCDEF` | — | ![m](prng_random1_mono.png) | ![g](prng_random1_gray.png) |
-
-## Technical Notes
-
-### Why scores are low (1-2%)
-MobileNetV2 is trained on photos, not 1-bit noise patterns.
-Even with symmetry, the patterns are abstract textures, not recognizable objects.
-Better approaches (TODO):
-1. **Dithered target**: convert photo → Floyd-Steinberg dither → find pRNG seed matching dithered image
-2. **Feature matching**: compare VGG intermediate features (perceptual loss) instead of class probability
-3. **Multi-scale symmetry**: mirror on 2+ axes, radial symmetry for more structure
-4. **Guided generation**: use gradient of CNN loss to inform seed mutation direction
-
-### Hardware
-- GPU0 (RTX 4060 Ti 16GB): multi-target search
-- GPU1 (RTX 4060 Ti 16GB): dedicated cat search (2000 pop × 500 gen)
-- Total overnight: ~12 hours, ~10B seed evaluations
-
-### Inspired by
 - **Introspec** — BB (Big Brother) 256-byte ZX Spectrum intro
-- **.ded^RMDA (Maxim Muchkaev)** — Hole #17 enigma, CALL-chain rendering
-- **Mona** (Atari 256b) — the original 'draw with noise' concept
-
-### Tools
-- `cuda/prng_cat_search.py` — CNN-guided search (PyTorch + MobileNetV2)
-- `cuda/z80_image_search.cu` — Pure CUDA brute-force
-- `cuda/z80_prng_search.cu` — Generic pRNG seed search
+- **.ded^RMDA (Maxim Muchkaev)** — Hole #17, CALL-chain rendering
+- **Mona** (Atari 256b) — the original "draw with noise" concept
