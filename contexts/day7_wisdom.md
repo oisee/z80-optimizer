@@ -56,3 +56,34 @@
 - Bad Apple: 33 keyframes, 5.5KB, 12.7% error
 - Face-aware 4×: 213 seeds (426B), 26.5% Che
 - div8 v3: avg 79T, carry_compare 26T for K≥128
+
+## Joint-2 Search (Day 7 continued)
+
+### Key Discovery: Joint seed optimization beats greedy by 15-68%
+- Greedy: find best seed_A, lock, find best seed_B → suboptimal pair
+- Joint-2: test ALL 65536² = 4.3B (seed_A, seed_B) pairs → globally optimal
+- Left eye: 500→156 err (−68%), Right eye: 495→155 err (−67%), Nose: 598→210 err (−65%)
+- Same seeds, same bytes — just BETTER combinations
+- CUDA kernel: grid(65536,256) × block(256) = 4.3B threads, ~132s per pair
+
+### Why it works
+- LFSR generates ~50% random pattern per seed
+- Greedy locks seed_A without seeing seed_B → may create hard-to-correct pattern
+- Joint-2 finds (A,B) where XOR(A) XOR(B) is closest to target delta
+- XOR(A,B) creates patterns neither A nor B produces alone
+
+### Independent vs overlapping pairs
+- Independent (left_eye ≠ right_eye): can optimize in parallel, lock separately
+- Overlapping (eye_2x2 + eye_1x1): must optimize jointly (this is what joint-2 does)
+- 99% of same-level segments are independent (ухо ≠ глаз)
+
+### Convergence guarantee
+- Each LFSR seed has slight bias (not exactly 50%)
+- Among 65536 seeds, one correlates with needed correction
+- Each layer guaranteed to improve (GPU finds best-of-65536)
+- Multi-scale (8→4→2→1) refines progressively
+- Joint-2 finds even better combinations greedy misses
+
+### Files
+- cuda/joint2_search.cu — CUDA joint-2 kernel (working, tested)
+- contexts/joint_search_findings.md — architecture notes
