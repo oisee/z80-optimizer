@@ -35,7 +35,7 @@ __device__ __host__ uint32_t lfsr_step(uint32_t state) {
     return state;
 }
 
-/* ====== Block-scan draw: 1 LFSR bit = 1 block, sequential scan ====== */
+/* ====== Draw: block-scan (num_points<0) or point-spray (num_points>0) ====== */
 __device__ void draw_segment(
     uint8_t* canvas,
     uint16_t seed,
@@ -43,13 +43,37 @@ __device__ void draw_segment(
     int rx, int ry,    /* rectangle top-left */
     int rw, int rh,    /* rectangle size */
     int block_size,    /* pixel block size */
-    int num_points     /* ignored in block-scan mode */
+    int num_points     /* >0: point-spray N random points; <0: block-scan */
 ) {
-    /* 16-bit LFSR: x^16 + x^14 + x^13 + x^11 + 1 */
+    if (num_points > 0) {
+        /* ====== Point-spray: N random XOR points within region ====== */
+        uint32_t state = ((uint32_t)seed << 16) | ((uint32_t)(seg_id * 13 + 0xBEEF));
+        for (int i = 0; i < 8; i++) {
+            uint32_t bit = state & 1; state >>= 1; if (bit) state ^= 0xB4BCD35C;
+        }
+        for (int p = 0; p < num_points; p++) {
+            uint32_t bit = state & 1; state >>= 1; if (bit) state ^= 0xB4BCD35C;
+            int lx = ((state >> 0) & 0xFFFF) % rw;
+            int ly = ((state >> 16) & 0xFFFF) % rh;
+            lx = (lx / block_size) * block_size;
+            ly = (ly / block_size) * block_size;
+            for (int dy = 0; dy < block_size && (ry + ly + dy) < H; dy++) {
+                for (int dx = 0; dx < block_size && (rx + lx + dx) < W; dx++) {
+                    int x = rx + lx + dx;
+                    int y = ry + ly + dy;
+                    int byte_idx = y * (W / 8) + (x / 8);
+                    int bit_idx = 7 - (x % 8);
+                    canvas[byte_idx] ^= (1 << bit_idx);
+                }
+            }
+        }
+        return;
+    }
+
+    /* ====== Block-scan: 1 LFSR bit = 1 block ====== */
     uint16_t state = seed;
     if (state == 0) state = 1;
 
-    /* Warm up LFSR with seg_id for uniqueness */
     for (int i = 0; i < (seg_id & 15) + 4; i++) {
         uint16_t bit = state & 1;
         state >>= 1;
@@ -59,15 +83,13 @@ __device__ void draw_segment(
     int nbx = rw / block_size;
     int nby = rh / block_size;
 
-    /* Scan all blocks in region; 1 LFSR bit per block */
     for (int by = 0; by < nby; by++) {
         for (int bx = 0; bx < nbx; bx++) {
-            /* Step LFSR */
             uint16_t bit = state & 1;
             state >>= 1;
             if (bit) state ^= 0xB400;
 
-            if (state & 1) {  /* use next bit as the XOR decision */
+            if (state & 1) {
                 int px = rx + bx * block_size;
                 int py = ry + by * block_size;
                 for (int dy = 0; dy < block_size && (py + dy) < H; dy++) {
@@ -119,29 +141,48 @@ __global__ void search_segment_kernel(
     errors[seed] = err;
 }
 
-/* ====== Host draw (block-scan, matches GPU) ====== */
+/* ====== Host draw (matches GPU: point-spray or block-scan) ====== */
 void host_draw_segment(uint8_t* canvas, uint16_t seed, int seg_id,
                        int rx, int ry, int rw, int rh, int block_size, int num_points) {
+    if (num_points > 0) {
+        /* Point-spray */
+        uint32_t state = ((uint32_t)seed << 16) | ((uint32_t)(seg_id * 13 + 0xBEEF));
+        for (int i = 0; i < 8; i++) {
+            uint32_t bit = state & 1; state >>= 1; if (bit) state ^= 0xB4BCD35C;
+        }
+        for (int p = 0; p < num_points; p++) {
+            uint32_t bit = state & 1; state >>= 1; if (bit) state ^= 0xB4BCD35C;
+            int lx = ((state >> 0) & 0xFFFF) % rw;
+            int ly = ((state >> 16) & 0xFFFF) % rh;
+            lx = (lx / block_size) * block_size;
+            ly = (ly / block_size) * block_size;
+            for (int dy = 0; dy < block_size && (ry + ly + dy) < H; dy++) {
+                for (int dx = 0; dx < block_size && (rx + lx + dx) < W; dx++) {
+                    int x = rx + lx + dx; int y = ry + ly + dy;
+                    int byte_idx = y * (W / 8) + (x / 8);
+                    int bit_idx = 7 - (x % 8);
+                    canvas[byte_idx] ^= (1 << bit_idx);
+                }
+            }
+        }
+        return;
+    }
+    /* Block-scan */
     uint16_t state = seed;
     if (state == 0) state = 1;
     for (int i = 0; i < (seg_id & 15) + 4; i++) {
         uint16_t bit = state & 1; state >>= 1; if (bit) state ^= 0xB400;
     }
-    int nbx = rw / block_size;
-    int nby = rh / block_size;
+    int nbx = rw / block_size; int nby = rh / block_size;
     for (int by = 0; by < nby; by++) {
         for (int bx = 0; bx < nbx; bx++) {
             uint16_t bit = state & 1; state >>= 1; if (bit) state ^= 0xB400;
             if (state & 1) {
-                int px = rx + bx * block_size;
-                int py = ry + by * block_size;
+                int px = rx + bx * block_size; int py = ry + by * block_size;
                 for (int dy = 0; dy < block_size && (py + dy) < H; dy++) {
                     for (int dx = 0; dx < block_size && (px + dx) < W; dx++) {
-                        int x = px + dx;
-                        int y = py + dy;
-                        int byte_idx = y * (W / 8) + (x / 8);
-                        int bit_idx = 7 - (x % 8);
-                        canvas[byte_idx] ^= (1 << bit_idx);
+                        int x = px + dx; int y = py + dy;
+                        canvas[y*(W/8)+(x/8)] ^= (1 << (7-(x%8)));
                     }
                 }
             }
@@ -344,12 +385,18 @@ int main(int argc, char** argv) {
             }
         }
 
-    } else if (!strcmp(mode, "facefile")) {
-        /* ====== Load face segments from file (for scaled experiments) ====== */
+    } else if (!strcmp(mode, "facefile") || !strcmp(mode, "segfile")) {
+        /* ====== Load segments from file ====== */
         char segpath[512];
-        snprintf(segpath, sizeof(segpath), "%s_segs.txt", mode);
-        /* Try density as scale indicator: --density N loads /tmp/faceNx_segs.txt */
+        /* --segments path overrides; otherwise /tmp/face{density}x_segs.txt */
+        if (canvas_path && !strcmp(mode, "segfile")) {
+            /* Hack: reuse --canvas for --segments in segfile mode...
+               Better: add explicit --segments flag */
+        }
         snprintf(segpath, sizeof(segpath), "/tmp/face%dx_segs.txt", pts_per_pixel);
+        /* Check env var for custom path */
+        const char* env_segs = getenv("SEGMENTS_FILE");
+        if (env_segs) strncpy(segpath, env_segs, sizeof(segpath)-1);
         FILE* sf = fopen(segpath, "r");
         if (sf) {
             int rx, ry, rw, rh, blk, npts, lv;
