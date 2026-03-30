@@ -83,13 +83,51 @@ Asymmetric: 1+3+5+7 = 16 seeds × 2 bytes = **32 bytes data**.
 LFSR code + region table + screen calc ≈ 100 bytes.
 **Total: ~132 bytes — fits in 256-byte intro with room to spare.**
 
+## Pop-Art / Warhol Color
+
+ZX Spectrum has 8×8 attribute cells with ink+paper colors. Five coloring strategies, zero extra bytes:
+
+| Mono (reference) | Density | Face-region | Warm/cool | Pop-art |
+|---|---|---|---|---|
+| ![mono](foveal_color/mono_preview.png) | ![density](foveal_color/density_preview.png) | ![face](foveal_color/face_region_preview.png) | ![warm](foveal_color/warmcool_preview.png) | ![pop](foveal_color/popart_preview.png) |
+
+### Warhol Grid — Che Guevara (quadtree, 15% error)
+
+![che_warhol](foveal_marilyn_popart/warhol_che_quadtree_hq.png)
+
+4 palettes: hot pink/yellow, turquoise/pink, orange/blue, lime/red.
+
+### Warhol Grid — Marilyn (quadtree, 14.9% error)
+
+![marilyn_warhol](foveal_marilyn_popart/warhol_quadtree_hq.png)
+
+### Per-Cell Palette Rotation (Che)
+
+![che_mixed](foveal_marilyn_popart/warhol_che_mixed_hq.png)
+
+Each 8×8 cell gets a different palette from the rotation — maximum psychedelic.
+
+### Mondrian (32 bytes) vs Quadtree (1194 bytes)
+
+![compare](foveal_marilyn_popart/compare_mondrian_vs_quadtree.png)
+
+Left: artistic pixelation (32B). Right: full resolution (1194B). Both recognizable.
+
 ## Build & Run
 
 ```bash
 nvcc -O3 -o cuda/prng_segmented_search cuda/prng_segmented_search.cu
+
+# Foveal modes
 ./cuda/prng_segmented_search --target media/prng_images/targets/che.pgm \
   --mode mondrian --seed 42 --density 2 \
   --output media/prng_images/foveal_mondrian_s42
+
+# Full quality quadtree
+./cuda/prng_segmented_search --target media/prng_images/targets/che.pgm \
+  --mode quadtree --density 3 \
+  --output media/prng_images/foveal_quadtree
 ```
 
 Modes: `quadtree` (original), `foveal` (center), `golden` (spiral), `mondrian` (random), `hybrid` (grid+foveal).
+Density: 1 (10 seeds) → 5 (97 seeds). Default: 2 (16 seeds).
