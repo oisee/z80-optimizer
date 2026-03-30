@@ -1,0 +1,5 @@
+# Segmented seeds: 4 segments, 8 bytes
+seg   0: 0x35D7  L0 [0,0 64x48] blk=4 pts=288
+seg   1: 0xC064  L0 [64,0 64x48] blk=4 pts=288
+seg   2: 0xB7EB  L0 [0,48 64x48] blk=4 pts=288
+seg   3: 0xD225  L0 [64,48 64x48] blk=4 pts=288
