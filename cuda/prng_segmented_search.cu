@@ -219,6 +219,7 @@ int count_errors(const uint8_t* a, const uint8_t* b) {
 int main(int argc, char** argv) {
     int device_id = 0;
     const char* target_path = NULL;
+    const char* canvas_path = NULL;  /* --canvas: start from previous result (for morphing) */
     const char* output_dir = "media/prng_images/segmented";
     int pts_per_pixel = 3;  /* points per pixel in segment */
     const char* mode = "quadtree";  /* quadtree, foveal, mondrian, golden */
@@ -226,6 +227,7 @@ int main(int argc, char** argv) {
 
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--target") && i+1<argc) target_path = argv[++i];
+        else if (!strcmp(argv[i], "--canvas") && i+1<argc) canvas_path = argv[++i];
         else if (!strcmp(argv[i], "--gpu") && i+1<argc) device_id = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--output") && i+1<argc) output_dir = argv[++i];
         else if (!strcmp(argv[i], "--density") && i+1<argc) pts_per_pixel = atoi(argv[++i]);
@@ -504,6 +506,12 @@ int main(int argc, char** argv) {
 
     uint8_t h_canvas[PACKED_SIZE];
     memset(h_canvas, 0, sizeof(h_canvas));
+    if (canvas_path) {
+        if (load_pgm_binary(canvas_path, h_canvas) == 0)
+            printf("Loaded canvas from %s (morphing mode)\n", canvas_path);
+        else
+            fprintf(stderr, "Warning: failed to load canvas %s, starting from blank\n", canvas_path);
+    }
     uint16_t best_seeds[1024];
     uint32_t h_errors[65536];
 
@@ -575,6 +583,10 @@ int main(int argc, char** argv) {
     /* Save seeds */
     snprintf(path, sizeof(path), "%s/seeds.bin", output_dir);
     FILE* f = fopen(path, "wb"); fwrite(best_seeds, 2, num_segments, f); fclose(f);
+
+    /* Save final canvas as PGM for chaining (morphing) */
+    snprintf(path, sizeof(path), "%s/canvas.pgm", output_dir);
+    save_pgm(path, h_canvas);
 
     snprintf(path, sizeof(path), "%s/seeds.txt", output_dir);
     f = fopen(path, "w");
