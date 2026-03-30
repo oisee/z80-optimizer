@@ -1,0 +1,2 @@
+# Segmented seeds: 1 segments, 2 bytes
+seg   0: 0x67EC  L0 [0,0 128x96] blk=8 pts=576
