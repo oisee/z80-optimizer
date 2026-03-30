@@ -145,3 +145,64 @@ PRNG is competitive at very low bitrates on ideal content.
 3. **Adaptive regions**: auto-detect face landmarks → custom segment layout per frame?
 4. **Temporal coherence**: share seeds between similar frames → reduce delta rate?
 5. **Perceptual loss**: optimize for SSIM not pixel error → better visual quality?
+
+## Delta Codec: Masked Two-Layer Architecture
+
+### Key Insight (from discussion)
+
+For delta frames (inter-frame difference), coarse layer is BOTH data AND mask:
+
+```
+Layer 1 (coarse, 8×8): LFSR seed → XOR blocks where delta exists
+  → This naturally marks WHERE changes happened (mask)
+  → ~80 blocks changed out of 768 = sparse
+
+Layer 2 (fine, 1×1): LFSR seed → XOR ONLY inside coarse-activated blocks
+  → Fine correction restricted to active zone
+  → Works on ~5000 pixels instead of 49152 = 10× better signal/noise
+```
+
+### Why masking is critical
+
+Without mask: fine seed must be neutral on 80% of image (no change zones)
+  → wastes "correlation budget" on staying quiet
+  → 65536 seeds, most can't satisfy both "be quiet here" + "be active there"
+
+With mask: fine seed only evaluated on active zone
+  → ALL 65536 candidates are useful (none wasted on neutrality)
+  → dramatically better search quality per seed
+
+### Decoder
+
+```z80
+; Coarse pass (8×8)
+call lfsr_xor_8x8        ; XOR coarse pattern, remember activated blocks
+; generates 96-byte bitmask (768 blocks / 8 bits) as side effect
+
+; Fine pass (1×1)  
+call lfsr_xor_1x1_masked ; XOR fine pattern ONLY where bitmask is set
+```
+
+Cost: +20 bytes code for mask check. Data: 4 bytes (2 seeds).
+
+### Joint-2 on coarse+fine
+
+Coarse seed (u16) + fine seed (u16) searched jointly as u32:
+- 65536² = 4.3B candidates
+- Coarse and fine optimized TOGETHER knowing the mask
+- 132 seconds GPU, 4 bytes data per delta frame
+
+### Estimated delta-frame budget
+
+```
+Movement type     Coarse seeds  Fine seeds  Total bytes
+Static (0% change)    0            0           0
+Slow (5% change)      1            1           4
+Medium (15% change)   1            2           6
+Fast (30% change)     2            3          10
+Scene cut             full keyframe          426
+```
+
+For 10fps video with slow-medium movement:
+  ~5 bytes/frame × 10fps = 50 bytes/sec = 400 bps
+  3 minutes = 9000 bytes = 8.8 KB (!!!)
