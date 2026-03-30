@@ -35,7 +35,7 @@ __device__ __host__ uint32_t lfsr_step(uint32_t state) {
     return state;
 }
 
-/* ====== Draw LFSR points within a rectangle, XOR onto canvas ====== */
+/* ====== Block-scan draw: 1 LFSR bit = 1 block, sequential scan ====== */
 __device__ void draw_segment(
     uint8_t* canvas,
     uint16_t seed,
@@ -43,30 +43,42 @@ __device__ void draw_segment(
     int rx, int ry,    /* rectangle top-left */
     int rw, int rh,    /* rectangle size */
     int block_size,    /* pixel block size */
-    int num_points
+    int num_points     /* ignored in block-scan mode */
 ) {
-    uint32_t state = ((uint32_t)seed << 16) | ((uint32_t)(seg_id * 13 + 0xBEEF));
-    for (int i = 0; i < 8; i++) state = lfsr_step(state);
+    /* 16-bit LFSR: x^16 + x^14 + x^13 + x^11 + 1 */
+    uint16_t state = seed;
+    if (state == 0) state = 1;
 
-    for (int p = 0; p < num_points; p++) {
-        state = lfsr_step(state);
+    /* Warm up LFSR with seg_id for uniqueness */
+    for (int i = 0; i < (seg_id & 15) + 4; i++) {
+        uint16_t bit = state & 1;
+        state >>= 1;
+        if (bit) state ^= 0xB400;
+    }
 
-        /* Map to within rectangle */
-        int lx = ((state >> 0) & 0xFFFF) % rw;
-        int ly = ((state >> 16) & 0xFFFF) % rh;
+    int nbx = rw / block_size;
+    int nby = rh / block_size;
 
-        /* Align to block grid */
-        lx = (lx / block_size) * block_size;
-        ly = (ly / block_size) * block_size;
+    /* Scan all blocks in region; 1 LFSR bit per block */
+    for (int by = 0; by < nby; by++) {
+        for (int bx = 0; bx < nbx; bx++) {
+            /* Step LFSR */
+            uint16_t bit = state & 1;
+            state >>= 1;
+            if (bit) state ^= 0xB400;
 
-        /* XOR block */
-        for (int dy = 0; dy < block_size && (ry + ly + dy) < H; dy++) {
-            for (int dx = 0; dx < block_size && (rx + lx + dx) < W; dx++) {
-                int x = rx + lx + dx;
-                int y = ry + ly + dy;
-                int byte_idx = y * (W / 8) + (x / 8);
-                int bit_idx = 7 - (x % 8);
-                canvas[byte_idx] ^= (1 << bit_idx);
+            if (state & 1) {  /* use next bit as the XOR decision */
+                int px = rx + bx * block_size;
+                int py = ry + by * block_size;
+                for (int dy = 0; dy < block_size && (py + dy) < H; dy++) {
+                    for (int dx = 0; dx < block_size && (px + dx) < W; dx++) {
+                        int x = px + dx;
+                        int y = py + dy;
+                        int byte_idx = y * (W / 8) + (x / 8);
+                        int bit_idx = 7 - (x % 8);
+                        canvas[byte_idx] ^= (1 << bit_idx);
+                    }
+                }
             }
         }
     }
@@ -107,26 +119,31 @@ __global__ void search_segment_kernel(
     errors[seed] = err;
 }
 
-/* ====== Host draw ====== */
+/* ====== Host draw (block-scan, matches GPU) ====== */
 void host_draw_segment(uint8_t* canvas, uint16_t seed, int seg_id,
                        int rx, int ry, int rw, int rh, int block_size, int num_points) {
-    uint32_t state = ((uint32_t)seed << 16) | ((uint32_t)(seg_id * 13 + 0xBEEF));
-    for (int i = 0; i < 8; i++) {
-        uint32_t bit = state & 1; state >>= 1; if (bit) state ^= 0xB4BCD35C;
+    uint16_t state = seed;
+    if (state == 0) state = 1;
+    for (int i = 0; i < (seg_id & 15) + 4; i++) {
+        uint16_t bit = state & 1; state >>= 1; if (bit) state ^= 0xB400;
     }
-    for (int p = 0; p < num_points; p++) {
-        uint32_t bit = state & 1; state >>= 1; if (bit) state ^= 0xB4BCD35C;
-        int lx = ((state >> 0) & 0xFFFF) % rw;
-        int ly = ((state >> 16) & 0xFFFF) % rh;
-        lx = (lx / block_size) * block_size;
-        ly = (ly / block_size) * block_size;
-        for (int dy = 0; dy < block_size && (ry + ly + dy) < H; dy++) {
-            for (int dx = 0; dx < block_size && (rx + lx + dx) < W; dx++) {
-                int x = rx + lx + dx;
-                int y = ry + ly + dy;
-                int byte_idx = y * (W / 8) + (x / 8);
-                int bit_idx = 7 - (x % 8);
-                canvas[byte_idx] ^= (1 << bit_idx);
+    int nbx = rw / block_size;
+    int nby = rh / block_size;
+    for (int by = 0; by < nby; by++) {
+        for (int bx = 0; bx < nbx; bx++) {
+            uint16_t bit = state & 1; state >>= 1; if (bit) state ^= 0xB400;
+            if (state & 1) {
+                int px = rx + bx * block_size;
+                int py = ry + by * block_size;
+                for (int dy = 0; dy < block_size && (py + dy) < H; dy++) {
+                    for (int dx = 0; dx < block_size && (px + dx) < W; dx++) {
+                        int x = px + dx;
+                        int y = py + dy;
+                        int byte_idx = y * (W / 8) + (x / 8);
+                        int bit_idx = 7 - (x % 8);
+                        canvas[byte_idx] ^= (1 << bit_idx);
+                    }
+                }
             }
         }
     }
