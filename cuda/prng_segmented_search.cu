@@ -342,6 +342,25 @@ int main(int argc, char** argv) {
             }
         }
 
+    } else if (!strcmp(mode, "facefile")) {
+        /* ====== Load face segments from file (for scaled experiments) ====== */
+        char segpath[512];
+        snprintf(segpath, sizeof(segpath), "%s_segs.txt", mode);
+        /* Try density as scale indicator: --density N loads /tmp/faceNx_segs.txt */
+        snprintf(segpath, sizeof(segpath), "/tmp/face%dx_segs.txt", pts_per_pixel);
+        FILE* sf = fopen(segpath, "r");
+        if (sf) {
+            int rx, ry, rw, rh, blk, npts, lv;
+            while (fscanf(sf, "%d %d %d %d %d %d %d", &rx, &ry, &rw, &rh, &blk, &npts, &lv) == 7) {
+                segments[num_segments++] = {rx, ry, rw, rh, blk, npts, lv};
+            }
+            fclose(sf);
+            printf("Loaded %d segments from %s\n", num_segments, segpath);
+        } else {
+            fprintf(stderr, "Cannot open %s\n", segpath);
+            return 1;
+        }
+
     } else if (!strcmp(mode, "face")) {
         /* ====== Face-aware: dense on features, sparse on background ====== */
         /* L0: whole image 8×8 */
