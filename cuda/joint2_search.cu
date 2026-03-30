@@ -197,11 +197,14 @@ int main(int argc, char** argv) {
     int ptsA = (rwA/blkA) * (rhA/blkA) * pts_per_pixel;
     int ptsB = (rwB/blkB) * (rhB/blkB) * pts_per_pixel;
 
-    /* ROI = union of both regions */
-    int roi_x = rxA < rxB ? rxA : rxB;
-    int roi_y = ryA < ryB ? ryA : ryB;
-    int roi_w = ((rxA+rwA > rxB+rwB) ? rxA+rwA : rxB+rwB) - roi_x;
-    int roi_h = ((ryA+rhA > ryB+rhB) ? ryA+rhA : ryB+rhB) - roi_y;
+    /* ROI = INTERSECTION of both regions (not union!)
+       Joint-2 optimizes for the OVERLAP zone where both seeds contribute. */
+    int roi_x = rxA > rxB ? rxA : rxB;
+    int roi_y = ryA > ryB ? ryA : ryB;
+    int roi_x2 = (rxA+rwA < rxB+rwB) ? rxA+rwA : rxB+rwB;
+    int roi_y2 = (ryA+rhA < ryB+rhB) ? ryA+rhA : ryB+rhB;
+    int roi_w = roi_x2 - roi_x; if (roi_w < 0) roi_w = 0;
+    int roi_h = roi_y2 - roi_y; if (roi_h < 0) roi_h = 0;
 
     printf("Region A: [%d,%d %dx%d] blk=%d pts=%d\n", rxA,ryA,rwA,rhA,blkA,ptsA);
     printf("Region B: [%d,%d %dx%d] blk=%d pts=%d\n", rxB,ryB,rwB,rhB,blkB,ptsB);
