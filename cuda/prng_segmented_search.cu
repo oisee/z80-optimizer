@@ -325,6 +325,49 @@ int main(int argc, char** argv) {
             }
         }
 
+    } else if (!strcmp(mode, "face")) {
+        /* ====== Face-aware: dense on features, sparse on background ====== */
+        /* L0: whole image 8×8 */
+        segments[num_segments++] = {0, 0, W, H, 8, 576, 0};
+        /* L1: 4 grid + 4 face overlaps (4×4) */
+        segments[num_segments++] = {0, 0, 64, 48, 4, 576, 1};
+        segments[num_segments++] = {64, 0, 64, 48, 4, 576, 1};
+        segments[num_segments++] = {0, 48, 64, 48, 4, 576, 1};
+        segments[num_segments++] = {64, 48, 64, 48, 4, 576, 1};
+        segments[num_segments++] = {24, 8, 80, 64, 4, 960, 1};   /* face center */
+        segments[num_segments++] = {16, 20, 96, 24, 4, 432, 1};  /* eyes band */
+        segments[num_segments++] = {32, 44, 64, 24, 4, 288, 1};  /* mouth area */
+        segments[num_segments++] = {24, 8, 80, 20, 4, 300, 1};   /* forehead */
+        /* L2: 4 background corners + 9 face regions (2×2) */
+        segments[num_segments++] = {0, 0, 40, 32, 2, 960, 2};    /* bg corners */
+        segments[num_segments++] = {88, 0, 40, 32, 2, 960, 2};
+        segments[num_segments++] = {0, 64, 48, 32, 2, 1152, 2};
+        segments[num_segments++] = {80, 64, 48, 32, 2, 1152, 2};
+        segments[num_segments++] = {32, 24, 32, 16, 2, 384, 2};  /* left eye */
+        segments[num_segments++] = {64, 24, 32, 16, 2, 384, 2};  /* right eye */
+        segments[num_segments++] = {40, 28, 48, 12, 2, 432, 2};  /* eye bridge */
+        segments[num_segments++] = {52, 34, 24, 20, 2, 360, 2};  /* nose */
+        segments[num_segments++] = {44, 48, 40, 16, 2, 480, 2};  /* mouth */
+        segments[num_segments++] = {48, 48, 32, 12, 2, 288, 2};  /* lips */
+        segments[num_segments++] = {26, 22, 20, 40, 2, 600, 2};  /* face left */
+        segments[num_segments++] = {82, 22, 20, 40, 2, 600, 2};  /* face right */
+        segments[num_segments++] = {28, 8, 72, 16, 2, 864, 2};   /* hairline */
+        /* L3: 1×1 pixel on eyes, nose, mouth, brows (overlapping!) */
+        segments[num_segments++] = {32, 27, 20, 10, 1, 600, 3};  /* L eye outer */
+        segments[num_segments++] = {44, 29, 12, 8, 1, 288, 3};   /* L eye inner */
+        segments[num_segments++] = {44, 30, 8, 6, 1, 144, 3};    /* L pupil */
+        segments[num_segments++] = {76, 27, 20, 10, 1, 600, 3};  /* R eye outer */
+        segments[num_segments++] = {72, 29, 12, 8, 1, 288, 3};   /* R eye inner */
+        segments[num_segments++] = {76, 30, 8, 6, 1, 144, 3};    /* R pupil */
+        segments[num_segments++] = {56, 44, 16, 8, 1, 384, 3};   /* nose tip */
+        segments[num_segments++] = {50, 53, 28, 6, 1, 504, 3};   /* mouth line */
+        segments[num_segments++] = {52, 50, 24, 6, 1, 432, 3};   /* upper lip */
+        segments[num_segments++] = {52, 56, 24, 6, 1, 432, 3};   /* lower lip */
+        segments[num_segments++] = {38, 24, 20, 6, 1, 360, 3};   /* L brow */
+        segments[num_segments++] = {70, 24, 20, 6, 1, 360, 3};   /* R brow */
+        segments[num_segments++] = {48, 62, 32, 8, 1, 768, 3};   /* chin line */
+        segments[num_segments++] = {56, 47, 16, 6, 1, 288, 3};   /* nostrils */
+
     } else if (!strcmp(mode, "hybrid")) {
         /* ====== Hybrid: foveal center + quadtree background ====== */
         /* L0: full image (1 seed) */
