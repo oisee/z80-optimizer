@@ -204,12 +204,16 @@ int main(int argc, char** argv) {
     const char* target_path = NULL;
     const char* output_dir = "media/prng_images/segmented";
     int pts_per_pixel = 3;  /* points per pixel in segment */
+    const char* mode = "quadtree";  /* quadtree, foveal, mondrian, golden */
+    int foveal_seed = 42;
 
     for (int i = 1; i < argc; i++) {
         if (!strcmp(argv[i], "--target") && i+1<argc) target_path = argv[++i];
         else if (!strcmp(argv[i], "--gpu") && i+1<argc) device_id = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--output") && i+1<argc) output_dir = argv[++i];
         else if (!strcmp(argv[i], "--density") && i+1<argc) pts_per_pixel = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--mode") && i+1<argc) mode = argv[++i];
+        else if (!strcmp(argv[i], "--seed") && i+1<argc) foveal_seed = atoi(argv[++i]);
     }
     if (!target_path) {
         fprintf(stderr, "Usage: %s --target file.pgm [--gpu 0] [--output dir] [--density 3]\n", argv[0]);
@@ -235,45 +239,178 @@ int main(int argc, char** argv) {
     Segment segments[1024];
     int num_segments = 0;
 
-    /* Level 0: 1 segment = whole image, 8x8 blocks */
-    segments[num_segments++] = {0, 0, W, H, 8, (W/8)*(H/8)*pts_per_pixel, 0};
+    printf("Mode: %s\n", mode);
 
-    /* Level 1: 4 quadrants, 4x4 blocks */
-    for (int qy = 0; qy < 2; qy++)
-        for (int qx = 0; qx < 2; qx++)
-            segments[num_segments++] = {qx*W/2, qy*H/2, W/2, H/2, 4,
-                                        (W/8)*(H/8)*pts_per_pixel/2, 1};
+    if (!strcmp(mode, "foveal") || !strcmp(mode, "golden") || !strcmp(mode, "mondrian")) {
+        /* ====== Foveal/Golden/Mondrian: asymmetric focus regions ====== */
+        /* Levels: 1+2+3+4 = 10 seeds (40 bytes) or 1+3+5+7 = 16 seeds (64 bytes) */
+        /* Configurable seeds-per-level via density:
+           density 1: 1+2+3+4   = 10 seeds (20 bytes)
+           density 2: 1+3+5+7   = 16 seeds (32 bytes)
+           density 3: 1+4+12+24 = 41 seeds (82 bytes)
+           density 4: 1+5+15+40 = 61 seeds (122 bytes)
+           density 5: 1+8+24+64 = 97 seeds (194 bytes) */
+        int spl_table[][4] = {
+            {1, 2, 3, 4},    /* density 1 */
+            {1, 3, 5, 7},    /* density 2 */
+            {1, 4, 12, 24},  /* density 3 */
+            {1, 5, 15, 40},  /* density 4 */
+            {1, 8, 24, 64},  /* density 5 */
+        };
+        int di = pts_per_pixel - 1;
+        if (di < 0) di = 0;
+        if (di > 4) di = 4;
+        int *spl = spl_table[di];
+        int blocks[] = {8, 4, 2, 1};
 
-    /* Level 2: 16 tiles (4x4 grid), 2x2 blocks */
-    for (int ty = 0; ty < 4; ty++)
-        for (int tx = 0; tx < 4; tx++)
-            segments[num_segments++] = {tx*W/4, ty*H/4, W/4, H/4, 2,
-                                        (W/16)*(H/16)*pts_per_pixel, 2};
+        /* Simple PRNG for region placement */
+        unsigned rng = (unsigned)foveal_seed;
+        #define FRNG() (rng = rng * 1103515245 + 12345, (rng >> 16) & 0x7FFF)
 
-    /* Level 3: 64 tiles (8x8 grid), 1x1 pixels */
-    for (int ty = 0; ty < 8; ty++)
-        for (int tx = 0; tx < 8; tx++)
-            segments[num_segments++] = {tx*W/8, ty*H/8, W/8, H/8, 1,
-                                        (W/8)*(H/8)*pts_per_pixel/4, 3};
+        double phi = 1.6180339887;
 
-    /* Level 4: 256 tiles (16x16 grid), 1x1 pixels, fine correction */
-    for (int ty = 0; ty < 16; ty++)
-        for (int tx = 0; tx < 16; tx++)
-            segments[num_segments++] = {tx*W/16, ty*H/16, W/16, H/16, 1,
-                                        (W/16)*(H/16)*pts_per_pixel/3, 4};
+        for (int lv = 0; lv < 4; lv++) {
+            int block = blocks[lv];
+            int n = spl[lv];
 
-    /* Level 5: 256 more tiles (shifted by half), 1x1, overlap correction */
-    for (int ty = 0; ty < 16; ty++)
-        for (int tx = 0; tx < 16; tx++) {
-            int rx = tx*W/16 + W/32;  /* shifted by half-tile */
-            int ry = ty*H/16 + H/32;
-            int rw = W/16, rh = H/16;
-            if (rx + rw > W) rw = W - rx;
-            if (ry + rh > H) rh = H - ry;
-            if (rw > 0 && rh > 0)
-                segments[num_segments++] = {rx, ry, rw, rh, 1,
-                                            rw*rh*pts_per_pixel/4, 5};
+            for (int i = 0; i < n; i++) {
+                int rx, ry, rw, rh;
+
+                if (lv == 0) {
+                    /* Full image */
+                    rx = 0; ry = 0; rw = W; rh = H;
+                } else if (!strcmp(mode, "golden")) {
+                    /* Golden ratio spiral */
+                    double angle = i * 2.0 * 3.14159 / phi + lv * 0.7;
+                    double radius = (0.35 - 0.06*lv) * (W < H ? W : H);
+                    double cx = W / phi + radius * cos(angle) * (0.4 + 0.15*i);
+                    double cy = H / phi + radius * sin(angle) * (0.4 + 0.15*i);
+                    rw = (int)(W * (0.6 - 0.1*lv));
+                    rh = (int)(H * (0.6 - 0.1*lv));
+                    rx = (int)(cx - rw/2);
+                    ry = (int)(cy - rh/2);
+                } else if (!strcmp(mode, "mondrian")) {
+                    /* Mondrian: random rectangles, center-biased */
+                    int cx = W/2 + (int)((FRNG() % 60 - 30) * W / 256.0);
+                    int cy = (int)(H*0.42) + (int)((FRNG() % 40 - 20) * H / 256.0);
+                    rw = (int)(W * (0.3 + (FRNG() % 30) / 100.0 - 0.07*lv));
+                    rh = (int)(H * (0.3 + (FRNG() % 30) / 100.0 - 0.07*lv));
+                    rx = cx - rw/2;
+                    ry = cy - rh/2;
+                } else { /* foveal = center-focused */
+                    int cx = W/2 + (i - n/2) * W/12;
+                    int cy = (int)(H*0.42) + (lv - 2) * H/15;
+                    rw = (int)(W * (0.65 - 0.12*lv));
+                    rh = (int)(H * (0.65 - 0.12*lv));
+                    rx = cx - rw/2;
+                    ry = cy - rh/2;
+                }
+
+                /* Clamp and align to block grid */
+                if (rx < 0) rx = 0;
+                if (ry < 0) ry = 0;
+                if (rx + rw > W) rw = W - rx;
+                if (ry + rh > H) rh = H - ry;
+                rw = (rw / block) * block;
+                rh = (rh / block) * block;
+                if (rw < block) rw = block;
+                if (rh < block) rh = block;
+                if (rx + rw > W) rx = W - rw;
+                if (ry + rh > H) ry = H - rh;
+
+                int npx = (rw/block) * (rh/block);
+                int npts = npx * pts_per_pixel;
+
+                segments[num_segments++] = {rx, ry, rw, rh, block, npts, lv};
+            }
         }
+
+    } else if (!strcmp(mode, "hybrid")) {
+        /* ====== Hybrid: foveal center + quadtree background ====== */
+        /* L0: full image (1 seed) */
+        segments[num_segments++] = {0, 0, W, H, 8, (W/8)*(H/8)*pts_per_pixel, 0};
+
+        /* L1: 4 quadrants (grid) + 2 foveal face regions = 6 seeds */
+        for (int qy = 0; qy < 2; qy++)
+            for (int qx = 0; qx < 2; qx++)
+                segments[num_segments++] = {qx*W/2, qy*H/2, W/2, H/2, 4,
+                                            (W/8)*(H/8)*pts_per_pixel/2, 1};
+        /* Face center + eyes region */
+        segments[num_segments++] = {W/4, H/6, W/2, H*2/3, 4, (W/8)*(H/4)*pts_per_pixel, 1};
+        segments[num_segments++] = {W/4, H/5, W/2, H/3, 4, (W/8)*(H/6)*pts_per_pixel, 1};
+
+        /* L2: 16 grid + 4 foveal = 20 seeds */
+        for (int ty = 0; ty < 4; ty++)
+            for (int tx = 0; tx < 4; tx++)
+                segments[num_segments++] = {tx*W/4, ty*H/4, W/4, H/4, 2,
+                                            (W/16)*(H/16)*pts_per_pixel, 2};
+        /* Extra foveal: eyes, nose, mouth */
+        segments[num_segments++] = {W/4, H/4, W/2, H/4, 2, (W/8)*(H/8)*pts_per_pixel, 2};
+        segments[num_segments++] = {W/3, H/3, W/3, H/4, 2, (W/6)*(H/8)*pts_per_pixel, 2};
+        segments[num_segments++] = {W/3, H/2, W/3, H/5, 2, (W/6)*(H/10)*pts_per_pixel, 2};
+        segments[num_segments++] = {W/4, H/6, W/2, H/3, 2, (W/8)*(H/6)*pts_per_pixel, 2};
+
+        /* L3: 64 grid + 8 foveal = 72 seeds */
+        for (int ty = 0; ty < 8; ty++)
+            for (int tx = 0; tx < 8; tx++)
+                segments[num_segments++] = {tx*W/8, ty*H/8, W/8, H/8, 1,
+                                            (W/8)*(H/8)*pts_per_pixel/4, 3};
+        /* Extra foveal detail at 1x1 */
+        unsigned rng2 = (unsigned)foveal_seed;
+        for (int i = 0; i < 8; i++) {
+            rng2 = rng2 * 1103515245 + 12345;
+            int cx = W/3 + (int)(((rng2 >> 16) & 0xFF) * W / 3 / 256);
+            rng2 = rng2 * 1103515245 + 12345;
+            int cy = H/5 + (int)(((rng2 >> 16) & 0xFF) * H * 3 / 5 / 256);
+            int rw = W/6, rh = H/6;
+            int rx = cx - rw/2; if (rx < 0) rx = 0; if (rx+rw>W) rx=W-rw;
+            int ry = cy - rh/2; if (ry < 0) ry = 0; if (ry+rh>H) ry=H-rh;
+            segments[num_segments++] = {rx, ry, rw, rh, 1, rw*rh*pts_per_pixel/3, 3};
+        }
+
+    } else {
+        /* ====== Original quadtree mode ====== */
+
+        /* Level 0: 1 segment = whole image, 8x8 blocks */
+        segments[num_segments++] = {0, 0, W, H, 8, (W/8)*(H/8)*pts_per_pixel, 0};
+
+        /* Level 1: 4 quadrants, 4x4 blocks */
+        for (int qy = 0; qy < 2; qy++)
+            for (int qx = 0; qx < 2; qx++)
+                segments[num_segments++] = {qx*W/2, qy*H/2, W/2, H/2, 4,
+                                            (W/8)*(H/8)*pts_per_pixel/2, 1};
+
+        /* Level 2: 16 tiles (4x4 grid), 2x2 blocks */
+        for (int ty = 0; ty < 4; ty++)
+            for (int tx = 0; tx < 4; tx++)
+                segments[num_segments++] = {tx*W/4, ty*H/4, W/4, H/4, 2,
+                                            (W/16)*(H/16)*pts_per_pixel, 2};
+
+        /* Level 3: 64 tiles (8x8 grid), 1x1 pixels */
+        for (int ty = 0; ty < 8; ty++)
+            for (int tx = 0; tx < 8; tx++)
+                segments[num_segments++] = {tx*W/8, ty*H/8, W/8, H/8, 1,
+                                            (W/8)*(H/8)*pts_per_pixel/4, 3};
+
+        /* Level 4: 256 tiles (16x16 grid), 1x1 pixels, fine correction */
+        for (int ty = 0; ty < 16; ty++)
+            for (int tx = 0; tx < 16; tx++)
+                segments[num_segments++] = {tx*W/16, ty*H/16, W/16, H/16, 1,
+                                            (W/16)*(H/16)*pts_per_pixel/3, 4};
+
+        /* Level 5: 256 more tiles (shifted by half), 1x1, overlap correction */
+        for (int ty = 0; ty < 16; ty++)
+            for (int tx = 0; tx < 16; tx++) {
+                int rx = tx*W/16 + W/32;
+                int ry = ty*H/16 + H/32;
+                int rw = W/16, rh = H/16;
+                if (rx + rw > W) rw = W - rx;
+                if (ry + rh > H) rh = H - ry;
+                if (rw > 0 && rh > 0)
+                    segments[num_segments++] = {rx, ry, rw, rh, 1,
+                                                rw*rh*pts_per_pixel/4, 5};
+            }
+    }
 
     printf("Segments: %d (L0=1, L1=4, L2=16, L3=64)\n", num_segments);
     printf("Data: %d seeds × 2 bytes = %d bytes\n", num_segments, num_segments * 2);
