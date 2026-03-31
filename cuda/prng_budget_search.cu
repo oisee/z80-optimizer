@@ -375,6 +375,7 @@ int main(int argc, char **argv) {
     int   delta_blk   = -1;   /* --delta-blk N: override first delta phase blk */
     int   auto_bounce = 0;    /* --auto-bounce: probe blk=1,2,4 and pick best for L0 */
     const char *weight_map  = NULL; /* --weight-map file.wmap: per-pixel uint8 importance */
+    int   auto_weight = 0;          /* --auto-weight: derive weight from canvas/target diff each step */
 
     /* Multi-zone: up to 8 zones (x,y pairs) */
     int zones_x[8], zones_y[8], n_zones = 0;
@@ -398,6 +399,7 @@ int main(int argc, char **argv) {
         else if(!strcmp(argv[i],"--auto-bounce"))               auto_bounce   = 1;
         else if(!strcmp(argv[i],"--verbose"))                   verbose       = 1;
         else if(!strcmp(argv[i],"--weight-map")   && i+1<argc) weight_map    = argv[++i];
+        else if(!strcmp(argv[i],"--auto-weight"))               auto_weight   = 1;
         else if(!strcmp(argv[i],"--preset")       && i+1<argc) {
             if(!strcmp(argv[++i],"fine")) preset_fine = 1;
         }
@@ -612,6 +614,22 @@ int main(int argc, char **argv) {
 
         for(int si=0; si<phase_budget; si++){
             int warmup = global_step;
+
+            /* --auto-weight: build weight from current canvas diff.
+             * Use 4:1 ratio (wrong:correct).  Much higher ratios cause thrashing:
+             * a seed fixing 1 wrong pixel at cost of breaking 200 correct ones
+             * would look attractive with 255:1 but makes the canvas far worse.
+             * At 4:1, a seed must fix > 25% of the pixels it breaks to be preferred. */
+            if(auto_weight){
+                if(!weight_d_ptr) cudaMalloc(&weight_d_ptr, W*H);
+                for(int y=0;y<H;y++) for(int x=0;x<W;x++){
+                    int bidx=y*(W/8)+x/8, bbit=7-(x%8);
+                    uint8_t cb=(canvas_h[bidx]>>bbit)&1u;
+                    uint8_t tb=(target_bin[bidx]>>bbit)&1u;
+                    weight_h[y*W+x] = (cb != tb) ? 4u : 1u;
+                }
+                cudaMemcpy(weight_d_ptr, weight_h, W*H, cudaMemcpyHostToDevice);
+            }
 
             int baseErr_h[512];
             computeBaseErrors(canvas_h,target_bin,npos,pos_ox_h,pos_oy_h,ph->blk,baseErr_h);
