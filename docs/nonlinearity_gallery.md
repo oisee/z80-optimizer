@@ -47,17 +47,31 @@ Full analysis: [experiment_buffer_nonlinearity.md](experiment_buffer_nonlinearit
 
 L0/L1 → AND-3 (broad strokes) · L2 → AND-4 · passes 1-8 → AND-5 · passes 9-24 → AND-6 · passes 25-74 → AND-7 (pointwise corrections)
 
+### Layer-by-layer progression
+
+| @21 seeds | @149 seeds | @213 seeds |
+|:---------:|:----------:|:----------:|
+| ![s021](result_cas_s021_and4.png) | ![s149](result_cas_s149_and5.png) | ![s213](result_cas_s213.png) |
+| **41.6%** L2-AND4 done | **28.6%** AND5 done | **24.5%** ≡spray budget |
+
+| @405 seeds | @597 seeds | @1205 seeds |
+|:----------:|:----------:|:-----------:|
+| ![s405](result_cas_s405_and6.png) | ![s597](result_cas_s597.png) | ![s1205](result_cas_s1205_and7.png) |
+| **16.2%** AND6 done | **10.1%** ≡quadtree | **1.2%** AND7 done |
+
+### vs AND-7 flat and 2D spray
+
 | AND-7 flat | **Cascade AND-3→7** | 2D spray (reference) |
 |:----------:|:-------------------:|:--------------------:|
 | ![and7](result_and7_buf.png) | ![cascade](result_cascade_buf.png) | ![spray](result_spray_face4x.png) |
-| **4.3%** @1205 | **1.32%** @1205 | ~26.5% @213 |
-| 1131/1205 eff. | 1164/1205 eff. | — |
+| **4.3%** @1205 | **1.2%** @1205 | ~26.5% @213 |
+| 1131/1205 eff. | 1172/1205 eff. | — |
 
 | @seeds | AND-7 flat | **Cascade** | 2D spray |
 |-------:|:----------:|:-----------:|:--------:|
-| 213    | 37.4%      | **24.4%**   | 26.5%    |
-| 597    | 18.6%      | **10.0%**   | 15.0%    |
-| 1205   | 4.3%       | **1.32%**   | —        |
+| 213    | 37.4%      | **24.5%**   | 26.5%    |
+| 597    | 18.6%      | **10.1%**   | 15.0%    |
+| 1205   | 4.3%       | **1.2%**    | —        |
 
 ---
 
