@@ -87,6 +87,7 @@ button.on { background: #1e3a1e; border-color: #4a8a4a; color: #8f8; }
       <div class="stat"><div class="val" id="st-on">0</div><div class="lbl">active</div></div>
       <div class="stat"><div class="val" id="st-and">—</div><div class="lbl">AND-N</div></div>
       <div class="stat"><div class="val" id="st-lbl">—</div><div class="lbl">layer</div></div>
+      <div class="stat" id="st-frame-box" style="display:none"><div class="val" id="st-frame">1/1</div><div class="lbl">frame</div></div>
     </div>
   </div>
 
@@ -110,6 +111,28 @@ button.on { background: #1e3a1e; border-color: #4a8a4a; color: #8f8; }
       speed <span id="spd-lbl">30/s</span>
       <input type="range" id="speed" min="1" max="300" value="30" style="flex:1"
              oninput="stepsPerSec=+this.value;document.getElementById('spd-lbl').textContent=this.value+'/s'">
+    </div>
+    <div id="anim-controls" style="display:flex;align-items:center;gap:6px;margin-top:4px;font-size:10px;color:#555">
+      frame pause <span id="fp-lbl">300ms</span>
+      <input type="range" id="frame-pause" min="0" max="2000" value="300" style="flex:1"
+             oninput="framePauseMs=+this.value;document.getElementById('fp-lbl').textContent=this.value+'ms'">
+    </div>
+  </div>
+
+  <div class="panel">
+    <h3>export GIF</h3>
+    <div style="display:flex;flex-direction:column;gap:5px">
+      <div style="display:flex;gap:5px;align-items:center;font-size:10px;color:#777">
+        FPS <input type="number" id="gif-fps" value="10" min="1" max="60"
+             style="width:38px;background:#111;border:1px solid #333;color:#ccc;padding:2px 4px;font-size:10px">
+        step <input type="number" id="gif-step" value="5" min="1" max="100"
+             style="width:38px;background:#111;border:1px solid #333;color:#ccc;padding:2px 4px;font-size:10px">
+        loop <input type="number" id="gif-loop" value="0" min="0" max="99"
+             style="width:32px;background:#111;border:1px solid #333;color:#ccc;padding:2px 4px;font-size:10px"
+             title="0=infinite">
+      </div>
+      <button onclick="startGifExport()" id="gif-btn">Export GIF</button>
+      <div id="gif-status" style="font-size:9px;color:#555;min-height:12px"></div>
     </div>
   </div>
 
@@ -152,6 +175,7 @@ function applyBuf(pix,buf,ox,oy,blk){
 const W=128, H=96;
 let seeds=[], bufs=[], active=[], pix=new Uint8Array(W*H);
 let cursor=0, snapshots={}, playing=false, stepsPerSec=30;
+let animMode=false, frameStarts=[], framePauseMs=300;
 
 // ── canvas ────────────────────────────────────────────────────────────────────
 const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
@@ -193,15 +217,31 @@ function jumpTo(n){
   cursor=n; updateUI(); redraw();
 }
 function stepBy(d){jumpTo(cursor+d);}
+function jumpToFrame(fi){if(animMode&&fi>=0&&fi<frameStarts.length)jumpTo(frameStarts[fi]);}
 function togglePlay(){
   playing=!playing;
   document.getElementById('btn-play').classList.toggle('on',playing);
   document.getElementById('btn-play').textContent=playing?'⏸':'▶';
   if(playing) tick();
 }
+function currentFrame(){
+  if(!animMode||!frameStarts.length) return -1;
+  let f=0;
+  for(let i=0;i<frameStarts.length;i++) if(cursor>=frameStarts[i]) f=i;
+  return f;
+}
 function tick(){
   if(!playing) return;
   if(cursor>=seeds.length){togglePlay();return;}
+  // In anim mode: when crossing a frame boundary, pause briefly then continue
+  if(animMode && frameStarts.length>1 && cursor>0){
+    const nextFrameIdx=frameStarts.findIndex(s=>s===cursor);
+    if(nextFrameIdx>0){
+      updateUI(); redraw();
+      setTimeout(tick, framePauseMs); // inter-frame pause
+      return;
+    }
+  }
   applyBuf(pix,bufs[cursor],seeds[cursor].ox,seeds[cursor].oy,seeds[cursor].blk);
   active[cursor]=true; cursor++;
   updateUI(); redraw();
@@ -210,7 +250,26 @@ function tick(){
 
 // ── load ──────────────────────────────────────────────────────────────────────
 function loadSeeds(data, presetId){
-  seeds=data.seeds||data;
+  // Handle animation_flat format: normalize short field names
+  animMode = data.type==='animation_flat' || data.type==='animation';
+  frameStarts = animMode ? (data.frame_starts||[]) : [];
+
+  let rawSeeds = [];
+  if(animMode && data.type==='animation_flat'){
+    // flat animation: seeds have {f,s,ox,oy,b,n,w}
+    rawSeeds = (data.seeds||[]).map(r=>({
+      seed:r.s, ox:r.ox, oy:r.oy, blk:r.b, and_n:r.n, warmup:r.w,
+      frame:r.f, label:'F'+r.f+'-AND'+r.n, step:0
+    }));
+  } else if(animMode && data.frames){
+    // nested animation: flatten all frames' seeds
+    rawSeeds=[];
+    for(const fr of data.frames) for(const s of fr.seeds) rawSeeds.push(s);
+  } else {
+    rawSeeds = data.seeds||data;
+  }
+
+  seeds = rawSeeds;
   bufs=seeds.map(r=>makeBuf(r.seed,r.warmup,r.and_n));
   active=new Array(seeds.length).fill(false);
   pix=new Uint8Array(W*H); cursor=0;
@@ -218,9 +277,10 @@ function loadSeeds(data, presetId){
   let s=pix.slice();
   for(let i=0;i<seeds.length;i++){
     applyBuf(s,bufs[i],seeds[i].ox,seeds[i].oy,seeds[i].blk);
-    if((i+1)%50===0||i===seeds.length-1) snapshots[i+1]=s.slice();
+    if((i+1)%100===0||i===seeds.length-1) snapshots[i+1]=s.slice();
   }
   document.getElementById('scrubber').max=seeds.length;
+  document.getElementById('st-frame-box').style.display=animMode?'':'none';
   // mark active preset
   document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
   if(presetId) document.getElementById('pb-'+presetId)?.classList.add('active');
@@ -279,6 +339,10 @@ function updateUI(){
   document.getElementById('st-and').textContent=r?'AND-'+r.and_n:'—';
   document.getElementById('st-lbl').textContent=r?r.label.replace(/L3p\d+-/,''):'—';
   document.getElementById('scrubber').value=cursor;
+  if(animMode && frameStarts.length){
+    const fi=currentFrame();
+    document.getElementById('st-frame').textContent=(fi+1)+'/'+frameStarts.length;
+  }
   updateStats(); updateLevelBtns();
   // seed list scroll
   const prev=document.querySelector('.seed-row.active');
@@ -291,11 +355,21 @@ function updateUI(){
 
 // ── presets ───────────────────────────────────────────────────────────────────
 const PRESETS=[
-  {id:'cascade', label:'Cascade AND-3→7', meta:'1171 seeds · 1.2% @1205',
+  {id:'foveal',  label:'Foveal AND-3→7 ★', meta:'939 seeds · 0.06% @1209 · CUDA 28s',
+   paths:['../data/foveal_cascade_seeds.json','data/foveal_cascade_seeds.json']},
+  {id:'che_anim',label:'Che animation 🎬',  meta:'25 frames · 16,114 seeds · 0.07% avg · delta',
+   paths:['../data/che_anim_flat.json','data/che_anim_flat.json']},
+  {id:'bgt_a',label:'Budget A · KF256/DT128', meta:'10 frames · 1384 seeds · shrink=0.90 · 23%→14%',
+   paths:['../data/budget_conf_a.json','data/budget_conf_a.json']},
+  {id:'bgt_b',label:'Budget B · KF128/DT64',  meta:'10 frames · 704 seeds · shrink=0.70 · vignette',
+   paths:['../data/budget_conf_b.json','data/budget_conf_b.json']},
+  {id:'bgt_c',label:'Budget C · KF512/DT256', meta:'10 frames · 1381 seeds · shrink=0.85 · 14%',
+   paths:['../data/budget_conf_c.json','data/budget_conf_c.json']},
+  {id:'cascade', label:'Cascade AND-3→7',  meta:'1171 seeds · 1.2% @1205',
    paths:['../data/cascade_seeds.json','data/cascade_seeds.json']},
-  {id:'and4',    label:'AND-4 flat',       meta:'~187 seeds · 25% @213',
+  {id:'and4',    label:'AND-4 flat',        meta:'~187 seeds · 25% @213',
    paths:['../data/flat_and4_seeds.json','data/flat_and4_seeds.json']},
-  {id:'and7',    label:'AND-7 flat',       meta:'1131 seeds · 4.3% @1205',
+  {id:'and7',    label:'AND-7 flat',        meta:'1131 seeds · 4.3% @1205',
    paths:['../data/flat_and7_seeds.json','data/flat_and7_seeds.json']},
 ];
 
@@ -338,7 +412,141 @@ dz.addEventListener('drop',e=>{
 });
 
 buildPresets();
-fetchPreset(PRESETS[0]); // auto-load cascade
+fetchPreset(PRESETS[0]); // auto-load foveal
+
+// ── GIF export ────────────────────────────────────────────────────────────────
+// Inline LZW + GIF89a encoder — no external libraries needed.
+
+function lzwEncode(data, minCodeSize) {
+  const clearCode = 1 << minCodeSize;
+  const eoi = clearCode + 1;
+  let codeSize = minCodeSize + 1;
+  let nextCode = eoi + 1;
+  const table = new Map();
+  const bits = []; let buf = 0, nbits = 0;
+
+  const initTable = () => {
+    table.clear();
+    for (let i = 0; i < clearCode; i++) table.set(''+i, i);
+    codeSize = minCodeSize + 1; nextCode = eoi + 1;
+  };
+  const emit = (code) => {
+    buf |= code << nbits; nbits += codeSize;
+    while (nbits >= 8) { bits.push(buf & 0xFF); buf >>= 8; nbits -= 8; }
+  };
+
+  initTable(); emit(clearCode);
+  let prefix = '';
+  for (let i = 0; i < data.length; i++) {
+    const px = data[i];
+    const key = prefix === '' ? ''+px : prefix+','+px;
+    if (table.has(key)) { prefix = key; continue; }
+    emit(table.get(prefix === '' ? ''+px : prefix));
+    table.set(key, nextCode++);
+    prefix = ''+px;
+    if (nextCode > (1 << codeSize) && codeSize < 12) codeSize++;
+    if (nextCode > 4094) { emit(clearCode); initTable(); }
+  }
+  if (prefix !== '') emit(table.get(prefix));
+  emit(eoi);
+  if (nbits > 0) bits.push(buf & 0xFF);
+  return bits;
+}
+
+function buildGIF(frames, delayCs, loopCount) {
+  // frames: array of Uint8Array(W*H) with values 0|1
+  // delayCs: delay in centiseconds per frame
+  const b = [];
+  const u16le = (v) => [v & 0xFF, v >> 8];
+  const push = (v) => b.push(v);
+  const seq = (arr) => arr.forEach(v => b.push(v));
+
+  // Header + Logical Screen Descriptor
+  seq([0x47,0x49,0x46,0x38,0x39,0x61]); // GIF89a
+  seq(u16le(W)); seq(u16le(H));
+  push(0x80); push(0); push(0); // GCT flag, bg=0, aspect=0
+  // Global Color Table: index 0 = black, index 1 = white
+  seq([0,0,0, 255,255,255]);
+
+  // Netscape loop extension
+  seq([0x21,0xFF,0x0B]);
+  seq([78,69,84,83,67,65,80,69,50,46,48]); // NETSCAPE2.0
+  push(3); push(1); seq(u16le(loopCount)); push(0);
+
+  for (const frame of frames) {
+    // Graphic Control Extension
+    seq([0x21,0xF9,0x04, 0x00]); seq(u16le(delayCs)); push(0); push(0);
+    // Image Descriptor
+    push(0x2C); seq(u16le(0)); seq(u16le(0)); seq(u16le(W)); seq(u16le(H)); push(0);
+    // Image Data (LZW min code size = 2 for 2-color GIF)
+    const lzw = lzwEncode(frame, 2);
+    push(2); // minimum code size
+    for (let i = 0; i < lzw.length; ) {
+      const chunk = Math.min(255, lzw.length - i);
+      push(chunk);
+      for (let j = 0; j < chunk; j++) push(lzw[i++]);
+    }
+    push(0); // block terminator
+  }
+  push(0x3B); // GIF trailer
+  return new Uint8Array(b);
+}
+
+function captureFrame(inv) {
+  const f = new Uint8Array(W * H);
+  for (let i = 0; i < W*H; i++) f[i] = inv ? 1 - pix[i] : pix[i];
+  return f;
+}
+
+async function startGifExport() {
+  if (!seeds.length) { alert('Load a preset first'); return; }
+  const fps    = Math.max(1, Math.min(60, +document.getElementById('gif-fps').value  || 10));
+  const step   = Math.max(1, Math.min(100,+document.getElementById('gif-step').value || 5));
+  const loop   = Math.max(0, +document.getElementById('gif-loop').value || 0);
+  const inv    = document.getElementById('chk-inv').checked;
+  const delayCs = Math.round(100 / fps);
+  const status = document.getElementById('gif-status');
+  const btn = document.getElementById('gif-btn');
+
+  btn.disabled = true;
+  const frames = [];
+  const savedCursor = cursor;
+
+  // Frame 0: blank canvas
+  const blank = new Uint8Array(W * H);
+  frames.push(inv ? blank.map(v => 1 - v) : blank.slice());
+
+  // Step through seeds
+  let s = new Uint8Array(W * H);
+  for (let i = 0; i < seeds.length; i++) {
+    applyBuf(s, bufs[i], seeds[i].ox, seeds[i].oy, seeds[i].blk);
+    if ((i + 1) % step === 0 || i === seeds.length - 1) {
+      const f = new Uint8Array(W * H);
+      for (let j = 0; j < W*H; j++) f[j] = inv ? 1 - s[j] : s[j];
+      frames.push(f);
+      if (frames.length % 10 === 0) {
+        status.textContent = `encoding… ${i+1}/${seeds.length} steps, ${frames.length} frames`;
+        await new Promise(r => setTimeout(r, 0)); // yield to UI
+      }
+    }
+  }
+
+  // Restore display
+  jumpTo(savedCursor);
+
+  status.textContent = `building GIF (${frames.length} frames)…`;
+  await new Promise(r => setTimeout(r, 0));
+
+  const gif = buildGIF(frames, delayCs, loop);
+  const blob = new Blob([gif], { type: 'image/gif' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url; a.download = 'cascade_animation.gif'; a.click();
+  URL.revokeObjectURL(url);
+
+  status.textContent = `done: ${frames.length} frames, ${(gif.length/1024).toFixed(0)} KB`;
+  btn.disabled = false;
+}
 </script>
 </body>
 </html>
