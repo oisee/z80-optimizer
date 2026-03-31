@@ -181,6 +181,10 @@ def main():
     ap.add_argument('--gpu',         type=int, default=0,   help='GPU device ID (default 0)')
     ap.add_argument('--auto-bounce', action='store_true',   help='Auto-pick blk for delta L0')
     ap.add_argument('--cp',          action='store_true',   help='Use carrier-payload (CP) mode for delta frames')
+    ap.add_argument('--cp-seeds',    type=int, default=255, help='Carrier seed budget: 255=u8 (fast), 65535=u16 (thorough)')
+    ap.add_argument('--cp-andN-lo',  type=int, default=3,   help='Carrier AND-N range low (default 3)')
+    ap.add_argument('--cp-andN-hi',  type=int, default=8,   help='Carrier AND-N range high (default 8)')
+    ap.add_argument('--cp-andN',     type=int, default=None,help='Fix carrier AND-N to single value (overrides lo/hi)')
     ap.add_argument('--shrink',      type=float, default=-1,help='Area shrink per KF phase (default 0.90)')
     ap.add_argument('--kf-every',    type=int, default=0,   help='Insert keyframe every N frames (0=off)')
     ap.add_argument('--kf-error',    type=float, default=0, help='Insert keyframe when delta error > X%% (0=off)')
@@ -235,6 +239,15 @@ def main():
         extra_args += ['--shrink', str(args.shrink)]
     if args.cp:
         extra_args += ['--cp']
+        if args.cp_seeds != 255:
+            extra_args += ['--cp-seeds', str(args.cp_seeds)]
+        if args.cp_andN is not None:
+            extra_args += ['--cp-andN', str(args.cp_andN)]
+        else:
+            if args.cp_andN_lo != 3:
+                extra_args += ['--cp-andN-lo', str(args.cp_andN_lo)]
+            if args.cp_andN_hi != 8:
+                extra_args += ['--cp-andN-hi', str(args.cp_andN_hi)]
 
     seed_jsons  = []
     frame_types = []

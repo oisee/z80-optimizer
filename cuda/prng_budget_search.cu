@@ -326,9 +326,10 @@ static PhaseConfig dt_phases[] = {
 static int ndt_phases = 5;
 
 /* ====================================================================
- * CP MODE: Carrier-Payload hierarchical search (CPU-only, u8 budget)
+ * CP MODE: Carrier-Payload hierarchical search (CPU-only)
  *
- * Carrier:  blk=8 at (0,0), seeds 1-255 × andN 3-8  → identifies hot zones
+ * Carrier:  blk=8 at (0,0), seeds 1-N × andN lo-hi  → identifies hot zones
+ *           N=255 (u8, fast) or N=65535 (u16, thorough, ~1s per frame)
  * Payload4: blk=4 at all valid positions, seeds 1-255 × andN 3-6
  * Payload2: blk=2 at all valid positions, seeds 1-255 × andN 4-6
  * Payload1: blk=1 at all valid positions, seeds 1-255 × andN 5-7
@@ -338,6 +339,9 @@ static int ndt_phases = 5;
  * Usage:
  *   ./cuda/prng_budget_search --cp --target frame.pgm [--init-canvas prev.pgm]
  *                             --out result.json --out-pgm result.pgm
+ *                             [--cp-seeds 65535]   # full u16 carrier search
+ *                             [--cp-andN-lo 4]     # carrier andN range
+ *                             [--cp-andN-hi 6]
  * ==================================================================== */
 
 /* CPU LFSR-16 (device version is __device__ __host__, use it directly) */
@@ -403,8 +407,68 @@ static int scoreBuf_h(const uint8_t canvas[W*H], const uint8_t target[W*H],
 
 typedef struct { uint16_t seed; int ox, oy, blk, andN; } CPPayload;
 
+/* GPU carrier search: blk=8 at (0,0), all 65535 seeds × andN lo-hi.
+ * Reuses searchKernel — each launch tries one andN value.
+ * Returns best delta (negative = improvement), sets *out_seed and *out_andN.
+ */
+static int cp_carrier_gpu(const uint8_t *cnv_pack, const uint8_t *tgt_pack,
+                            int gpu_id, int andN_lo, int andN_hi,
+                            uint16_t *out_seed, int *out_andN) {
+    cudaSetDevice(gpu_id);
+
+    uint8_t *canvas_d, *target_d;
+    int     *ox_d, *oy_d, *dummy_base_d;
+    uint16_t*seed_d; int *pos_d, *err_d;
+
+    cudaMalloc(&canvas_d,     PS);
+    cudaMalloc(&target_d,     PS);
+    cudaMemcpy(canvas_d, cnv_pack, PS, cudaMemcpyHostToDevice);
+    cudaMemcpy(target_d, tgt_pack, PS, cudaMemcpyHostToDevice);
+
+    int zero = 0;
+    cudaMalloc(&ox_d,          sizeof(int)); cudaMemset(ox_d, 0, sizeof(int));
+    cudaMalloc(&oy_d,          sizeof(int)); cudaMemset(oy_d, 0, sizeof(int));
+    cudaMalloc(&dummy_base_d,  sizeof(int)); cudaMemcpy(dummy_base_d, &zero, sizeof(int), cudaMemcpyHostToDevice);
+    cudaMalloc(&seed_d, NSEEDS * sizeof(uint16_t));
+    cudaMalloc(&pos_d,  NSEEDS * sizeof(int));
+    cudaMalloc(&err_d,  NSEEDS * sizeof(int));
+
+    int *err_h = (int*)malloc(NSEEDS * sizeof(int));
+
+    int bs = 256, gs = (NSEEDS + bs - 1) / bs;
+    int best_delta = INT_MAX; uint16_t best_seed = 1; int best_andN = andN_lo;
+
+    for (int andN = andN_lo; andN <= andN_hi; andN++) {
+        searchKernel<<<gs, bs>>>(canvas_d, target_d, dummy_base_d,
+                                  ox_d, oy_d, 1, 8, andN, 0,
+                                  seed_d, pos_d, err_d, NULL);
+        cudaDeviceSynchronize();
+        cudaMemcpy(err_h, err_d, NSEEDS * sizeof(int), cudaMemcpyDeviceToHost);
+        /* Retrieve seeds in blocks to find the best */
+        uint16_t seed_val = 1;
+        for (int s = 0; s < NSEEDS; s++) {
+            if (err_h[s] < best_delta) {
+                best_delta = err_h[s]; best_seed = (uint16_t)(s + 1); best_andN = andN;
+            }
+        }
+        (void)seed_val;
+    }
+
+    free(err_h);
+    cudaFree(canvas_d); cudaFree(target_d);
+    cudaFree(ox_d); cudaFree(oy_d); cudaFree(dummy_base_d);
+    cudaFree(seed_d); cudaFree(pos_d); cudaFree(err_d);
+
+    *out_seed = best_seed; *out_andN = best_andN;
+    return best_delta;
+}
+
 int cp_search(const char *target_path, const char *init_canvas_path,
-              const char *out_json, const char *out_pgm) {
+              const char *out_json, const char *out_pgm,
+              int carrier_seeds,   /* max seed value for carrier (255=u8 CPU, 65535=u16 GPU) */
+              int andN_lo,         /* carrier andN search range low  (default 3) */
+              int andN_hi,         /* carrier andN search range high (default 8) */
+              int gpu_id) {        /* GPU device for carrier_seeds > 255 */
 
     uint8_t tgt_pack[PS], cnv_pack[PS];
     int tw, th;
@@ -423,36 +487,48 @@ int cp_search(const char *target_path, const char *init_canvas_path,
 
     int base_err = 0;
     for (int i = 0; i < W*H; i++) base_err += (canvas[i] != target_px[i]);
-    printf("CP mode | target=%s | base err=%d (%.2f%%)\n",
-           target_path, base_err, 100.0f*base_err/(W*H));
+    printf("CP mode | target=%s | base err=%d (%.2f%%) | carrier seeds=1..%d andN=%d..%d\n",
+           target_path, base_err, 100.0f*base_err/(W*H), carrier_seeds, andN_lo, andN_hi);
 
-    /* ── Phase 1: Carrier (blk=8, andN 3-8, seeds 1-255) ───────────────── */
+    /* ── Phase 1: Carrier (blk=8, andN lo-hi) ──────────────────────────── */
     uint8_t carrier_buf[BUF_N], tmp_buf[BUF_N];
-    uint16_t cs = 1; int can = 5, c_score = INT_MAX;
+    uint16_t cs = 1; int can = andN_lo, c_score = INT_MAX;
 
-    for (int andN = 3; andN <= 8; andN++) {
-        for (int s = 1; s <= 255; s++) {
-            makeBuf_h((uint16_t)s, 0, andN, tmp_buf);
-            /* Score carrier: only 16×12 valid blocks (blk=8 at ox=0,oy=0) */
-            int d = 0;
-            for (int by = 0; by < 12; by++) for (int bx = 0; bx < 16; bx++) {
-                if (!tmp_buf[by*32+bx]) continue;
-                for (int dy = 0; dy < 8; dy++) for (int dx = 0; dx < 8; dx++) {
-                    int x = bx*8+dx, y = by*8+dy;
-                    d += (canvas[y*W+x] != target_px[y*W+x]) ? -1 : +1;
+    if (carrier_seeds > 255) {
+        /* GPU: full u16 search (65535 seeds × each andN, one kernel launch per andN) */
+        printf("[carrier] GPU search seeds=1..%d andN=%d..%d ...\n",
+               carrier_seeds, andN_lo, andN_hi);
+        cudaSetDevice(gpu_id);
+        cudaDeviceProp prop; cudaGetDeviceProperties(&prop, gpu_id);
+        printf("[carrier] GPU %d: %s\n", gpu_id, prop.name);
+        c_score = cp_carrier_gpu(cnv_pack, tgt_pack, gpu_id, andN_lo, andN_hi, &cs, &can);
+        makeBuf_h(cs, 0, can, carrier_buf);
+    } else {
+        /* CPU: u8 search (1..carrier_seeds × each andN) */
+        for (int andN = andN_lo; andN <= andN_hi; andN++) {
+            for (int s = 1; s <= carrier_seeds; s++) {
+                makeBuf_h((uint16_t)s, 0, andN, tmp_buf);
+                int d = 0;
+                for (int by = 0; by < 12; by++) for (int bx = 0; bx < 16; bx++) {
+                    if (!tmp_buf[by*32+bx]) continue;
+                    for (int dy = 0; dy < 8; dy++) for (int dx = 0; dx < 8; dx++) {
+                        int x = bx*8+dx, y = by*8+dy;
+                        d += (canvas[y*W+x] != target_px[y*W+x]) ? -1 : +1;
+                    }
                 }
-            }
-            if (d < c_score) {
-                c_score = d; cs = (uint16_t)s; can = andN;
-                memcpy(carrier_buf, tmp_buf, BUF_N);
+                if (d < c_score) {
+                    c_score = d; cs = (uint16_t)s; can = andN;
+                    memcpy(carrier_buf, tmp_buf, BUF_N);
+                }
             }
         }
     }
 
     int n_active = 0;
     for (int i = 0; i < BUF_N; i++) n_active += carrier_buf[i];
-    printf("[carrier] seed=%u andN=%d score=%+d active=%d/192 (%.1f%%)\n",
-           cs, can, c_score, n_active, 100.0f*n_active/192);
+    printf("[carrier] seed=%u andN=%d score=%+d active=%d/192 (%.1f%%) [%s]\n",
+           cs, can, c_score, n_active, 100.0f*n_active/192,
+           carrier_seeds > 255 ? "GPU u16" : "CPU u8");
 
     applyBuf_h(canvas, carrier_buf, 0, 0, 8, NULL);
 
@@ -577,7 +653,10 @@ int main(int argc, char **argv) {
     int   auto_bounce = 0;    /* --auto-bounce: probe blk=1,2,4 and pick best for L0 */
     const char *weight_map  = NULL; /* --weight-map file.wmap: per-pixel uint8 importance */
     int   auto_weight = 0;          /* --auto-weight: derive weight from canvas/target diff each step */
-    int   mode_cp     = 0;          /* --cp: carrier-payload hierarchical search (CPU, u8 budget) */
+    int   mode_cp         = 0;      /* --cp: carrier-payload hierarchical search */
+    int   cp_carrier_seeds = 255;   /* --cp-seeds N: carrier search range 1..N (255=u8, 65535=u16) */
+    int   cp_andN_lo      = 3;      /* --cp-andN-lo N: carrier andN range low  */
+    int   cp_andN_hi      = 8;      /* --cp-andN-hi N: carrier andN range high */
 
     /* Multi-zone: up to 8 zones (x,y pairs) */
     int zones_x[8], zones_y[8], n_zones = 0;
@@ -603,6 +682,10 @@ int main(int argc, char **argv) {
         else if(!strcmp(argv[i],"--weight-map")   && i+1<argc) weight_map    = argv[++i];
         else if(!strcmp(argv[i],"--auto-weight"))               auto_weight   = 1;
         else if(!strcmp(argv[i],"--cp"))                        mode_cp       = 1;
+        else if(!strcmp(argv[i],"--cp-seeds")  && i+1<argc) cp_carrier_seeds = atoi(argv[++i]);
+        else if(!strcmp(argv[i],"--cp-andN-lo")&& i+1<argc) cp_andN_lo       = atoi(argv[++i]);
+        else if(!strcmp(argv[i],"--cp-andN-hi")&& i+1<argc) cp_andN_hi       = atoi(argv[++i]);
+        else if(!strcmp(argv[i],"--cp-andN")   && i+1<argc) { cp_andN_lo = cp_andN_hi = atoi(argv[++i]); }
         else if(!strcmp(argv[i],"--preset")       && i+1<argc) {
             if(!strcmp(argv[++i],"fine")) preset_fine = 1;
         }
@@ -669,7 +752,8 @@ int main(int argc, char **argv) {
     if(!target_path) { fprintf(stderr,"--target required\n"); return 1; }
 
     /* CP mode: CPU-only, no GPU needed */
-    if(mode_cp) return cp_search(target_path, init_canvas, out_json, out_pgm);
+    if(mode_cp) return cp_search(target_path, init_canvas, out_json, out_pgm,
+                                 cp_carrier_seeds, cp_andN_lo, cp_andN_hi, gpu_id);
 
     cudaSetDevice(gpu_id);
     cudaDeviceProp prop; cudaGetDeviceProperties(&prop,gpu_id);
