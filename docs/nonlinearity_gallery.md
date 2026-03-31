@@ -43,19 +43,23 @@ Full analysis: [experiment_buffer_nonlinearity.md](experiment_buffer_nonlinearit
 
 ## Nonlinearity Ladder
 
-| Method | P(flip) | Degree | Eff.seeds @213 | L_bin @213 | Converges? |
-|--------|:-------:|:------:|:--------------:|:----------:|:----------:|
-| Linear (1 bit) | 0.500 | 1 | 21 | 42.2% | ✗ oscillates |
-| Majority-3 | 0.500 | 3 | 15 | 39.1% | ✗ plateau |
-| 1D spray (N=576, LFSR-16) | ≈0.39 | 576† | 26 | 40.2% | ✗ plateau |
-| OR-4 | 0.9375 | 4 | 7 | 30.5% | ✗ plateau |
-| AND-2 | 0.250 | 2 | 58 | 36.3% | ✗ plateau |
-| AND-3 | 0.125 | 3 | 138 | 29.2% | ✗ plateau |
-| **AND-4** | **0.0625** | **4** | **187** | **25.18%** | **✓ beats spray!** |
-| **2D spray (LFSR-32)** | ≈0.39 | N+‡ | **213+** | **26.5%** | **✓ monotone** |
+| Method | P(flip) | @213 | @426 | @597 | @1205 | eff/1205 |
+|--------|:-------:|:----:|:----:|:----:|:-----:|:--------:|
+| Linear (1 bit) | 0.500 | 42.2% ✗ | — | — | — | 21 |
+| Majority-3 | 0.500 | 39.1% ✗ | — | — | — | 15 |
+| 1D spray (N=576) | ≈0.39 | 40.2% ✗ | — | — | — | 26 |
+| OR-4 | 0.9375 | 30.5% ✗ | — | — | — | 7 |
+| AND-2 | 0.250 | 36.3% | — | — | — | 58 |
+| AND-3 | 0.125 | 29.2% | — | — | — | 138 |
+| AND-4 | 0.0625 | **25.18%** ★ | — | 22.1% | — | 187 |
+| AND-5 | 0.03125 | 26.5% | 17.4% | **14.8%** | 14.1% | 561 |
+| AND-6 | 0.015625 | 31.3% | 19.3% | 13.3% | **5.6%** | 1003 |
+| AND-7 | 0.0078125 | 37.4% | 25.7% | 18.6% | **4.3%** | 1131 |
+| **2D spray (LFSR-32)** | ≈0.39 | **26.5%** | — | **15.0%** | — | 213+ |
 
-† correlated: 576 consecutive LFSR-16 steps, limited diversity
-‡ near-independent (x,y) from different bit-slices of 32-bit state
+✗ = plateau/oscillates. ★ = first to beat 2D spray at equal budget.
+
+† 1D spray: 576 consecutive LFSR-16 steps, autocorrelated
 
 ---
 
@@ -69,18 +73,29 @@ Full analysis: [experiment_buffer_nonlinearity.md](experiment_buffer_nonlinearit
 - **AND-3** (P=0.125): 138 seeds → 29.2%. Continuing improvement.
 - **AND-4** (P=0.0625): 187 seeds → **25.18% — beats 2D spray at same 213-seed budget**.
 
-### AND-4 @ 597 seeds: 22.11%
-Running longer (597 seeds) further improves to 22.11%, well below the 2D spray plateau.
+### AND-4: fast start, first to beat spray at 213 seeds
+P=0.0625 gives enough sparsity to accumulate 187 effective seeds in 213 tries (88%).
+Beats 2D spray (26.5%) at the same budget: **25.18%**.
+
+### AND-5: matches spray speed, then overtakes
+At 213 seeds: 26.46% — tied with 2D spray. By 597: **14.8%** beats spray quadtree (15.0%).
+Saturates around 14.1% at 1205 seeds (only 561 effective — patterns still too correlated).
+
+### AND-6/AND-7: slow start, exceptional finish
+AND-6 and AND-7 lag early (31%/37% at 213) but have near-zero saturation:
+- AND-6 @ 1205: **5.6%** (1003/1205 effective seeds = 83%)
+- AND-7 @ 1205: **4.3%** (1131/1205 effective seeds = 94%)
+
+The face is clearly recognisable at AND-7 with 1205 seeds.
 
 ### Why AND-N works
-Each AND-4 pattern fires only 1/16 of blocks (P=0.0625), so patterns are highly distinct.
-With P=0.5 patterns: XOR of any two ≈ cancels → effective seed count saturates early.
-With P=0.0625: patterns rarely overlap → all 213 seeds contribute independently.
+Sparser patterns (lower P) → less mutual cancellation → more seeds contribute before plateau.
+With P=0.5: XOR of any two patterns ≈ another pattern → saturates at ~20 seeds.
+With P=0.0078 (AND-7): patterns almost never overlap → 94% of seeds are effective.
 
-### Why 2D spray beats AND-2/AND-3 at same budget
-2D spray (LFSR-32) has near-independent (x,y) coordinates from different 32-bit slices,
-giving high-degree polynomial patterns with no autocorrelation. But AND-4 from LFSR-16
-achieves the same sparsity mechanically, trading independence for controlled P(flip).
+### The LFSR-16 linearity proof still holds
+All 65535 LFSR-16 patterns form a linear [768,16] code in GF(2). The AND nonlinearity
+operates *after* — it maps the linear code to a nonlinear family with controlled sparsity.
 
 ### The LFSR-16 linearity proof still holds
 All 65535 LFSR-16 patterns form a linear [768,16] code in GF(2). The AND nonlinearity
