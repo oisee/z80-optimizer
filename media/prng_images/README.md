@@ -177,6 +177,77 @@ nvcc -O3 -o cuda/prng_segmented_search cuda/prng_segmented_search.cu
 ./cuda/prng_segmented_search --target targets/einstein.pgm --canvas prev/canvas.pgm --mode quadtree --output morph/
 ```
 
+---
+
+## Convert Your Video → AND-cascade Animation
+
+Turn any MP4 into a playable LFSR-16 animation for `docs/renderer.html`.
+
+**Requirements:** CUDA GPU + `nvcc` + `ffmpeg` + `python3 opencv-python`
+
+### Build once
+
+```bash
+nvcc -O3 -o cuda/prng_budget_search cuda/prng_budget_search.cu -lm
+```
+
+### Quick encode
+
+```bash
+python3 cuda/encode_anim.py \
+  --input /path/to/video.mp4 \
+  --out data/my_anim.json \
+  --budget 256 --kf-budget 512 \
+  --every 3 \
+  --name "My video"
+```
+
+Play: open `docs/renderer.html`, click the preset or drag-drop `my_anim.json`.
+
+### What content works best
+
+| Works great | Struggles |
+|-------------|-----------|
+| Sparse bright on black (fire, stars, lines) | Dense full-frame content (Bad Apple) |
+| Slow/subtle motion — portraits, faces | Fast cuts, camera shake |
+| High-contrast silhouettes | Grayscale gradients |
+| <10% pixels lit per frame | >30% pixels lit per frame |
+
+### Key parameters
+
+| Flag | Default | Use when |
+|------|---------|----------|
+| `--budget N` | 128 | Seeds per delta frame. 64=fast/lossy, 256=good, 600=near-perfect |
+| `--kf-budget N` | 2×budget | Seeds for keyframe (first frame or after reset) |
+| `--every N` | 5 | Take every Nth source frame. 2=smooth, 6=choppy but fast |
+| `--kf-every N` | 0 (off) | Insert keyframe every N frames — prevents error drift on long videos |
+| `--kf-error X` | 0 (off) | Insert keyframe when delta error exceeds X% (e.g. `20.0`). Don't combine with `--kf-every` on dense content — can cascade |
+| `--weighted` | off | Face/edge priority via OpenCV heatmap. Helps at budget ≤128 |
+| `--gpu N` | 0 | GPU device index |
+
+### Typical recipes
+
+```bash
+# Living portrait (face video, 5-30s, best quality)
+python3 cuda/encode_anim.py --input face.mp4 --out data/portrait.json \
+  --budget 512 --kf-budget 1024 --every 2 --weighted
+
+# Short loop (15-60s, balanced)
+python3 cuda/encode_anim.py --input clip.mp4 --out data/clip.json \
+  --budget 256 --kf-budget 512 --every 3 --kf-every 60
+
+# Long video (>1 min, streaming quality)
+python3 cuda/encode_anim.py --input long.mp4 --out data/long.json \
+  --budget 64 --kf-budget 256 --every 6 --kf-every 100
+```
+
+### Encoding speed
+
+~2–4 seconds per frame on RTX 4060 Ti (independent of `--budget`).
+100 frames ≈ 4 min · 500 frames ≈ 20 min · 1643 frames ≈ 60 min
+
+---
+
 ## Inspired By
 
 - **Introspec** — [BB](https://www.pouet.net/prod.php?which=63074) ZX 256b, 1st Multimatograf 2014

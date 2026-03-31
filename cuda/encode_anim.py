@@ -251,8 +251,13 @@ def main():
             gpu=args.gpu, auto_bounce=args.auto_bounce,
             extra_args=extra_args)
 
-        # Adaptive keyframe: re-encode as kf if error too high
-        if not is_kf and args.kf_error > 0 and error is not None and error > args.kf_error:
+        # Adaptive keyframe: re-encode as kf if error too high.
+        # Guard: only trigger once per scene — if previous frame was already
+        # a kf and still bad, the scene is just dense; don't cascade.
+        prev_was_kf = len(frame_types) > 0 and frame_types[-1] == 'kf'
+        if (not is_kf and args.kf_error > 0
+                and error is not None and error > args.kf_error
+                and not prev_was_kf):
             note = f're-kf (err={error:.1f}%)'
             is_kf = True
             budget = kf_budget
