@@ -256,10 +256,17 @@ function loadSeeds(data, presetId){
 
   let rawSeeds = [];
   if(animMode && data.type==='animation_flat'){
-    // flat animation: seeds have {f,s,ox,oy,b,n,w}
+    // flat animation: seeds may have short {f,s,ox,oy,b,n,w} or long {seed,ox,oy,blk,and_n,warmup}
     rawSeeds = (data.seeds||[]).map(r=>({
-      seed:r.s, ox:r.ox, oy:r.oy, blk:r.b, and_n:r.n, warmup:r.w,
-      frame:r.f, label:'F'+r.f+'-AND'+r.n, step:0
+      seed:  r.seed ?? r.s,
+      ox:    r.ox,
+      oy:    r.oy,
+      blk:   r.blk ?? r.b,
+      and_n: r.and_n ?? r.n,
+      warmup:r.warmup ?? r.w ?? 0,
+      frame: r.f ?? 0,
+      label: r.label || ('F'+(r.f??0)+'-AND'+(r.and_n??r.n)),
+      step:  r.step ?? 0
     }));
   } else if(animMode && data.frames){
     // nested animation: flatten all frames' seeds
