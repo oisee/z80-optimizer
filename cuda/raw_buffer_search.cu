@@ -34,12 +34,12 @@ __device__ void lfsr_fill(uint16_t seed, uint8_t* buf, int warmup) {
 }
 
 /* Apply buffer: XOR solid blocks onto packed canvas */
-__device__ void apply_buffer(uint8_t* canvas, const uint8_t* buf, int block_size) {
+__device__ void apply_buffer(uint8_t* canvas, const uint8_t* buf, int block_size, int ox=0, int oy=0) {
     for (int by = 0; by < BH; by++) {
         for (int bx = 0; bx < BW; bx++) {
             if (buf[by * BW + bx]) {
-                int px = bx * block_size;
-                int py = by * block_size;
+                int px = ox + bx * block_size;
+                int py = oy + by * block_size;
                 for (int dy = 0; dy < block_size && (py+dy) < H; dy++) {
                     for (int dx = 0; dx < block_size && (px+dx) < W; dx++) {
                         int x = px + dx, y = py + dy;
@@ -120,8 +120,9 @@ __global__ void joint2_raw_kernel(
 __global__ void greedy_raw_kernel(
     const uint8_t* __restrict__ base_canvas,
     const uint8_t* __restrict__ target_gray,
+    const uint8_t* __restrict__ target_bin,
     uint32_t* __restrict__ errors,
-    int blk, int warmup
+    int blk, int warmup, int ox, int oy
 ) {
     int seed = blockIdx.x * blockDim.x + threadIdx.x;
     if (seed >= 65536) return;
@@ -131,9 +132,13 @@ __global__ void greedy_raw_kernel(
 
     uint8_t buf[BUFSIZE];
     lfsr_fill((uint16_t)seed, buf, warmup);
-    apply_buffer(canvas, buf, blk);
+    apply_buffer(canvas, buf, blk, ox, oy);
 
-    errors[seed] = grayscale_loss(canvas, target_gray);
+    {
+        uint32_t berr = 0;
+        for (int i = 0; i < PACKED_SIZE; i++) berr += __builtin_popcount(canvas[i] ^ d_target_bin[i]);
+        errors[seed] = berr;
+    }
 }
 
 /* I/O */
@@ -203,12 +208,14 @@ int main(int argc, char** argv) {
     uint8_t h_target_gray[H/2 * W/2];
     make_grayscale_target(h_target, h_target_gray);
 
-    uint8_t *d_canvas, *d_target_gray;
+    uint8_t *d_canvas, *d_target_gray, *d_target_bin;
     uint32_t *d_errors, *d_best_err;
     uint16_t *d_best_seedB;
 
     cudaMalloc(&d_canvas, PACKED_SIZE);
     cudaMalloc(&d_target_gray, H/2 * W/2);
+    cudaMalloc(&d_target_bin, PACKED_SIZE);
+    cudaMemcpy(d_target_bin, h_target, PACKED_SIZE, cudaMemcpyHostToDevice);
     cudaMalloc(&d_errors, 65536 * sizeof(uint32_t));
     cudaMalloc(&d_best_err, 65536 * sizeof(uint32_t));
     cudaMalloc(&d_best_seedB, 65536 * sizeof(uint16_t));
@@ -221,15 +228,32 @@ int main(int argc, char** argv) {
     clock_gettime(CLOCK_MONOTONIC, &t0);
 
     if (mode == 0) {
-        /* Greedy 4-layer: L0(8), L1(4), L2(2), L3(1) */
-        int blks[] = {8, 4, 2, 1};
-        uint16_t seeds[4];
+        /* Quadtree: 1×8×8 + 4×4×4 + 16×2×2 + 64×1×1 = 85 seeds */
+        struct Seg { int ox, oy, blk, warmup; };
+        Seg segs[85];
+        int ns = 0;
+        /* L0 */
+        segs[ns++] = {0, 0, 8, 0};
+        /* L1: 4 quadrants */
+        for (int qy=0;qy<2;qy++) for(int qx=0;qx<2;qx++)
+            segs[ns++] = {qx*64, qy*48, 4, 10+qy*2+qx};
+        /* L2: 16 tiles */
+        for (int ty=0;ty<4;ty++) for(int tx=0;tx<4;tx++)
+            segs[ns++] = {tx*32, ty*24, 2, 20+ty*4+tx};
+        /* L3: 64 tiles */
+        for (int ty=0;ty<8;ty++) for(int tx=0;tx<8;tx++)
+            segs[ns++] = {tx*16, ty*12, 1, 40+ty*8+tx};
         
-        for (int layer = 0; layer < 4; layer++) {
+        printf("Quadtree: %d segments\n", ns);
+        uint16_t all_seeds[85];
+        
+        for (int layer = 0; layer < ns; layer++) {
+            int blk = segs[layer].blk;
+            int blks[] = {blk}; /* dummy for compat */
             cudaMemcpy(d_canvas, h_canvas, PACKED_SIZE, cudaMemcpyHostToDevice);
             
             uint32_t h_errors[65536];
-            greedy_raw_kernel<<<256, 256>>>(d_canvas, d_target_gray, d_errors, blks[layer], 4 + layer);
+            greedy_raw_kernel<<<256, 256>>>(d_canvas, d_target_gray, d_target_bin, d_errors, segs[layer].blk, segs[layer].warmup, segs[layer].ox, segs[layer].oy);
             cudaDeviceSynchronize();
             cudaMemcpy(h_errors, d_errors, 65536*sizeof(uint32_t), cudaMemcpyDeviceToHost);
 
@@ -237,19 +261,20 @@ int main(int argc, char** argv) {
             for (int s = 0; s < 65536; s++)
                 if (h_errors[s] < best) { best = h_errors[s]; best_s = s; }
 
-            seeds[layer] = best_s;
+            all_seeds[layer] = best_s;
 
             /* Apply to host canvas */
             uint8_t buf[BUFSIZE];
             uint16_t state = best_s; if (!state) state = 1;
-            for (int i = 0; i < 4+layer; i++) { uint16_t b=state&1;state>>=1;if(b)state^=0xB400; }
+            for (int i = 0; i < segs[layer].warmup; i++) { uint16_t b=state&1;state>>=1;if(b)state^=0xB400; }
             for (int i = 0; i < BUFSIZE; i++) { uint16_t b=state&1;state>>=1;if(b)state^=0xB400;buf[i]=state&1; }
+            int sblk=segs[layer].blk, sox=segs[layer].ox, soy=segs[layer].oy;
             for (int by = 0; by < BH; by++)
                 for (int bx = 0; bx < BW; bx++)
                     if (buf[by*BW+bx])
-                        for (int dy=0;dy<blks[layer]&&by*blks[layer]+dy<H;dy++)
-                            for (int dx=0;dx<blks[layer]&&bx*blks[layer]+dx<W;dx++) {
-                                int x=bx*blks[layer]+dx, y=by*blks[layer]+dy;
+                        for (int dy=0;dy<sblk&&soy+by*sblk+dy<H;dy++)
+                            for (int dx=0;dx<sblk&&sox+bx*sblk+dx<W;dx++) {
+                                int x=sox+bx*sblk+dx, y=soy+by*sblk+dy;
                                 h_canvas[y*(W/8)+(x/8)] ^= (1<<(7-(x%8)));
                             }
 
@@ -260,7 +285,7 @@ int main(int argc, char** argv) {
                    layer, blks[layer], best_s, best, err, 100.0*err/12288);
         }
 
-        printf("\nSeeds: 0x%04X 0x%04X 0x%04X 0x%04X = 8 bytes\n", seeds[0], seeds[1], seeds[2], seeds[3]);
+        printf("\n%d seeds = %d bytes\n", ns, ns*2);
 
     } else if (mode == 1 || mode == 2) {
         /* Joint L0+L1 or L2+L3 */
@@ -300,7 +325,7 @@ int main(int argc, char** argv) {
     save_pgm(output_path, h_canvas);
     printf("Time: %.1fs\nOutput: %s\n", elapsed, output_path);
 
-    cudaFree(d_canvas); cudaFree(d_target_gray);
+    cudaFree(d_canvas); cudaFree(d_target_gray); cudaFree(d_target_bin);
     cudaFree(d_errors); cudaFree(d_best_err); cudaFree(d_best_seedB);
     return 0;
 }
