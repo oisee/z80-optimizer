@@ -197,12 +197,13 @@ int main(int argc, char** argv) {
     int ptsA = (rwA/blkA) * (rhA/blkA) * pts_per_pixel;
     int ptsB = (rwB/blkB) * (rhB/blkB) * pts_per_pixel;
 
-    /* ROI = INTERSECTION of both regions (not union!)
+    /* ROI = UNION of both regions (where either seed acts).
        Joint-2 optimizes for the OVERLAP zone where both seeds contribute. */
-    int roi_x = rxA > rxB ? rxA : rxB;
-    int roi_y = ryA > ryB ? ryA : ryB;
-    int roi_x2 = (rxA+rwA < rxB+rwB) ? rxA+rwA : rxB+rwB;
-    int roi_y2 = (ryA+rhA < ryB+rhB) ? ryA+rhA : ryB+rhB;
+    // FULL SCREEN ROI for global optimization
+    int roi_x = 0; // rxA < rxB ? rxA : rxB;
+    int roi_y = 0;
+    int roi_x2 = 128;
+    int roi_y2 = 96;
     int roi_w = roi_x2 - roi_x; if (roi_w < 0) roi_w = 0;
     int roi_h = roi_y2 - roi_y; if (roi_h < 0) roi_h = 0;
 
