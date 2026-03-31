@@ -326,6 +326,207 @@ static PhaseConfig dt_phases[] = {
 static int ndt_phases = 5;
 
 /* ====================================================================
+ * CP MODE: Carrier-Payload hierarchical search (CPU-only, u8 budget)
+ *
+ * Carrier:  blk=8 at (0,0), seeds 1-255 × andN 3-8  → identifies hot zones
+ * Payload4: blk=4 at all valid positions, seeds 1-255 × andN 3-6
+ * Payload2: blk=2 at all valid positions, seeds 1-255 × andN 4-6
+ * Payload1: blk=1 at all valid positions, seeds 1-255 × andN 5-7
+ *
+ * Payloads scored and applied masked to carrier-active 8×8 blocks.
+ *
+ * Usage:
+ *   ./cuda/prng_budget_search --cp --target frame.pgm [--init-canvas prev.pgm]
+ *                             --out result.json --out-pgm result.pgm
+ * ==================================================================== */
+
+/* CPU LFSR-16 (device version is __device__ __host__, use it directly) */
+
+static void makeBuf_h(uint16_t seed, int warmup, int andN, uint8_t buf[BUF_N]) {
+    uint16_t s = seed ? seed : 1u;
+    for (int i = 0; i < warmup; i++) s = lfsr16(s);
+    for (int i = 0; i < BUF_N; i++) {
+        uint8_t acc = 1;
+        for (int k = 0; k < andN; k++) { s = lfsr16(s); acc &= (uint8_t)(s & 1u); }
+        buf[i] = acc;
+    }
+}
+
+static void unpackPS(const uint8_t packed[PS], uint8_t out[W*H]) {
+    for (int y = 0; y < H; y++) for (int x = 0; x < W; x++)
+        out[y*W+x] = (packed[y*(W/8)+x/8] >> (7-(x%8))) & 1u;
+}
+
+static void packPS(const uint8_t in[W*H], uint8_t packed[PS]) {
+    memset(packed, 0, PS);
+    for (int y = 0; y < H; y++) for (int x = 0; x < W; x++)
+        if (in[y*W+x]) packed[y*(W/8)+x/8] |= (1u << (7-(x%8)));
+}
+
+/* Apply buf to unpacked canvas. If cmask!=NULL, restrict to carrier-active 8×8 blocks. */
+static void applyBuf_h(uint8_t canvas[W*H], const uint8_t buf[BUF_N],
+                        int ox, int oy, int blk, const uint8_t cmask[BUF_N]) {
+    for (int by = 0; by < 24; by++) for (int bx = 0; bx < 32; bx++) {
+        if (!buf[by*32+bx]) continue;
+        for (int dy = 0; dy < blk; dy++) for (int dx = 0; dx < blk; dx++) {
+            int x = ox+bx*blk+dx, y = oy+by*blk+dy;
+            if (x < 0 || x >= W || y < 0 || y >= H) continue;
+            if (cmask) {
+                int cbx = x/8, cby = y/8;
+                if (cbx >= 16 || cby >= 12 || !cmask[cby*32+cbx]) continue;
+            }
+            canvas[y*W+x] ^= 1;
+        }
+    }
+}
+
+/* Score buf against target (returns delta: negative = improvement).
+   If cmask!=NULL, count only pixels within carrier-active 8×8 blocks. */
+static int scoreBuf_h(const uint8_t canvas[W*H], const uint8_t target[W*H],
+                       const uint8_t buf[BUF_N], int ox, int oy, int blk,
+                       const uint8_t cmask[BUF_N]) {
+    int d = 0;
+    for (int by = 0; by < 24; by++) for (int bx = 0; bx < 32; bx++) {
+        if (!buf[by*32+bx]) continue;
+        for (int dy = 0; dy < blk; dy++) for (int dx = 0; dx < blk; dx++) {
+            int x = ox+bx*blk+dx, y = oy+by*blk+dy;
+            if (x < 0 || x >= W || y < 0 || y >= H) continue;
+            if (cmask) {
+                int cbx = x/8, cby = y/8;
+                if (cbx >= 16 || cby >= 12 || !cmask[cby*32+cbx]) continue;
+            }
+            d += (canvas[y*W+x] != target[y*W+x]) ? -1 : +1;
+        }
+    }
+    return d;
+}
+
+typedef struct { uint16_t seed; int ox, oy, blk, andN; } CPPayload;
+
+int cp_search(const char *target_path, const char *init_canvas_path,
+              const char *out_json, const char *out_pgm) {
+
+    uint8_t tgt_pack[PS], cnv_pack[PS];
+    int tw, th;
+    memset(cnv_pack, 0, PS);
+
+    if (loadPGM(target_path, tgt_pack, &tw, &th) < 0) return 1;
+    if (tw != W || th != H) { fprintf(stderr, "Target size mismatch: %dx%d\n", tw, th); return 1; }
+    if (init_canvas_path && loadPGM(init_canvas_path, cnv_pack, &tw, &th) < 0) {
+        fprintf(stderr, "Warning: init canvas not found, using black\n");
+        memset(cnv_pack, 0, PS);
+    }
+
+    uint8_t canvas[W*H], target_px[W*H];
+    unpackPS(cnv_pack, canvas);
+    unpackPS(tgt_pack, target_px);
+
+    int base_err = 0;
+    for (int i = 0; i < W*H; i++) base_err += (canvas[i] != target_px[i]);
+    printf("CP mode | target=%s | base err=%d (%.2f%%)\n",
+           target_path, base_err, 100.0f*base_err/(W*H));
+
+    /* ── Phase 1: Carrier (blk=8, andN 3-8, seeds 1-255) ───────────────── */
+    uint8_t carrier_buf[BUF_N], tmp_buf[BUF_N];
+    uint16_t cs = 1; int can = 5, c_score = INT_MAX;
+
+    for (int andN = 3; andN <= 8; andN++) {
+        for (int s = 1; s <= 255; s++) {
+            makeBuf_h((uint16_t)s, 0, andN, tmp_buf);
+            /* Score carrier: only 16×12 valid blocks (blk=8 at ox=0,oy=0) */
+            int d = 0;
+            for (int by = 0; by < 12; by++) for (int bx = 0; bx < 16; bx++) {
+                if (!tmp_buf[by*32+bx]) continue;
+                for (int dy = 0; dy < 8; dy++) for (int dx = 0; dx < 8; dx++) {
+                    int x = bx*8+dx, y = by*8+dy;
+                    d += (canvas[y*W+x] != target_px[y*W+x]) ? -1 : +1;
+                }
+            }
+            if (d < c_score) {
+                c_score = d; cs = (uint16_t)s; can = andN;
+                memcpy(carrier_buf, tmp_buf, BUF_N);
+            }
+        }
+    }
+
+    int n_active = 0;
+    for (int i = 0; i < BUF_N; i++) n_active += carrier_buf[i];
+    printf("[carrier] seed=%u andN=%d score=%+d active=%d/192 (%.1f%%)\n",
+           cs, can, c_score, n_active, 100.0f*n_active/192);
+
+    applyBuf_h(canvas, carrier_buf, 0, 0, 8, NULL);
+
+    int err_c = 0;
+    for (int i = 0; i < W*H; i++) err_c += (canvas[i] != target_px[i]);
+    printf("[carrier] after: %d px (%.2f%%)\n", err_c, 100.0f*err_c/(W*H));
+
+    /* ── Phases 2-4: Payload (blk=4,2,1, scored within carrier zone) ───── */
+    CPPayload payloads[32]; int npl = 0;
+
+    struct { int blk, anL, anH; } pl_cfg[] = {{4,3,6},{2,4,6},{1,5,7}};
+    int n_pl_cfg = (int)(sizeof(pl_cfg)/sizeof(pl_cfg[0]));
+
+    for (int ph = 0; ph < n_pl_cfg && npl < 16; ph++) {
+        int blk = pl_cfg[ph].blk, anL = pl_cfg[ph].anL, anH = pl_cfg[ph].anH;
+        int ox_list[512], oy_list[512];
+        int npos = buildPositionsConstrained(blk, 1.0f, W/2, H/2, ox_list, oy_list);
+
+        int best_d = 0; uint16_t bseed = 0; int box = 0, boy = 0, ban = anL;
+
+        for (int s = 1; s <= 255 && npl < 16; s++) {
+            for (int pi = 0; pi < npos; pi++) {
+                int ox = ox_list[pi], oy = oy_list[pi];
+                for (int andN = anL; andN <= anH; andN++) {
+                    makeBuf_h((uint16_t)s, 0, andN, tmp_buf);
+                    int d = scoreBuf_h(canvas, target_px, tmp_buf, ox, oy, blk, carrier_buf);
+                    if (d < best_d) { best_d=d; bseed=(uint16_t)s; box=ox; boy=oy; ban=andN; }
+                }
+            }
+        }
+
+        if (bseed && best_d < 0) {
+            makeBuf_h(bseed, 0, ban, tmp_buf);
+            applyBuf_h(canvas, tmp_buf, box, boy, blk, carrier_buf);
+            payloads[npl].seed=bseed; payloads[npl].ox=box;
+            payloads[npl].oy=boy; payloads[npl].blk=blk; payloads[npl].andN=ban;
+            npl++;
+            int err_pl = 0;
+            for (int i = 0; i < W*H; i++) err_pl += (canvas[i] != target_px[i]);
+            printf("[payload blk=%d] seed=%u andN=%d (%d,%d) score=%+d | err=%d (%.2f%%)\n",
+                   blk, bseed, ban, box, boy, best_d, err_pl, 100.0f*err_pl/(W*H));
+        }
+    }
+
+    int final_err = 0;
+    for (int i = 0; i < W*H; i++) final_err += (canvas[i] != target_px[i]);
+    printf("Final: %d seeds, %.2f%% error  (CP: 1 carrier + %d payload)\n",
+           1+npl, 100.0f*final_err/(W*H), npl);
+
+    /* Write CP JSON */
+    FILE *f = fopen(out_json, "w"); if (!f) { perror(out_json); return 1; }
+    fprintf(f, "{\n  \"lfsr16_poly\": \"0xB400\",\n");
+    fprintf(f, "  \"canvas_w\": %d,\n  \"canvas_h\": %d,\n", W, H);
+    fprintf(f, "  \"mode\": \"delta\",\n  \"budget\": 255,\n");
+    fprintf(f, "  \"seeds\": [\n");
+    fprintf(f, "    {\"type\":\"cp\",\"cs\":%u,\"cx\":0,\"cy\":0,\"can\":%d,\"ps\":[", cs, can);
+    for (int i = 0; i < npl; i++) {
+        fprintf(f, "[%u,%d,%d,%d,%d]", payloads[i].seed, payloads[i].ox,
+                payloads[i].oy, payloads[i].blk, payloads[i].andN);
+        if (i < npl-1) fprintf(f, ",");
+    }
+    fprintf(f, "]}\n  ]\n}\n");
+    fclose(f);
+    printf("JSON: %s\n", out_json);
+
+    uint8_t result_pack[PS];
+    packPS(canvas, result_pack);
+    savePGM(out_pgm, result_pack);
+    printf("PGM:  %s\n", out_pgm);
+
+    return 0;
+}
+
+/* ====================================================================
  * Seed record + JSON output
  * ==================================================================== */
 typedef struct {
@@ -376,6 +577,7 @@ int main(int argc, char **argv) {
     int   auto_bounce = 0;    /* --auto-bounce: probe blk=1,2,4 and pick best for L0 */
     const char *weight_map  = NULL; /* --weight-map file.wmap: per-pixel uint8 importance */
     int   auto_weight = 0;          /* --auto-weight: derive weight from canvas/target diff each step */
+    int   mode_cp     = 0;          /* --cp: carrier-payload hierarchical search (CPU, u8 budget) */
 
     /* Multi-zone: up to 8 zones (x,y pairs) */
     int zones_x[8], zones_y[8], n_zones = 0;
@@ -400,6 +602,7 @@ int main(int argc, char **argv) {
         else if(!strcmp(argv[i],"--verbose"))                   verbose       = 1;
         else if(!strcmp(argv[i],"--weight-map")   && i+1<argc) weight_map    = argv[++i];
         else if(!strcmp(argv[i],"--auto-weight"))               auto_weight   = 1;
+        else if(!strcmp(argv[i],"--cp"))                        mode_cp       = 1;
         else if(!strcmp(argv[i],"--preset")       && i+1<argc) {
             if(!strcmp(argv[++i],"fine")) preset_fine = 1;
         }
@@ -464,6 +667,9 @@ int main(int argc, char **argv) {
         phases[nphases-1].budget += (budget_cap - total_phase_budget);
 
     if(!target_path) { fprintf(stderr,"--target required\n"); return 1; }
+
+    /* CP mode: CPU-only, no GPU needed */
+    if(mode_cp) return cp_search(target_path, init_canvas, out_json, out_pgm);
 
     cudaSetDevice(gpu_id);
     cudaDeviceProp prop; cudaGetDeviceProperties(&prop,gpu_id);

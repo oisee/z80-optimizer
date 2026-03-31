@@ -115,7 +115,9 @@ def search_frame(target, init_canvas, wmap, out_json, out_pgm,
         cmd += ['--weight-map', str(wmap)]
     if auto_bounce and not is_keyframe:
         cmd += ['--auto-bounce']
-    cmd += extra_args
+    # --cp applies to delta frames only; strip it for keyframes
+    filtered_extra = [a for a in extra_args if not (is_keyframe and a == '--cp')]
+    cmd += filtered_extra
 
     r = subprocess.run(cmd, capture_output=True, text=True)
     seeds_used, error = '?', None
@@ -130,17 +132,29 @@ def search_frame(target, init_canvas, wmap, out_json, out_pgm,
     return seeds_used, error, r.returncode == 0
 
 # ── assemble animation_flat JSON ──────────────────────────────────────────────
+def _cp_expanded_size(record):
+    """Number of expanded seed entries for a single JSON seed record.
+    CP records expand to 1 carrier + len(ps) payloads; flat records stay as 1."""
+    if isinstance(record, dict) and record.get('type') == 'cp':
+        return 1 + len(record.get('ps', []))
+    return 1
+
 def assemble(seed_jsons, frame_types, label):
     all_seeds = []
     frame_starts = []
     frame_sizes = []
 
+    # frame_starts/frame_sizes track EXPANDED seed indices so that the
+    # renderer's frame boundaries remain correct after CP record expansion.
+    expanded_total = 0
     for p in seed_jsons:
         with open(p) as f:
             data = json.load(f)
         records = data.get('seeds', [])
-        frame_starts.append(len(all_seeds))
-        frame_sizes.append(len(records))
+        frame_starts.append(expanded_total)
+        expanded = sum(_cp_expanded_size(r) for r in records)
+        frame_sizes.append(expanded)
+        expanded_total += expanded
         all_seeds.extend(records)
 
     return {
@@ -166,6 +180,7 @@ def main():
     ap.add_argument('--max-frames',  type=int, default=None,help='Max frames to encode')
     ap.add_argument('--gpu',         type=int, default=0,   help='GPU device ID (default 0)')
     ap.add_argument('--auto-bounce', action='store_true',   help='Auto-pick blk for delta L0')
+    ap.add_argument('--cp',          action='store_true',   help='Use carrier-payload (CP) mode for delta frames')
     ap.add_argument('--shrink',      type=float, default=-1,help='Area shrink per KF phase (default 0.90)')
     ap.add_argument('--kf-every',    type=int, default=0,   help='Insert keyframe every N frames (0=off)')
     ap.add_argument('--kf-error',    type=float, default=0, help='Insert keyframe when delta error > X%% (0=off)')
@@ -218,6 +233,8 @@ def main():
     extra_args = extra[:]
     if args.shrink > 0:
         extra_args += ['--shrink', str(args.shrink)]
+    if args.cp:
+        extra_args += ['--cp']
 
     seed_jsons  = []
     frame_types = []

@@ -210,6 +210,25 @@ function applyBuf(pix,buf,ox,oy,blk){
   }
 }
 
+// Pre-mask a payload buf to carrier-active 8×8 zones.
+// Returns a new 768-element buf with blocks zeroed outside carrier.
+function maskPayloadBuf(pBuf, pox, poy, pblk, cBuf) {
+  const out = new Uint8Array(768);
+  for(let by=0;by<24;by++) for(let bx=0;bx<32;bx++){
+    if(!pBuf[by*32+bx]) continue;
+    // Check if any pixel in this payload block is inside a carrier-active 8×8 zone
+    let inZone = false;
+    for(let dy=0;dy<pblk&&!inZone;dy++) for(let dx=0;dx<pblk&&!inZone;dx++){
+      const x=pox+bx*pblk+dx, y=poy+by*pblk+dy;
+      if(x<0||x>=128||y<0||y>=96) continue;
+      const cbx=(x/8)|0, cby=(y/8)|0;
+      if(cbx<16&&cby<12&&cBuf[cby*32+cbx]) inZone=true;
+    }
+    out[by*32+bx] = inZone ? 1 : 0;
+  }
+  return out;
+}
+
 // ── state ─────────────────────────────────────────────────────────────────────
 const W=128, H=96;
 let seeds=[], bufs=[], active=[], pix=new Uint8Array(W*H);
@@ -337,17 +356,24 @@ function loadSeeds(data, presetId){
 
   let rawSeeds = [];
   if(animMode && data.type==='animation_flat'){
-    rawSeeds = (data.seeds||[]).map(r=>({
-      seed:  r.seed ?? r.s,
-      ox:    r.ox,
-      oy:    r.oy,
-      blk:   r.blk ?? r.b,
-      and_n: r.and_n ?? r.n,
-      warmup:r.warmup ?? r.w ?? 0,
-      frame: r.f ?? 0,
-      label: r.label || ('F'+(r.f??0)+'-AND'+(r.and_n??r.n)),
-      step:  r.step ?? 0
-    }));
+    // Handle mixed flat seeds and CP records
+    for(const r of (data.seeds||[])){
+      if(r && r.type==='cp'){
+        rawSeeds.push(r); // keep CP records as-is for expansion below
+      } else {
+        rawSeeds.push({
+          seed:  r.seed ?? r.s,
+          ox:    r.ox,
+          oy:    r.oy,
+          blk:   r.blk ?? r.b,
+          and_n: r.and_n ?? r.n,
+          warmup:r.warmup ?? r.w ?? 0,
+          frame: r.f ?? 0,
+          label: r.label || ('F'+(r.f??0)+'-AND'+(r.and_n??r.n)),
+          step:  r.step ?? 0
+        });
+      }
+    }
   } else if(animMode && data.frames){
     rawSeeds=[];
     for(const fr of data.frames) for(const s of fr.seeds) rawSeeds.push(s);
@@ -355,8 +381,35 @@ function loadSeeds(data, presetId){
     rawSeeds = data.seeds||data;
   }
 
+  // Expand CP (carrier-payload) records into flat seed entries.
+  // Carrier is applied normally (blk=8). Payload bufs are pre-masked to
+  // carrier-active 8×8 zones so applyBuf() needs no changes elsewhere.
+  {
+    const flat=[];
+    for(const r of rawSeeds){
+      if(r && r.type==='cp'){
+        const cBuf=makeBuf(r.cs, r.cw||0, r.can);
+        flat.push({seed:r.cs, ox:r.cx||0, oy:r.cy||0, blk:8, and_n:r.can,
+                   warmup:r.cw||0, label:'CP-carrier', step:r.step||0, frame:r.frame||0,
+                   _cpBuf:cBuf, _cpRole:'carrier'});
+        for(const pl of (r.ps||[])){
+          const [ps,pox,poy,pblk,pan,pw]=pl;
+          const pBuf=makeBuf(ps, pw||0, pan||4);
+          const masked=maskPayloadBuf(pBuf, pox||0, poy||0, pblk||4, cBuf);
+          flat.push({seed:ps, ox:pox||0, oy:poy||0, blk:pblk||4, and_n:pan||4,
+                     warmup:pw||0, label:'CP-payload', step:r.step||0, frame:r.frame||0,
+                     _cpBuf:masked, _cpRole:'payload'});
+        }
+      } else {
+        flat.push(r);
+      }
+    }
+    rawSeeds=flat;
+  }
+
   seeds = rawSeeds;
-  bufs=seeds.map(r=>makeBuf(r.seed,r.warmup,r.and_n));
+  // For CP entries, use pre-computed _cpBuf; otherwise generate from LFSR params.
+  bufs=seeds.map(r=>r._cpBuf||makeBuf(r.seed,r.warmup,r.and_n));
   active=new Array(seeds.length).fill(false);
   pix=new Uint8Array(W*H); cursor=0;
 
@@ -440,9 +493,12 @@ function buildSeedList(){
     }
     const div=document.createElement('div');
     div.className='seed-row off'; div.id='sr-'+i;
+    const roleTag = r._cpRole==='carrier' ? '<span style="color:#6af;font-size:9px">⊕</span> '
+                  : r._cpRole==='payload' ? '<span style="color:#a8f;font-size:9px">·</span> '
+                  : '';
     div.innerHTML=`<div class="seed-dot" style="background:${col}"></div>
       <span style="color:#555">${i+1}</span>
-      <span style="color:#777">AND${r.and_n}</span>
+      ${roleTag}<span style="color:#777">AND${r.and_n}</span>
       <span style="color:#444">${r.ox},${r.oy}×${r.blk}</span>`;
     div.onclick=()=>toggleSeed(i);
     div.title=`seed=${r.seed} warmup=${r.warmup} label=${r.label}`;
@@ -496,6 +552,8 @@ const PRESETS=[
    paths:['../data/che_wgt128_anim.json','data/che_wgt128_anim.json']},
   {id:'che_aw128',label:'Che auto-weight 4:1 (128)',  meta:'25 frames · 4121 seeds · dynamic wrong-pixel priority',
    paths:['../data/che_aw128_anim.json','data/che_aw128_anim.json']},
+  {id:'che_cp5',label:'Che CP 5-frame (CPU)', meta:'5 frames · CP delta · carrier+payload · u8 budget · CPU-only',
+   paths:['../data/che_cp_test.json','data/che_cp_test.json']},
   {id:'che_wgt64',label:'Che weighted 👁 (64)',  meta:'25 frames · 2585 seeds · heatmap face · 47% less face err',
    paths:['../data/che_weighted64_anim.json','data/che_weighted64_anim.json']},
   {id:'che_unw64',label:'Che unweighted (64)',  meta:'25 frames · 2585 seeds · no heatmap · compare',
