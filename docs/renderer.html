@@ -9,9 +9,12 @@ body { background: #111; color: #ccc; font: 13px/1.5 monospace;
        display: flex; flex-direction: column; align-items: center;
        padding: 16px; gap: 10px; }
 h1 { font-size: 14px; color: #eee; }
-canvas { display: block; image-rendering: pixelated; border: 1px solid #333; }
-#layout { display: flex; gap: 14px; align-items: flex-start; }
-#sidebar { display: flex; flex-direction: column; gap: 8px; width: 230px; }
+canvas { display: block; image-rendering: pixelated; border: 1px solid #333; flex-shrink: 0; }
+
+/* three-column layout: sidebar | canvas | seedpanel */
+#layout { display: flex; gap: 12px; align-items: flex-start; }
+#sidebar { display: flex; flex-direction: column; gap: 8px; width: 210px; flex-shrink: 0; }
+#seedpanel { display: flex; flex-direction: column; gap: 8px; width: 200px; flex-shrink: 0; }
 .panel { background: #161616; border: 1px solid #2a2a2a; border-radius: 4px; padding: 8px; }
 .panel h3 { font-size: 11px; color: #555; margin-bottom: 6px; text-transform: uppercase; letter-spacing:.05em; }
 
@@ -30,7 +33,7 @@ canvas { display: block; image-rendering: pixelated; border: 1px solid #333; }
 .stat .val { font-size: 15px; color: #eee; }
 .stat .lbl { font-size: 9px; color: #555; }
 
-/* layer toggles — big buttons */
+/* layer toggles */
 #level-toggles { display: flex; flex-wrap: wrap; gap: 4px; }
 .lvl-btn { border: 2px solid #333; border-radius: 4px; padding: 4px 8px;
            cursor: pointer; font: inherit; font-size: 11px;
@@ -45,10 +48,20 @@ button { background: #1e1e1e; border: 1px solid #3a3a3a; color: #ccc;
          padding: 4px 10px; border-radius: 3px; cursor: pointer; font: inherit; }
 button:hover { background: #2a2a2a; }
 button.on { background: #1e3a1e; border-color: #4a8a4a; color: #8f8; }
+button.fmode { background: #1e1e3a; border-color: #4a4a8a; color: #88f; }
+button.fmode.on { background: #2a2a5a; border-color: #7a7acf; color: #aaf; }
 #scrubber { width: 100%; margin-top: 5px; }
+#frame-scrubber { width: 100%; margin-top: 3px; accent-color: #6a6acf; }
+
+/* frame indicator bar */
+#frame-bar { display: none; background: #1a1a2a; border: 1px solid #333; border-radius: 3px;
+             padding: 5px 8px; font-size: 12px; text-align: center; }
+#frame-bar.visible { display: block; }
+#frame-num { color: #aaf; font-size: 16px; font-weight: bold; }
+#frame-total { color: #446; font-size: 11px; }
 
 /* seed list */
-#seedlist { max-height: 200px; overflow-y: auto; font-size: 10px;
+#seedlist { max-height: 420px; overflow-y: auto; font-size: 10px;
             display: flex; flex-direction: column; gap: 1px; }
 .seed-row { display: flex; align-items: center; gap: 5px; padding: 2px 4px;
             border-radius: 2px; cursor: pointer; }
@@ -56,6 +69,7 @@ button.on { background: #1e3a1e; border-color: #4a8a4a; color: #8f8; }
 .seed-row.active { background: #2a2a18; outline: 1px solid #554; }
 .seed-row.off { opacity: .3; }
 .seed-dot { width: 8px; height: 8px; border-radius: 1px; flex-shrink: 0; }
+.seed-frame-sep { height: 1px; background: #2a2a3a; margin: 2px 0; }
 
 /* dropzone */
 #dropzone { border: 1px dashed #2a2a2a; border-radius: 3px; padding: 7px 10px;
@@ -73,6 +87,8 @@ button.on { background: #1e3a1e; border-color: #4a8a4a; color: #8f8; }
 </div>
 
 <div id="layout">
+
+<!-- LEFT: controls sidebar -->
 <div id="sidebar">
 
   <div class="panel">
@@ -87,7 +103,6 @@ button.on { background: #1e3a1e; border-color: #4a8a4a; color: #8f8; }
       <div class="stat"><div class="val" id="st-on">0</div><div class="lbl">active</div></div>
       <div class="stat"><div class="val" id="st-and">—</div><div class="lbl">AND-N</div></div>
       <div class="stat"><div class="val" id="st-lbl">—</div><div class="lbl">layer</div></div>
-      <div class="stat" id="st-frame-box" style="display:none"><div class="val" id="st-frame">1/1</div><div class="lbl">frame</div></div>
     </div>
   </div>
 
@@ -99,14 +114,26 @@ button.on { background: #1e3a1e; border-color: #4a8a4a; color: #8f8; }
   <div class="panel">
     <h3>playback</h3>
     <div id="controls">
-      <button onclick="jumpTo(0)">⏮</button>
-      <button onclick="stepBy(-1)">◀</button>
+      <button onclick="jumpTo(0)" title="rewind">⏮</button>
+      <button onclick="stepBy(-1)" title="step back">◀</button>
       <button id="btn-play" onclick="togglePlay()">▶</button>
-      <button onclick="stepBy(1)">▶|</button>
-      <button onclick="jumpTo(seeds.length)">⏭</button>
-      <label style="font-size:11px"><input type="checkbox" id="chk-inv" onchange="redraw()"> invert</label>
+      <button onclick="stepBy(1)" title="step forward">▶|</button>
+      <button onclick="jumpTo(seeds.length)" title="end">⏭</button>
+      <button id="btn-fmode" class="fmode" onclick="toggleFrameMode()" style="display:none"
+              title="toggle frame-by-frame / seed-by-seed">🎬</button>
+      <label style="font-size:11px"><input type="checkbox" id="chk-inv" onchange="redraw()"> inv</label>
     </div>
     <input type="range" id="scrubber" min="0" max="0" value="0" oninput="jumpTo(+this.value)">
+
+    <!-- frame scrubber (animation only) -->
+    <div id="frame-controls" style="display:none">
+      <div style="display:flex;align-items:center;gap:5px;margin-top:4px;font-size:10px;color:#446">
+        frame <span id="fc-num" style="color:#aaf">1</span>/<span id="fc-tot">1</span>
+        <input type="range" id="frame-scrubber" min="0" max="0" value="0"
+               style="flex:1" oninput="jumpToFrame(+this.value)">
+      </div>
+    </div>
+
     <div style="display:flex;align-items:center;gap:6px;margin-top:5px;font-size:10px;color:#555">
       speed <span id="spd-lbl">30/s</span>
       <input type="range" id="speed" min="1" max="300" value="30" style="flex:1"
@@ -136,13 +163,25 @@ button.on { background: #1e3a1e; border-color: #4a8a4a; color: #8f8; }
     </div>
   </div>
 
+</div><!-- sidebar -->
+
+<!-- CENTER: canvas -->
+<div style="display:flex;flex-direction:column;gap:6px;align-items:center">
+  <!-- frame indicator (animation mode) -->
+  <div id="frame-bar">
+    frame <span id="frame-num">1</span><span id="frame-total">/1</span>
+  </div>
+  <canvas id="cv" width="128" height="96" style="width:512px;height:384px"></canvas>
+</div>
+
+<!-- RIGHT: seed list -->
+<div id="seedpanel">
   <div class="panel">
     <h3>seeds <span style="color:#3a3a3a;font-size:9px">click = toggle one</span></h3>
     <div id="seedlist"></div>
   </div>
+</div>
 
-</div><!-- sidebar -->
-<canvas id="cv" width="128" height="96" style="width:512px;height:384px"></canvas>
 </div><!-- layout -->
 
 <script>
@@ -176,6 +215,7 @@ const W=128, H=96;
 let seeds=[], bufs=[], active=[], pix=new Uint8Array(W*H);
 let cursor=0, snapshots={}, playing=false, stepsPerSec=30;
 let animMode=false, frameStarts=[], framePauseMs=300;
+let frameMode=false; // true = play frame-by-frame; false = seed-by-seed
 
 // ── canvas ────────────────────────────────────────────────────────────────────
 const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
@@ -217,28 +257,56 @@ function jumpTo(n){
   cursor=n; updateUI(); redraw();
 }
 function stepBy(d){jumpTo(cursor+d);}
-function jumpToFrame(fi){if(animMode&&fi>=0&&fi<frameStarts.length)jumpTo(frameStarts[fi]);}
-function togglePlay(){
-  playing=!playing;
-  document.getElementById('btn-play').classList.toggle('on',playing);
-  document.getElementById('btn-play').textContent=playing?'⏸':'▶';
-  if(playing) tick();
-}
+
 function currentFrame(){
   if(!animMode||!frameStarts.length) return -1;
   let f=0;
   for(let i=0;i<frameStarts.length;i++) if(cursor>=frameStarts[i]) f=i;
   return f;
 }
+
+function jumpToFrame(fi){
+  if(!animMode||!frameStarts.length) return;
+  fi=Math.max(0,Math.min(frameStarts.length-1,fi));
+  jumpTo(frameStarts[fi]);
+}
+
+function toggleFrameMode(){
+  frameMode=!frameMode;
+  document.getElementById('btn-fmode').classList.toggle('on',frameMode);
+  document.getElementById('btn-fmode').title = frameMode
+    ? 'mode: frame-by-frame (click to switch to seed-by-seed)'
+    : 'mode: seed-by-seed (click to switch to frame-by-frame)';
+}
+
+function togglePlay(){
+  playing=!playing;
+  document.getElementById('btn-play').classList.toggle('on',playing);
+  document.getElementById('btn-play').textContent=playing?'⏸':'▶';
+  if(playing) tick();
+}
+
 function tick(){
   if(!playing) return;
   if(cursor>=seeds.length){togglePlay();return;}
-  // In anim mode: when crossing a frame boundary, pause briefly then continue
+
+  if(frameMode && animMode && frameStarts.length>1){
+    // Frame-by-frame mode: jump to next frame boundary
+    const fi=currentFrame();
+    const nextFi=fi+1;
+    if(nextFi>=frameStarts.length){ togglePlay(); return; }
+    jumpTo(frameStarts[nextFi]);
+    updateUI(); redraw();
+    setTimeout(tick, Math.max(50, framePauseMs));
+    return;
+  }
+
+  // Seed-by-seed mode: pause briefly at frame boundaries
   if(animMode && frameStarts.length>1 && cursor>0){
     const nextFrameIdx=frameStarts.findIndex(s=>s===cursor);
     if(nextFrameIdx>0){
       updateUI(); redraw();
-      setTimeout(tick, framePauseMs); // inter-frame pause
+      setTimeout(tick, framePauseMs);
       return;
     }
   }
@@ -250,13 +318,11 @@ function tick(){
 
 // ── load ──────────────────────────────────────────────────────────────────────
 function loadSeeds(data, presetId){
-  // Handle animation_flat format: normalize short field names
   animMode = data.type==='animation_flat' || data.type==='animation';
   frameStarts = animMode ? (data.frame_starts||[]) : [];
 
   let rawSeeds = [];
   if(animMode && data.type==='animation_flat'){
-    // flat animation: seeds may have short {f,s,ox,oy,b,n,w} or long {seed,ox,oy,blk,and_n,warmup}
     rawSeeds = (data.seeds||[]).map(r=>({
       seed:  r.seed ?? r.s,
       ox:    r.ox,
@@ -269,7 +335,6 @@ function loadSeeds(data, presetId){
       step:  r.step ?? 0
     }));
   } else if(animMode && data.frames){
-    // nested animation: flatten all frames' seeds
     rawSeeds=[];
     for(const fr of data.frames) for(const s of fr.seeds) rawSeeds.push(s);
   } else {
@@ -287,8 +352,19 @@ function loadSeeds(data, presetId){
     if((i+1)%100===0||i===seeds.length-1) snapshots[i+1]=s.slice();
   }
   document.getElementById('scrubber').max=seeds.length;
-  document.getElementById('st-frame-box').style.display=animMode?'':'none';
-  // mark active preset
+
+  // frame scrubber + frame UI
+  const hasFrames = animMode && frameStarts.length>1;
+  document.getElementById('frame-controls').style.display = hasFrames ? '' : 'none';
+  document.getElementById('frame-bar').classList.toggle('visible', hasFrames);
+  document.getElementById('btn-fmode').style.display = hasFrames ? '' : 'none';
+  if(hasFrames){
+    const fs = document.getElementById('frame-scrubber');
+    fs.max = frameStarts.length-1; fs.value=0;
+    document.getElementById('fc-tot').textContent = frameStarts.length;
+    document.getElementById('frame-total').textContent = '/'+frameStarts.length;
+  }
+
   document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
   if(presetId) document.getElementById('pb-'+presetId)?.classList.add('active');
   buildLevelBtns(); buildSeedList(); updateUI(); redraw();
@@ -323,8 +399,19 @@ function updateLevelBtns(){
 
 function buildSeedList(){
   const el=document.getElementById('seedlist'); el.innerHTML='';
+  let lastFrame=-1;
   for(let i=0;i<seeds.length;i++){
     const r=seeds[i]; const col=AND_COL[r.and_n]||'#888';
+    // frame separator for animation
+    if(animMode && frameStarts.length>1){
+      const fi = frameStarts.lastIndexOf(i);
+      if(fi>0){
+        const sep=document.createElement('div');
+        sep.className='seed-frame-sep';
+        sep.title='frame '+fi;
+        el.appendChild(sep);
+      }
+    }
     const div=document.createElement('div');
     div.className='seed-row off'; div.id='sr-'+i;
     div.innerHTML=`<div class="seed-dot" style="background:${col}"></div>
@@ -348,7 +435,12 @@ function updateUI(){
   document.getElementById('scrubber').value=cursor;
   if(animMode && frameStarts.length){
     const fi=currentFrame();
-    document.getElementById('st-frame').textContent=(fi+1)+'/'+frameStarts.length;
+    const fn=fi+1;
+    // frame bar (above canvas)
+    document.getElementById('frame-num').textContent=fn;
+    // frame scrubber
+    const fs=document.getElementById('frame-scrubber');
+    if(fs) { fs.value=fi; document.getElementById('fc-num').textContent=fn; }
   }
   updateStats(); updateLevelBtns();
   // seed list scroll
@@ -366,12 +458,12 @@ const PRESETS=[
    paths:['../data/foveal_cascade_seeds.json','data/foveal_cascade_seeds.json']},
   {id:'che_anim',label:'Che animation 🎬',  meta:'25 frames · 16,114 seeds · 0.07% avg · delta',
    paths:['../data/che_anim_flat.json','data/che_anim_flat.json']},
+  {id:'che_unw128v2',label:'Che unweighted AND7 (128) ★',  meta:'25 frames · 4104 seeds · AND-3→7 phases · best at 128',
+   paths:['../data/che_unw128_v2_anim.json','data/che_unw128_v2_anim.json']},
   {id:'che_wgt64',label:'Che weighted 👁 (64)',  meta:'25 frames · 2585 seeds · heatmap face · 47% less face err',
    paths:['../data/che_weighted64_anim.json','data/che_weighted64_anim.json']},
   {id:'che_unw64',label:'Che unweighted (64)',  meta:'25 frames · 2585 seeds · no heatmap · compare',
    paths:['../data/che_unweighted64_anim.json','data/che_unweighted64_anim.json']},
-  {id:'che_unw128v2',label:'Che unweighted AND7 (128) ★',  meta:'25 frames · 4104 seeds · AND-3→7 phases · best at 128',
-   paths:['../data/che_unw128_v2_anim.json','data/che_unw128_v2_anim.json']},
   {id:'bgt_a',label:'Budget A · KF256/DT128', meta:'10 frames · 1384 seeds · shrink=0.90 · 23%→14%',
    paths:['../data/budget_conf_a.json','data/budget_conf_a.json']},
   {id:'bgt_b',label:'Budget B · KF128/DT64',  meta:'10 frames · 704 seeds · shrink=0.70 · vignette',
@@ -428,8 +520,6 @@ buildPresets();
 fetchPreset(PRESETS[0]); // auto-load foveal
 
 // ── GIF export ────────────────────────────────────────────────────────────────
-// Inline LZW + GIF89a encoder — no external libraries needed.
-
 function lzwEncode(data, minCodeSize) {
   const clearCode = 1 << minCodeSize;
   const eoi = clearCode + 1;
@@ -467,41 +557,33 @@ function lzwEncode(data, minCodeSize) {
 }
 
 function buildGIF(frames, delayCs, loopCount) {
-  // frames: array of Uint8Array(W*H) with values 0|1
-  // delayCs: delay in centiseconds per frame
   const b = [];
   const u16le = (v) => [v & 0xFF, v >> 8];
   const push = (v) => b.push(v);
   const seq = (arr) => arr.forEach(v => b.push(v));
 
-  // Header + Logical Screen Descriptor
   seq([0x47,0x49,0x46,0x38,0x39,0x61]); // GIF89a
   seq(u16le(W)); seq(u16le(H));
-  push(0x80); push(0); push(0); // GCT flag, bg=0, aspect=0
-  // Global Color Table: index 0 = black, index 1 = white
-  seq([0,0,0, 255,255,255]);
+  push(0x80); push(0); push(0);
+  seq([0,0,0, 255,255,255]); // GCT: 0=black, 1=white
 
-  // Netscape loop extension
   seq([0x21,0xFF,0x0B]);
   seq([78,69,84,83,67,65,80,69,50,46,48]); // NETSCAPE2.0
   push(3); push(1); seq(u16le(loopCount)); push(0);
 
   for (const frame of frames) {
-    // Graphic Control Extension
     seq([0x21,0xF9,0x04, 0x00]); seq(u16le(delayCs)); push(0); push(0);
-    // Image Descriptor
     push(0x2C); seq(u16le(0)); seq(u16le(0)); seq(u16le(W)); seq(u16le(H)); push(0);
-    // Image Data (LZW min code size = 2 for 2-color GIF)
     const lzw = lzwEncode(frame, 2);
-    push(2); // minimum code size
+    push(2);
     for (let i = 0; i < lzw.length; ) {
       const chunk = Math.min(255, lzw.length - i);
       push(chunk);
       for (let j = 0; j < chunk; j++) push(lzw[i++]);
     }
-    push(0); // block terminator
+    push(0);
   }
-  push(0x3B); // GIF trailer
+  push(0x3B);
   return new Uint8Array(b);
 }
 
@@ -525,11 +607,9 @@ async function startGifExport() {
   const frames = [];
   const savedCursor = cursor;
 
-  // Frame 0: blank canvas
   const blank = new Uint8Array(W * H);
   frames.push(inv ? blank.map(v => 1 - v) : blank.slice());
 
-  // Step through seeds
   let s = new Uint8Array(W * H);
   for (let i = 0; i < seeds.length; i++) {
     applyBuf(s, bufs[i], seeds[i].ox, seeds[i].oy, seeds[i].blk);
@@ -539,12 +619,11 @@ async function startGifExport() {
       frames.push(f);
       if (frames.length % 10 === 0) {
         status.textContent = `encoding… ${i+1}/${seeds.length} steps, ${frames.length} frames`;
-        await new Promise(r => setTimeout(r, 0)); // yield to UI
+        await new Promise(r => setTimeout(r, 0));
       }
     }
   }
 
-  // Restore display
   jumpTo(savedCursor);
 
   status.textContent = `building GIF (${frames.length} frames)…`;
