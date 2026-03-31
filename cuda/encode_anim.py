@@ -13,16 +13,24 @@ Usage:
   python3 cuda/encode_anim.py \
     --input che.mp4 \
     --out data/my_anim.json \
-    --budget 256 \
-    --kf-budget 512 \
+    --budget 64 \
+    --kf-budget 256 \
+    --every 4 \
+    --kf-every 100 \
+    --kf-error 15.0 \
     --weighted \
-    --every 5 \
-    --max-frames 25 \
     --gpu 0 \
-    --workdir /tmp/encode_work \
     --name "My Animation"
 
 Output: animation_flat JSON, compatible with docs/renderer.html
+
+Keyframe insertion (--kf-every / --kf-error):
+  A keyframe resets the canvas to black and re-encodes from scratch.
+  --kf-every N   : insert keyframe every N frames unconditionally
+  --kf-error X   : insert keyframe when delta error exceeds X%
+  Both conditions are OR'd — either one triggers a keyframe.
+  The JSON includes frame_types[] ('kf'/'dt') so the renderer can
+  reset the canvas at keyframe boundaries.
 
 Build dependency:
   nvcc -O3 -o cuda/prng_budget_search cuda/prng_budget_search.cu -lm
@@ -42,11 +50,9 @@ W, H = 128, 96
 def extract_frames(input_path, out_dir, every=5, max_frames=None):
     out_dir.mkdir(parents=True, exist_ok=True)
     vf = f"select='not(mod(n,{every}))',scale={W}:{H},format=gray"
-    if max_frames:
-        vf += f",trim=end_frame={max_frames * every}"
     cmd = ['ffmpeg', '-y', '-i', str(input_path),
            '-vf', vf, '-vsync', 'vfr',
-           str(out_dir / 'frame_%03d.pgm')]
+           str(out_dir / 'frame_%04d.pgm')]
     print(f"[ffmpeg] extracting frames (every {every}th, {W}×{H} gray)...")
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
@@ -112,18 +118,19 @@ def search_frame(target, init_canvas, wmap, out_json, out_pgm,
     cmd += extra_args
 
     r = subprocess.run(cmd, capture_output=True, text=True)
-    # extract final error and seeds from output
-    seeds_used, error = '?', '?'
+    seeds_used, error = '?', None
     for line in r.stdout.split('\n'):
         if line.startswith('Final:'):
-            # "Final: 508 seeds, 2.409% error, 14.3s"
             parts = line.split()
             seeds_used = parts[1]
-            error = parts[3].rstrip('%')
+            try:
+                error = float(parts[3].rstrip('%'))
+            except Exception:
+                pass
     return seeds_used, error, r.returncode == 0
 
 # ── assemble animation_flat JSON ──────────────────────────────────────────────
-def assemble(seed_jsons, label):
+def assemble(seed_jsons, frame_types, label):
     all_seeds = []
     frame_starts = []
     frame_sizes = []
@@ -143,6 +150,7 @@ def assemble(seed_jsons, label):
         'total_seeds': len(all_seeds),
         'frame_starts': frame_starts,
         'frame_sizes': frame_sizes,
+        'frame_types': frame_types,   # 'kf' or 'dt' per frame
         'seeds': all_seeds,
     }
 
@@ -159,6 +167,8 @@ def main():
     ap.add_argument('--gpu',         type=int, default=0,   help='GPU device ID (default 0)')
     ap.add_argument('--auto-bounce', action='store_true',   help='Auto-pick blk for delta L0')
     ap.add_argument('--shrink',      type=float, default=-1,help='Area shrink per KF phase (default 0.90)')
+    ap.add_argument('--kf-every',    type=int, default=0,   help='Insert keyframe every N frames (0=off)')
+    ap.add_argument('--kf-error',    type=float, default=0, help='Insert keyframe when delta error > X%% (0=off)')
     ap.add_argument('--workdir',     default=None,          help='Working directory (default: /tmp/encode_<name>)')
     ap.add_argument('--name',        default=None,          help='Animation label (default: input filename stem)')
     ap.add_argument('--keep-work',   action='store_true',   help='Keep workdir after encoding')
@@ -184,6 +194,10 @@ def main():
 
     print(f"=== encode_anim: {name} ===")
     print(f"  budget: kf={kf_budget} dt={args.budget}  weighted={args.weighted}  gpu={args.gpu}")
+    if args.kf_every > 0:
+        print(f"  kf-every: {args.kf_every} frames")
+    if args.kf_error > 0:
+        print(f"  kf-error: >{args.kf_error}% triggers keyframe")
 
     # Step 1: get frames
     inp = Path(args.input)
@@ -205,38 +219,66 @@ def main():
     if args.shrink > 0:
         extra_args += ['--shrink', str(args.shrink)]
 
-    seed_jsons = []
-    prev_pgm   = None
+    seed_jsons  = []
+    frame_types = []
+    prev_pgm    = None
     t0 = time.time()
+    kf_count = 0
+    dt_count = 0
 
-    print(f"\n{'Fr':4}  {'mode':9}  {'seeds':6}  {'error':8}  {'elapsed':8}")
-    print('-' * 45)
+    print(f"\n{'Fr':>5}  {'type':8}  {'seeds':6}  {'error':8}  {'elapsed':8}  {'note'}")
+    print('-' * 55)
 
     for i, frame in enumerate(frames):
-        fn = f"{i+1:03d}"
+        fn = f"{i+1:04d}"
         out_json = seeds_dir  / f'seeds_{fn}.json'
         out_pgm  = results_dir / f'result_{fn}.pgm'
-        is_kf    = (i == 0)
-        budget   = kf_budget if is_kf else args.budget
+
+        # Decide keyframe vs delta
+        force_kf = (
+            i == 0                                          # always kf for first frame
+            or (args.kf_every > 0 and i % args.kf_every == 0)  # periodic
+        )
+        is_kf = force_kf
+        note  = 'periodic' if (force_kf and i > 0 and args.kf_every > 0) else ''
+
+        budget = kf_budget if is_kf else args.budget
 
         seeds_used, error, ok = search_frame(
-            target=frame, init_canvas=prev_pgm,
+            target=frame, init_canvas=(None if is_kf else prev_pgm),
             wmap=wmaps[i], out_json=out_json, out_pgm=out_pgm,
             budget=budget, is_keyframe=is_kf,
             gpu=args.gpu, auto_bounce=args.auto_bounce,
             extra_args=extra_args)
 
-        mode = 'keyframe' if is_kf else 'delta'
+        # Adaptive keyframe: re-encode as kf if error too high
+        if not is_kf and args.kf_error > 0 and error is not None and error > args.kf_error:
+            note = f're-kf (err={error:.1f}%)'
+            is_kf = True
+            budget = kf_budget
+            seeds_used, error, ok = search_frame(
+                target=frame, init_canvas=None,
+                wmap=wmaps[i], out_json=out_json, out_pgm=out_pgm,
+                budget=budget, is_keyframe=True,
+                gpu=args.gpu, auto_bounce=False,
+                extra_args=extra_args)
+
+        ftype = 'kf' if is_kf else 'dt'
+        frame_types.append(ftype)
+        if is_kf: kf_count += 1
+        else:      dt_count += 1
+
         elapsed = time.time() - t0
-        status = '' if ok else ' [WARN]'
-        print(f"  {fn}   {mode:9}  {seeds_used:>6}  {error:>6}%   {elapsed:6.1f}s{status}")
+        err_str = f"{error:.2f}%" if error is not None else '?'
+        status  = '' if ok else ' [WARN]'
+        print(f"  {fn}  {ftype:8}  {seeds_used:>6}  {err_str:>8}  {elapsed:6.1f}s  {note}{status}")
 
         seed_jsons.append(out_json)
         prev_pgm = out_pgm
 
     # Step 4: assemble
-    print(f"\n[assemble] {n} frames → {args.out}")
-    anim = assemble(seed_jsons, label=name)
+    print(f"\n[assemble] {n} frames ({kf_count} kf + {dt_count} dt) → {args.out}")
+    anim = assemble(seed_jsons, frame_types, label=name)
     out_path = Path(args.out)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     with open(out_path, 'w') as f:
@@ -246,10 +288,10 @@ def main():
     total_time = time.time() - t0
     print(f"\n=== Done ===")
     print(f"  Output:  {out_path}  ({sz//1024}KB)")
-    print(f"  Frames:  {anim['n_frames']}")
+    print(f"  Frames:  {anim['n_frames']}  ({kf_count} kf + {dt_count} dt)")
     print(f"  Seeds:   {anim['total_seeds']}")
     print(f"  Time:    {total_time:.1f}s  ({total_time/n:.1f}s/frame)")
-    print(f"  Sizes:   {anim['frame_sizes']}")
+    print(f"  KF at:   {[i for i,t in enumerate(frame_types) if t=='kf'][:20]}{'...' if kf_count>20 else ''}")
 
     if not args.keep_work:
         shutil.rmtree(workdir, ignore_errors=True)

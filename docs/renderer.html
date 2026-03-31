@@ -216,6 +216,7 @@ let seeds=[], bufs=[], active=[], pix=new Uint8Array(W*H);
 let cursor=0, snapshots={}, playing=false, stepsPerSec=30;
 let animMode=false, frameStarts=[], framePauseMs=300;
 let frameMode=false; // true = play frame-by-frame; false = seed-by-seed
+let frameTypes=[]; // 'kf' or 'dt' per frame; 'kf' = reset canvas to black
 
 // ── canvas ────────────────────────────────────────────────────────────────────
 const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
@@ -246,14 +247,26 @@ function toggleLevel(andN){
 }
 
 // ── playback ──────────────────────────────────────────────────────────────────
+// kfStarts: set of seed indices where canvas must be reset to black (keyframe boundaries)
+let kfStarts = new Set();
+
 function jumpTo(n){
   n=Math.max(0,Math.min(seeds.length,n));
+  // Find best snapshot that doesn't cross a keyframe boundary after n
   let base=0;
-  for(const k of Object.keys(snapshots).map(Number).sort((a,b)=>a-b))
-    if(k<=n) base=k;
+  for(const k of Object.keys(snapshots).map(Number).sort((a,b)=>a-b)){
+    if(k>n) break;
+    // Only use snapshot if no kfStart lies between k and n that would invalidate it
+    // (i.e. snapshot was built with the correct canvas state)
+    base=k;
+  }
   pix=snapshots[base].slice();
   for(let i=0;i<seeds.length;i++) active[i]=i<base;
-  for(let i=base;i<n;i++){applyBuf(pix,bufs[i],seeds[i].ox,seeds[i].oy,seeds[i].blk);active[i]=true;}
+  for(let i=base;i<n;i++){
+    if(kfStarts.has(i)) pix=new Uint8Array(W*H); // canvas reset at keyframe
+    applyBuf(pix,bufs[i],seeds[i].ox,seeds[i].oy,seeds[i].blk);
+    active[i]=true;
+  }
   cursor=n; updateUI(); redraw();
 }
 function stepBy(d){jumpTo(cursor+d);}
@@ -310,6 +323,7 @@ function tick(){
       return;
     }
   }
+  if(kfStarts.has(cursor)) pix=new Uint8Array(W*H); // canvas reset at keyframe
   applyBuf(pix,bufs[cursor],seeds[cursor].ox,seeds[cursor].oy,seeds[cursor].blk);
   active[cursor]=true; cursor++;
   updateUI(); redraw();
@@ -345,9 +359,21 @@ function loadSeeds(data, presetId){
   bufs=seeds.map(r=>makeBuf(r.seed,r.warmup,r.and_n));
   active=new Array(seeds.length).fill(false);
   pix=new Uint8Array(W*H); cursor=0;
-  snapshots={0:pix.slice()};
-  let s=pix.slice();
+
+  // Build kfStarts: set of seed indices where canvas resets (frame_types='kf', frame>0)
+  frameTypes = data.frame_types || [];
+  kfStarts = new Set();
+  if(frameTypes.length && frameStarts.length){
+    for(let fi=1; fi<frameStarts.length; fi++){
+      if(frameTypes[fi]==='kf') kfStarts.add(frameStarts[fi]);
+    }
+  }
+
+  // Build snapshots, respecting canvas resets at keyframe boundaries
+  snapshots={0:new Uint8Array(W*H)};
+  let s=new Uint8Array(W*H);
   for(let i=0;i<seeds.length;i++){
+    if(kfStarts.has(i)) s=new Uint8Array(W*H); // canvas reset at keyframe
     applyBuf(s,bufs[i],seeds[i].ox,seeds[i].oy,seeds[i].blk);
     if((i+1)%100===0||i===seeds.length-1) snapshots[i+1]=s.slice();
   }
@@ -454,6 +480,8 @@ function updateUI(){
 
 // ── presets ───────────────────────────────────────────────────────────────────
 const PRESETS=[
+  {id:'badapple',label:'Bad Apple!! 🍎',  meta:'1643 frames · kf/100 · budget kf=256 dt=64 · ~55min encode',
+   paths:['../data/badapple_anim.json','data/badapple_anim.json']},
   {id:'foveal',  label:'Foveal AND-3→7 ★', meta:'939 seeds · 0.06% @1209 · CUDA 28s',
    paths:['../data/foveal_cascade_seeds.json','data/foveal_cascade_seeds.json']},
   {id:'che_anim',label:'Che animation 🎬',  meta:'25 frames · 16,114 seeds · 0.07% avg · delta',
