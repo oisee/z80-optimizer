@@ -41,6 +41,26 @@ Full analysis: [experiment_buffer_nonlinearity.md](experiment_buffer_nonlinearit
 
 ---
 
+## ★ Cascade AND-3→7 (budget=1205 seeds)
+
+**Same LFSR-16. Same greedy. Same seed count. 3× better than AND-7 flat.**
+
+L0/L1 → AND-3 (broad strokes) · L2 → AND-4 · passes 1-8 → AND-5 · passes 9-24 → AND-6 · passes 25-74 → AND-7 (pointwise corrections)
+
+| AND-7 flat | **Cascade AND-3→7** | 2D spray (reference) |
+|:----------:|:-------------------:|:--------------------:|
+| ![and7](result_and7_buf.png) | ![cascade](result_cascade_buf.png) | ![spray](result_spray_face4x.png) |
+| **4.3%** @1205 | **1.32%** @1205 | ~26.5% @213 |
+| 1131/1205 eff. | 1164/1205 eff. | — |
+
+| @seeds | AND-7 flat | **Cascade** | 2D spray |
+|-------:|:----------:|:-----------:|:--------:|
+| 213    | 37.4%      | **24.4%**   | 26.5%    |
+| 597    | 18.6%      | **10.0%**   | 15.0%    |
+| 1205   | 4.3%       | **1.32%**   | —        |
+
+---
+
 ## AND-5 / AND-6 / AND-7 (budget=1205 seeds)
 
 | AND-5  P=1/32 | AND-6  P=1/64 | AND-7  P=1/128 |
@@ -84,6 +104,11 @@ Full analysis: [experiment_buffer_nonlinearity.md](experiment_buffer_nonlinearit
 - **AND-2** (P=0.25, quadratic): 58 seeds → 36.3%. Sparser → more diversity before saturation.
 - **AND-3** (P=0.125): 138 seeds → 29.2%. Continuing improvement.
 - **AND-4** (P=0.0625): 187 seeds → **25.18% — beats 2D spray at same 213-seed budget**.
+
+### Cascade AND-3→7: best of both worlds
+Coarse-to-fine AND scheduling gives fast early convergence (AND-3/4) AND deep fine
+correction (AND-6/7). Result: **1.32% @1205 seeds** — 3× better than AND-7 flat (4.3%),
+no extra data, same LFSR-16 generator, same greedy budget.
 
 ### AND-4: fast start, first to beat spray at 213 seeds
 P=0.0625 gives enough sparsity to accumulate 187 effective seeds in 213 tries (88%).
