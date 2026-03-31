@@ -41,6 +41,18 @@ Full analysis: [experiment_buffer_nonlinearity.md](experiment_buffer_nonlinearit
 
 ---
 
+## AND-5 / AND-6 / AND-7 (budget=1205 seeds)
+
+| AND-5  P=1/32 | AND-6  P=1/64 | AND-7  P=1/128 |
+|:-------------:|:-------------:|:--------------:|
+| ![and5](result_and5_buf.png) | ![and6](result_and6_buf.png) | ![and7](result_and7_buf.png) |
+| **14.1%** @1205 | **5.6%** @1205 | **4.3%** @1205 |
+| 561/1205 eff. | 1003/1205 eff. | 1131/1205 eff. |
+
+*AND-7: 94% effective seeds, face clearly readable. Same LFSR-16, same greedy budget.*
+
+---
+
 ## Nonlinearity Ladder
 
 | Method | P(flip) | @213 | @426 | @597 | @1205 | eff/1205 |
