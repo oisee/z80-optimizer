@@ -136,7 +136,6 @@ __global__ void greedy_raw_kernel(
 
     {
         uint32_t berr = 0;
-        for (int i = 0; i < PACKED_SIZE; i++) berr += __builtin_popcount(canvas[i] ^ d_target_bin[i]);
         errors[seed] = berr;
     }
 }
@@ -208,14 +207,14 @@ int main(int argc, char** argv) {
     uint8_t h_target_gray[H/2 * W/2];
     make_grayscale_target(h_target, h_target_gray);
 
-    uint8_t *d_canvas, *d_target_gray, *d_target_bin;
     uint32_t *d_errors, *d_best_err;
     uint16_t *d_best_seedB;
 
+    uint8_t *d_canvas, *d_target_gray;
+    uint32_t *d_errors, *d_best_err;
+    uint16_t *d_best_seedB;
     cudaMalloc(&d_canvas, PACKED_SIZE);
     cudaMalloc(&d_target_gray, H/2 * W/2);
-    cudaMalloc(&d_target_bin, PACKED_SIZE);
-    cudaMemcpy(d_target_bin, h_target, PACKED_SIZE, cudaMemcpyHostToDevice);
     cudaMalloc(&d_errors, 65536 * sizeof(uint32_t));
     cudaMalloc(&d_best_err, 65536 * sizeof(uint32_t));
     cudaMalloc(&d_best_seedB, 65536 * sizeof(uint16_t));
@@ -230,7 +229,7 @@ int main(int argc, char** argv) {
     if (mode == 0) {
         /* Quadtree: 1×8×8 + 4×4×4 + 16×2×2 + 64×1×1 = 85 seeds */
         struct Seg { int ox, oy, blk, warmup; };
-        Seg segs[85];
+        Seg segs[700];
         int ns = 0;
         /* L0 */
         segs[ns++] = {0, 0, 8, 0};
@@ -243,9 +242,18 @@ int main(int argc, char** argv) {
         /* L3: 64 tiles */
         for (int ty=0;ty<8;ty++) for(int tx=0;tx<8;tx++)
             segs[ns++] = {tx*16, ty*12, 1, 40+ty*8+tx};
+        /* L4: 256 fine tiles (16×16 grid, 1×1) */
+        for (int ty=0;ty<16;ty++) for(int tx=0;tx<16;tx++)
+            segs[ns++] = {tx*8, ty*6, 1, 110+ty*16+tx};
+        /* L5: 256 shifted tiles (overlap correction) */
+        for (int ty=0;ty<16;ty++) for(int tx=0;tx<16;tx++) {
+            int rx=tx*8+4, ry=ty*6+3;
+            if (rx+8<=128 && ry+6<=96)
+                segs[ns++] = {rx, ry, 1, 370+ty*16+tx};
+        }
         
         printf("Quadtree: %d segments\n", ns);
-        uint16_t all_seeds[85];
+        uint16_t all_seeds[700];
         
         for (int layer = 0; layer < ns; layer++) {
             int blk = segs[layer].blk;
@@ -253,7 +261,6 @@ int main(int argc, char** argv) {
             cudaMemcpy(d_canvas, h_canvas, PACKED_SIZE, cudaMemcpyHostToDevice);
             
             uint32_t h_errors[65536];
-            greedy_raw_kernel<<<256, 256>>>(d_canvas, d_target_gray, d_target_bin, d_errors, segs[layer].blk, segs[layer].warmup, segs[layer].ox, segs[layer].oy);
             cudaDeviceSynchronize();
             cudaMemcpy(h_errors, d_errors, 65536*sizeof(uint32_t), cudaMemcpyDeviceToHost);
 
@@ -325,7 +332,6 @@ int main(int argc, char** argv) {
     save_pgm(output_path, h_canvas);
     printf("Time: %.1fs\nOutput: %s\n", elapsed, output_path);
 
-    cudaFree(d_canvas); cudaFree(d_target_gray); cudaFree(d_target_bin);
     cudaFree(d_errors); cudaFree(d_best_err); cudaFree(d_best_seedB);
     return 0;
 }

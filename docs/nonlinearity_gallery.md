@@ -41,6 +41,23 @@ Full analysis: [experiment_buffer_nonlinearity.md](experiment_buffer_nonlinearit
 
 ---
 
+## ★★ Foveal AND-3→7 (budget=1209 seeds) — BEST RESULT
+
+**Greedy position search + AND-cascade. 0.06% @1209 seeds. 20× better than flat cascade.**
+
+Each step finds the best (seed, ox, oy) jointly — naturally focuses on high-error regions (the face).
+Key fix: minimize `delta` (improvement), not `newErr` (absolute), when comparing positions.
+CUDA: 28 seconds. 128 unique positions used. 939/1209 seeds effective (77.7%).
+
+| @step 9 | @step 100 | @step 213 | @step 597 | @step 1209 |
+|:-------:|:---------:|:---------:|:---------:|:----------:|
+| ![s009](result_fov_s0009.png) | ![s100](result_fov_s0100.png) | ![s213](result_fov_s0213.png) | ![s597](result_fov_s0597.png) | ![s1209](result_fov_s1209.png) |
+| 36.5% | 23.9% | 16.2% | 4.1% | **0.06%** |
+
+Full algorithm: [foveal_cascade.md](foveal_cascade.md) · Seeds: [data/foveal_cascade_seeds.json](../data/foveal_cascade_seeds.json)
+
+---
+
 ## ★ Cascade AND-3→7 (budget=1205 seeds)
 
 **Same LFSR-16. Same greedy. Same seed count. 3× better than AND-7 flat.**

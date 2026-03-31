@@ -1,2 +1,321 @@
 {"op": "div", "k": 2, "initB": 0, "ops": ["SRL A"], "length": 1, "tstates": 8}
 {"op": "div", "k": 4, "initB": 0, "ops": ["SLA A", "RLC A"], "length": 2, "tstates": 16}
+{"op": "div", "k": 16, "initB": 0, "ops": ["SLA A", "RLC A", "RLC A", "RLC A"], "length": 4, "tstates": 32}
+{"op": "div", "k": 32, "initB": 0, "ops": ["SRL A", "RLC A", "SLA A", "SLA A", "RLC A"], "length": 5, "tstates": 40}
+{"op": "div", "k": 113, "found": false}
+{"op": "div", "k": 114, "found": false}
+{"op": "div", "k": 115, "found": false}
+{"op": "div", "k": 116, "found": false}
+{"op": "div", "k": 117, "found": false}
+{"op": "div", "k": 118, "found": false}
+{"op": "div", "k": 76, "found": false}
+{"op": "div", "k": 119, "found": false}
+{"op": "div", "k": 77, "found": false}
+{"op": "div", "k": 78, "found": false}
+{"op": "div", "k": 120, "found": false}
+{"op": "div", "k": 79, "found": false}
+{"op": "div", "k": 80, "found": false}
+{"op": "div", "k": 121, "found": false}
+{"op": "div", "k": 81, "found": false}
+{"op": "div", "k": 82, "found": false}
+{"op": "div", "k": 122, "found": false}
+{"op": "div", "k": 83, "found": false}
+{"op": "div", "k": 84, "found": false}
+{"op": "div", "k": 123, "found": false}
+{"op": "div", "k": 85, "found": false}
+{"op": "div", "k": 86, "found": false}
+{"op": "div", "k": 124, "found": false}
+{"op": "div", "k": 87, "found": false}
+{"op": "div", "k": 88, "found": false}
+{"op": "div", "k": 125, "found": false}
+{"op": "div", "k": 89, "found": false}
+{"op": "div", "k": 90, "found": false}
+{"op": "div", "k": 126, "found": false}
+{"op": "div", "k": 91, "found": false}
+{"op": "div", "k": 92, "found": false}
+{"op": "div", "k": 93, "found": false}
+{"op": "div", "k": 127, "found": false}
+{"op": "div", "k": 128, "initB": 0, "ops": ["ADC A,A", "SBC A,A", "RLCA"], "length": 3, "tstates": 12}
+{"op": "div", "k": 94, "found": false}
+{"op": "div", "k": 129, "initB": 127, "ops": ["LD B,127", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 95, "found": false}
+{"op": "div", "k": 96, "found": false}
+{"op": "div", "k": 130, "initB": 126, "ops": ["LD B,126", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 97, "found": false}
+{"op": "div", "k": 98, "found": false}
+{"op": "div", "k": 99, "found": false}
+{"op": "div", "k": 131, "initB": 125, "ops": ["LD B,125", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 100, "found": false}
+{"op": "div", "k": 101, "found": false}
+{"op": "div", "k": 132, "initB": 124, "ops": ["LD B,124", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 102, "found": false}
+{"op": "div", "k": 103, "found": false}
+{"op": "div", "k": 133, "initB": 123, "ops": ["LD B,123", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 104, "found": false}
+{"op": "div", "k": 105, "found": false}
+{"op": "div", "k": 106, "found": false}
+{"op": "div", "k": 134, "initB": 122, "ops": ["LD B,122", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 107, "found": false}
+{"op": "div", "k": 108, "found": false}
+{"op": "div", "k": 135, "initB": 121, "ops": ["LD B,121", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 109, "found": false}
+{"op": "div", "k": 110, "found": false}
+{"op": "div", "k": 136, "initB": 120, "ops": ["LD B,120", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 111, "found": false}
+{"op": "div", "k": 112, "found": false}
+{"op": "div", "k": 137, "initB": 119, "ops": ["LD B,119", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 137, "initB": 119, "ops": ["LD B,119", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 138, "initB": 118, "ops": ["LD B,118", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 139, "initB": 117, "ops": ["LD B,117", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 138, "initB": 118, "ops": ["LD B,118", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 140, "initB": 116, "ops": ["LD B,116", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 141, "initB": 115, "ops": ["LD B,115", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 139, "initB": 117, "ops": ["LD B,117", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 142, "initB": 114, "ops": ["LD B,114", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 143, "initB": 113, "ops": ["LD B,113", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 144, "initB": 112, "ops": ["LD B,112", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 140, "initB": 116, "ops": ["LD B,116", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 145, "initB": 111, "ops": ["LD B,111", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 146, "initB": 110, "ops": ["LD B,110", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 141, "initB": 115, "ops": ["LD B,115", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 147, "initB": 109, "ops": ["LD B,109", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 148, "initB": 108, "ops": ["LD B,108", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 142, "initB": 114, "ops": ["LD B,114", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 149, "initB": 107, "ops": ["LD B,107", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 150, "initB": 106, "ops": ["LD B,106", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 151, "initB": 105, "ops": ["LD B,105", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 143, "initB": 113, "ops": ["LD B,113", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 152, "initB": 104, "ops": ["LD B,104", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 153, "initB": 103, "ops": ["LD B,103", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 144, "initB": 112, "ops": ["LD B,112", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 154, "initB": 102, "ops": ["LD B,102", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 155, "initB": 101, "ops": ["LD B,101", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 145, "initB": 111, "ops": ["LD B,111", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 156, "initB": 100, "ops": ["LD B,100", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 157, "initB": 99, "ops": ["LD B,99", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 158, "initB": 98, "ops": ["LD B,98", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 146, "initB": 110, "ops": ["LD B,110", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 159, "initB": 97, "ops": ["LD B,97", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 160, "initB": 96, "ops": ["LD B,96", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 147, "initB": 109, "ops": ["LD B,109", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 161, "initB": 95, "ops": ["LD B,95", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 162, "initB": 94, "ops": ["LD B,94", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 148, "initB": 108, "ops": ["LD B,108", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 163, "initB": 93, "ops": ["LD B,93", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 164, "initB": 92, "ops": ["LD B,92", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 165, "initB": 91, "ops": ["LD B,91", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 149, "initB": 107, "ops": ["LD B,107", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 166, "initB": 90, "ops": ["LD B,90", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 167, "initB": 89, "ops": ["LD B,89", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 150, "initB": 106, "ops": ["LD B,106", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 168, "initB": 88, "ops": ["LD B,88", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 169, "initB": 87, "ops": ["LD B,87", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 170, "initB": 86, "ops": ["LD B,86", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 151, "initB": 105, "ops": ["LD B,105", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 171, "initB": 85, "ops": ["LD B,85", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 172, "initB": 84, "ops": ["LD B,84", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 152, "initB": 104, "ops": ["LD B,104", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 173, "initB": 83, "ops": ["LD B,83", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 174, "initB": 82, "ops": ["LD B,82", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 153, "initB": 103, "ops": ["LD B,103", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 175, "initB": 81, "ops": ["LD B,81", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 176, "initB": 80, "ops": ["LD B,80", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 177, "initB": 79, "ops": ["LD B,79", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 154, "initB": 102, "ops": ["LD B,102", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 178, "initB": 78, "ops": ["LD B,78", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 179, "initB": 77, "ops": ["LD B,77", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 155, "initB": 101, "ops": ["LD B,101", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 180, "initB": 76, "ops": ["LD B,76", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 181, "initB": 75, "ops": ["LD B,75", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 156, "initB": 100, "ops": ["LD B,100", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 182, "initB": 74, "ops": ["LD B,74", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 183, "initB": 73, "ops": ["LD B,73", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 184, "initB": 72, "ops": ["LD B,72", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 157, "initB": 99, "ops": ["LD B,99", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 185, "initB": 71, "ops": ["LD B,71", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 186, "initB": 70, "ops": ["LD B,70", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 158, "initB": 98, "ops": ["LD B,98", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 187, "initB": 69, "ops": ["LD B,69", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 188, "initB": 68, "ops": ["LD B,68", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 159, "initB": 97, "ops": ["LD B,97", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 189, "initB": 67, "ops": ["LD B,67", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 190, "initB": 66, "ops": ["LD B,66", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 191, "initB": 65, "ops": ["LD B,65", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 160, "initB": 96, "ops": ["LD B,96", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 192, "initB": 64, "ops": ["LD B,64", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 193, "initB": 63, "ops": ["LD B,63", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 161, "initB": 95, "ops": ["LD B,95", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 194, "initB": 62, "ops": ["LD B,62", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 195, "initB": 61, "ops": ["LD B,61", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 162, "initB": 94, "ops": ["LD B,94", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 196, "initB": 60, "ops": ["LD B,60", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 197, "initB": 59, "ops": ["LD B,59", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 198, "initB": 58, "ops": ["LD B,58", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 163, "initB": 93, "ops": ["LD B,93", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 199, "initB": 57, "ops": ["LD B,57", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 200, "initB": 56, "ops": ["LD B,56", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 164, "initB": 92, "ops": ["LD B,92", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 201, "initB": 55, "ops": ["LD B,55", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 202, "initB": 54, "ops": ["LD B,54", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 203, "initB": 53, "ops": ["LD B,53", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 165, "initB": 91, "ops": ["LD B,91", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 204, "initB": 52, "ops": ["LD B,52", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 205, "initB": 51, "ops": ["LD B,51", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 166, "initB": 90, "ops": ["LD B,90", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 206, "initB": 50, "ops": ["LD B,50", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 207, "initB": 49, "ops": ["LD B,49", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 167, "initB": 89, "ops": ["LD B,89", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 208, "initB": 48, "ops": ["LD B,48", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 209, "initB": 47, "ops": ["LD B,47", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 210, "initB": 46, "ops": ["LD B,46", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 168, "initB": 88, "ops": ["LD B,88", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 211, "initB": 45, "ops": ["LD B,45", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 212, "initB": 44, "ops": ["LD B,44", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 169, "initB": 87, "ops": ["LD B,87", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 213, "initB": 43, "ops": ["LD B,43", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 214, "initB": 42, "ops": ["LD B,42", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 170, "initB": 86, "ops": ["LD B,86", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 215, "initB": 41, "ops": ["LD B,41", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 171, "initB": 85, "ops": ["LD B,85", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 216, "initB": 40, "ops": ["LD B,40", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 217, "initB": 39, "ops": ["LD B,39", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 218, "initB": 38, "ops": ["LD B,38", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 172, "initB": 84, "ops": ["LD B,84", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 219, "initB": 37, "ops": ["LD B,37", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 220, "initB": 36, "ops": ["LD B,36", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 173, "initB": 83, "ops": ["LD B,83", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 221, "initB": 35, "ops": ["LD B,35", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 222, "initB": 34, "ops": ["LD B,34", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 174, "initB": 82, "ops": ["LD B,82", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 223, "initB": 33, "ops": ["LD B,33", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 224, "initB": 32, "ops": ["LD B,32", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 225, "initB": 31, "ops": ["LD B,31", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 175, "initB": 81, "ops": ["LD B,81", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 226, "initB": 30, "ops": ["LD B,30", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 227, "initB": 29, "ops": ["LD B,29", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 176, "initB": 80, "ops": ["LD B,80", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 228, "initB": 28, "ops": ["LD B,28", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 229, "initB": 27, "ops": ["LD B,27", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 230, "initB": 26, "ops": ["LD B,26", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 177, "initB": 79, "ops": ["LD B,79", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 231, "initB": 25, "ops": ["LD B,25", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 232, "initB": 24, "ops": ["LD B,24", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 178, "initB": 78, "ops": ["LD B,78", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 233, "initB": 23, "ops": ["LD B,23", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 234, "initB": 22, "ops": ["LD B,22", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 179, "initB": 77, "ops": ["LD B,77", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 235, "initB": 21, "ops": ["LD B,21", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 236, "initB": 20, "ops": ["LD B,20", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 237, "initB": 19, "ops": ["LD B,19", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 180, "initB": 76, "ops": ["LD B,76", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 238, "initB": 18, "ops": ["LD B,18", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 239, "initB": 17, "ops": ["LD B,17", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 181, "initB": 75, "ops": ["LD B,75", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 240, "initB": 16, "ops": ["LD B,16", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 241, "initB": 15, "ops": ["LD B,15", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 182, "initB": 74, "ops": ["LD B,74", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 242, "initB": 14, "ops": ["LD B,14", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 243, "initB": 13, "ops": ["LD B,13", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 244, "initB": 12, "ops": ["LD B,12", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 183, "initB": 73, "ops": ["LD B,73", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 245, "initB": 11, "ops": ["LD B,11", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 246, "initB": 10, "ops": ["LD B,10", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 184, "initB": 72, "ops": ["LD B,72", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 247, "initB": 9, "ops": ["LD B,9", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 248, "initB": 8, "ops": ["LD B,8", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 249, "initB": 7, "ops": ["LD B,7", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 185, "initB": 71, "ops": ["LD B,71", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 250, "initB": 6, "ops": ["LD B,6", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 251, "initB": 5, "ops": ["LD B,5", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 186, "initB": 70, "ops": ["LD B,70", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 252, "initB": 4, "ops": ["LD B,4", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 253, "initB": 3, "ops": ["LD B,3", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 187, "initB": 69, "ops": ["LD B,69", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 254, "initB": 2, "ops": ["LD B,2", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 255, "initB": 1, "ops": ["LD B,1", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 188, "initB": 68, "ops": ["LD B,68", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 189, "initB": 67, "ops": ["LD B,67", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 8, "initB": 0, "ops": ["SLA A", "SLA A", "RLC A"], "length": 3, "tstates": 24}
+{"op": "div", "k": 190, "initB": 66, "ops": ["LD B,66", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 191, "initB": 65, "ops": ["LD B,65", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 192, "initB": 64, "ops": ["LD B,64", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 193, "initB": 63, "ops": ["LD B,63", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 194, "initB": 62, "ops": ["LD B,62", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 195, "initB": 61, "ops": ["LD B,61", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 196, "initB": 60, "ops": ["LD B,60", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 197, "initB": 59, "ops": ["LD B,59", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 198, "initB": 58, "ops": ["LD B,58", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 199, "initB": 57, "ops": ["LD B,57", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 200, "initB": 56, "ops": ["LD B,56", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 201, "initB": 55, "ops": ["LD B,55", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 202, "initB": 54, "ops": ["LD B,54", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 203, "initB": 53, "ops": ["LD B,53", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 204, "initB": 52, "ops": ["LD B,52", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 205, "initB": 51, "ops": ["LD B,51", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 206, "initB": 50, "ops": ["LD B,50", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 207, "initB": 49, "ops": ["LD B,49", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 208, "initB": 48, "ops": ["LD B,48", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 209, "initB": 47, "ops": ["LD B,47", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 49, "found": false}
+{"op": "div", "k": 210, "initB": 46, "ops": ["LD B,46", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 50, "found": false}
+{"op": "div", "k": 211, "initB": 45, "ops": ["LD B,45", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 51, "found": false}
+{"op": "div", "k": 212, "initB": 44, "ops": ["LD B,44", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 52, "found": false}
+{"op": "div", "k": 213, "initB": 43, "ops": ["LD B,43", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 53, "found": false}
+{"op": "div", "k": 214, "initB": 42, "ops": ["LD B,42", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 54, "found": false}
+{"op": "div", "k": 55, "found": false}
+{"op": "div", "k": 215, "initB": 41, "ops": ["LD B,41", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 56, "found": false}
+{"op": "div", "k": 216, "initB": 40, "ops": ["LD B,40", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 57, "found": false}
+{"op": "div", "k": 217, "initB": 39, "ops": ["LD B,39", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 58, "found": false}
+{"op": "div", "k": 218, "initB": 38, "ops": ["LD B,38", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 59, "found": false}
+{"op": "div", "k": 219, "initB": 37, "ops": ["LD B,37", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 220, "initB": 36, "ops": ["LD B,36", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 61, "found": false}
+{"op": "div", "k": 221, "initB": 35, "ops": ["LD B,35", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 62, "found": false}
+{"op": "div", "k": 63, "found": false}
+{"op": "div", "k": 222, "initB": 34, "ops": ["LD B,34", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 223, "initB": 33, "ops": ["LD B,33", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 224, "initB": 32, "ops": ["LD B,32", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 225, "initB": 31, "ops": ["LD B,31", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 67, "found": false}
+{"op": "div", "k": 226, "initB": 30, "ops": ["LD B,30", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 227, "initB": 29, "ops": ["LD B,29", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 228, "initB": 28, "ops": ["LD B,28", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 229, "initB": 27, "ops": ["LD B,27", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 72, "found": false}
+{"op": "div", "k": 230, "initB": 26, "ops": ["LD B,26", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 231, "initB": 25, "ops": ["LD B,25", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 74, "found": false}
+{"op": "div", "k": 232, "initB": 24, "ops": ["LD B,24", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 233, "initB": 23, "ops": ["LD B,23", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 234, "initB": 22, "ops": ["LD B,22", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 235, "initB": 21, "ops": ["LD B,21", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 236, "initB": 20, "ops": ["LD B,20", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 237, "initB": 19, "ops": ["LD B,19", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 238, "initB": 18, "ops": ["LD B,18", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 239, "initB": 17, "ops": ["LD B,17", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 240, "initB": 16, "ops": ["LD B,16", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 241, "initB": 15, "ops": ["LD B,15", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 242, "initB": 14, "ops": ["LD B,14", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 243, "initB": 13, "ops": ["LD B,13", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 244, "initB": 12, "ops": ["LD B,12", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 245, "initB": 11, "ops": ["LD B,11", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 246, "initB": 10, "ops": ["LD B,10", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 247, "initB": 9, "ops": ["LD B,9", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 248, "initB": 8, "ops": ["LD B,8", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 249, "initB": 7, "ops": ["LD B,7", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 250, "initB": 6, "ops": ["LD B,6", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 251, "initB": 5, "ops": ["LD B,5", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 252, "initB": 4, "ops": ["LD B,4", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 253, "initB": 3, "ops": ["LD B,3", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 254, "initB": 2, "ops": ["LD B,2", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}
+{"op": "div", "k": 255, "initB": 1, "ops": ["LD B,1", , "ADC A,B", "SBC A,A", "RLCA"], "length": 4, "tstates": 19}

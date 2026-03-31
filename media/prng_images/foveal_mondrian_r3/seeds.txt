@@ -1,0 +1,17 @@
+# Segmented seeds: 16 segments, 32 bytes
+seg   0: 0x2322  L0 [0,0 128x96] blk=8 pts=768
+seg   1: 0x0000  L1 [124,92 4x4] blk=4 pts=4
+seg   2: 0xA96E  L1 [46,29 52x28] blk=4 pts=364
+seg   3: 0x0255  L1 [38,92 52x4] blk=4 pts=52
+seg   4: 0x430F  L2 [49,94 38x2] blk=2 pts=76
+seg   5: 0x024D  L2 [126,25 2x30] blk=2 pts=60
+seg   6: 0x1A5E  L2 [45,94 38x2] blk=2 pts=76
+seg   7: 0xDE8A  L2 [61,21 22x38] blk=2 pts=836
+seg   8: 0x0000  L2 [126,94 2x2] blk=2 pts=4
+seg   9: 0x0000  L3 [127,95 1x1] blk=1 pts=4
+seg  10: 0x7B68  L3 [61,25 26x34] blk=1 pts=3536
+seg  11: 0x4B90  L3 [127,39 1x15] blk=1 pts=60
+seg  12: 0x166E  L3 [50,31 30x20] blk=1 pts=2400
+seg  13: 0x3D8A  L3 [127,25 1x32] blk=1 pts=128
+seg  14: 0x0000  L3 [127,95 1x1] blk=1 pts=4
+seg  15: 0x1CC3  L3 [55,95 40x1] blk=1 pts=160
