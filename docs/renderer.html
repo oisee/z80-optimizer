@@ -9,15 +9,20 @@ body { background: #111; color: #ccc; font: 13px/1.5 monospace;
        display: flex; flex-direction: column; align-items: center;
        padding: 16px; gap: 10px; }
 h1 { font-size: 14px; color: #eee; }
-
 canvas { display: block; image-rendering: pixelated; border: 1px solid #333; }
-
 #layout { display: flex; gap: 14px; align-items: flex-start; }
-
-#sidebar { display: flex; flex-direction: column; gap: 8px; width: 220px; }
-
+#sidebar { display: flex; flex-direction: column; gap: 8px; width: 230px; }
 .panel { background: #161616; border: 1px solid #2a2a2a; border-radius: 4px; padding: 8px; }
-.panel h3 { font-size: 11px; color: #666; margin-bottom: 6px; text-transform: uppercase; letter-spacing: .05em; }
+.panel h3 { font-size: 11px; color: #555; margin-bottom: 6px; text-transform: uppercase; letter-spacing:.05em; }
+
+/* dataset selector */
+#presets { display: flex; flex-direction: column; gap: 4px; }
+.preset-btn { background: #1a1a1a; border: 1px solid #333; color: #aaa;
+              padding: 5px 8px; border-radius: 3px; cursor: pointer;
+              font: inherit; text-align: left; font-size: 12px; }
+.preset-btn:hover { background: #222; border-color: #555; }
+.preset-btn.active { background: #1a2a1a; border-color: #4a7a4a; color: #8d8; }
+.preset-meta { font-size: 9px; color: #555; margin-top: 1px; }
 
 /* stats */
 #stats { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
@@ -25,356 +30,315 @@ canvas { display: block; image-rendering: pixelated; border: 1px solid #333; }
 .stat .val { font-size: 15px; color: #eee; }
 .stat .lbl { font-size: 9px; color: #555; }
 
-/* layer toggles */
-.layer-btn { display: flex; align-items: center; gap: 6px; cursor: pointer;
-             padding: 3px 6px; border-radius: 3px; user-select: none; }
-.layer-btn:hover { background: #222; }
-.layer-btn input { cursor: pointer; }
-.layer-dot { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
+/* layer toggles — big buttons */
+#level-toggles { display: flex; flex-wrap: wrap; gap: 4px; }
+.lvl-btn { border: 2px solid #333; border-radius: 4px; padding: 4px 8px;
+           cursor: pointer; font: inherit; font-size: 11px;
+           background: #1a1a1a; color: #666; transition: all .1s; }
+.lvl-btn.on { color: #eee; border-color: var(--c); background: color-mix(in srgb, var(--c) 20%, #1a1a1a); }
+.lvl-btn:hover { background: #222; }
+.lvl-count { font-size: 9px; opacity:.6; }
 
 /* controls */
-#controls { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+#controls { display: flex; gap: 5px; flex-wrap: wrap; align-items: center; }
 button { background: #1e1e1e; border: 1px solid #3a3a3a; color: #ccc;
          padding: 4px 10px; border-radius: 3px; cursor: pointer; font: inherit; }
 button:hover { background: #2a2a2a; }
 button.on { background: #1e3a1e; border-color: #4a8a4a; color: #8f8; }
-#scrubber { width: 100%; }
-#speed-lbl { font-size: 11px; color: #555; }
+#scrubber { width: 100%; margin-top: 5px; }
 
 /* seed list */
-#seedlist { max-height: 220px; overflow-y: auto; font-size: 10px;
+#seedlist { max-height: 200px; overflow-y: auto; font-size: 10px;
             display: flex; flex-direction: column; gap: 1px; }
-.seed-row { display: flex; align-items: center; gap: 5px; padding: 1px 4px;
+.seed-row { display: flex; align-items: center; gap: 5px; padding: 2px 4px;
             border-radius: 2px; cursor: pointer; }
 .seed-row:hover { background: #1e1e1e; }
-.seed-row.active { background: #2a2a1a; }
-.seed-row.off { opacity: 0.35; }
+.seed-row.active { background: #2a2a18; outline: 1px solid #554; }
+.seed-row.off { opacity: .3; }
 .seed-dot { width: 8px; height: 8px; border-radius: 1px; flex-shrink: 0; }
 
 /* dropzone */
-#dropzone { border: 2px dashed #2a2a2a; border-radius: 4px; padding: 10px;
-            text-align: center; color: #444; cursor: pointer; font-size: 11px;
-            width: 100%; max-width: 752px; }
-#dropzone:hover, #dropzone.over { border-color: #555; color: #777; }
+#dropzone { border: 1px dashed #2a2a2a; border-radius: 3px; padding: 7px 10px;
+            color: #444; cursor: pointer; font-size: 11px; text-align:center;
+            width: 100%; max-width: 760px; }
+#dropzone:hover,.dropzone.over { border-color: #555; color: #777; }
 </style>
 </head>
 <body>
-<h1>AND-cascade renderer &nbsp;·&nbsp; LFSR-16 &nbsp;·&nbsp; XOR-reversible layers</h1>
+<h1>LFSR-16 · AND-cascade renderer · XOR-reversible layers</h1>
 
 <div id="dropzone" onclick="document.getElementById('filein').click()">
-  drop seed JSON · or click ·
-  <a href="javascript:loadAuto()" style="color:#58a">auto-load cascade_seeds.json</a>
+  drag &amp; drop seed JSON · or click to browse
   <input type="file" id="filein" accept=".json" style="display:none" onchange="loadFile(this)">
 </div>
 
 <div id="layout">
+<div id="sidebar">
 
-  <div id="sidebar">
+  <div class="panel">
+    <h3>dataset</h3>
+    <div id="presets"></div>
+  </div>
 
-    <div class="panel">
-      <h3>stats</h3>
-      <div id="stats">
-        <div class="stat"><div class="val" id="st-step">0/0</div><div class="lbl">step</div></div>
-        <div class="stat"><div class="val" id="st-on">0</div><div class="lbl">active</div></div>
-        <div class="stat"><div class="val" id="st-and">—</div><div class="lbl">AND-N</div></div>
-        <div class="stat"><div class="val" id="st-lbl">—</div><div class="lbl">layer</div></div>
-      </div>
+  <div class="panel">
+    <h3>stats</h3>
+    <div id="stats">
+      <div class="stat"><div class="val" id="st-step">0/0</div><div class="lbl">step</div></div>
+      <div class="stat"><div class="val" id="st-on">0</div><div class="lbl">active</div></div>
+      <div class="stat"><div class="val" id="st-and">—</div><div class="lbl">AND-N</div></div>
+      <div class="stat"><div class="val" id="st-lbl">—</div><div class="lbl">layer</div></div>
     </div>
+  </div>
 
-    <div class="panel">
-      <h3>AND-N levels &nbsp;<span style="color:#444;font-size:9px">(click to toggle all)</span></h3>
-      <div id="level-toggles"></div>
+  <div class="panel">
+    <h3>layers <span style="color:#3a3a3a;font-size:9px">click to toggle</span></h3>
+    <div id="level-toggles"></div>
+  </div>
+
+  <div class="panel">
+    <h3>playback</h3>
+    <div id="controls">
+      <button onclick="jumpTo(0)">⏮</button>
+      <button onclick="stepBy(-1)">◀</button>
+      <button id="btn-play" onclick="togglePlay()">▶</button>
+      <button onclick="stepBy(1)">▶|</button>
+      <button onclick="jumpTo(seeds.length)">⏭</button>
+      <label style="font-size:11px"><input type="checkbox" id="chk-inv" onchange="redraw()"> invert</label>
     </div>
-
-    <div class="panel">
-      <h3>playback</h3>
-      <div id="controls">
-        <button onclick="jumpTo(0)" title="rewind">⏮</button>
-        <button onclick="stepBy(-1)">◀</button>
-        <button id="btn-play" onclick="togglePlay()">▶</button>
-        <button onclick="stepBy(1)">▶|</button>
-        <button onclick="jumpTo(seeds.length)">⏭</button>
-        <label><input type="checkbox" id="chk-inv" onchange="redraw()"> invert</label>
-      </div>
-      <input type="range" id="scrubber" min="0" max="0" value="0"
-             oninput="jumpTo(+this.value)" style="margin-top:6px">
-      <div style="display:flex;align-items:center;gap:6px;margin-top:4px">
-        <span id="speed-lbl" style="font-size:10px;color:#555">30/s</span>
-        <input type="range" id="speed" min="1" max="300" value="30" style="flex:1"
-               oninput="stepsPerSec=+this.value;document.getElementById('speed-lbl').textContent=this.value+'/s'">
-      </div>
+    <input type="range" id="scrubber" min="0" max="0" value="0" oninput="jumpTo(+this.value)">
+    <div style="display:flex;align-items:center;gap:6px;margin-top:5px;font-size:10px;color:#555">
+      speed <span id="spd-lbl">30/s</span>
+      <input type="range" id="speed" min="1" max="300" value="30" style="flex:1"
+             oninput="stepsPerSec=+this.value;document.getElementById('spd-lbl').textContent=this.value+'/s'">
     </div>
+  </div>
 
-    <div class="panel">
-      <h3>seeds &nbsp;<span style="color:#444;font-size:9px">(click to toggle one)</span></h3>
-      <div id="seedlist"></div>
-    </div>
+  <div class="panel">
+    <h3>seeds <span style="color:#3a3a3a;font-size:9px">click = toggle one</span></h3>
+    <div id="seedlist"></div>
+  </div>
 
-  </div><!-- sidebar -->
-
-  <canvas id="cv" width="128" height="96" style="width:512px;height:384px"></canvas>
-
+</div><!-- sidebar -->
+<canvas id="cv" width="128" height="96" style="width:512px;height:384px"></canvas>
 </div><!-- layout -->
 
 <script>
-// ── LFSR-16 ──────────────────────────────────────────────────────────────────
-function lfsr16(s) { return (s >>> 1) ^ (s & 1 ? 0xB400 : 0); }
+// ── LFSR-16 ───────────────────────────────────────────────────────────────────
+function lfsr16(s) { return (s>>>1)^(s&1?0xB400:0); }
 
 function makeBuf(seed, warmup, andN) {
-  let s = seed || 1;
-  for (let i = 0; i < warmup; i++) s = lfsr16(s);
-  const buf = new Uint8Array(768);
-  for (let i = 0; i < 768; i++) {
-    let acc = 1;
-    for (let k = 0; k < andN; k++) { s = lfsr16(s); acc &= (s & 1); }
-    buf[i] = acc;
+  let s=seed||1;
+  for(let i=0;i<warmup;i++) s=lfsr16(s);
+  const buf=new Uint8Array(768);
+  for(let i=0;i<768;i++){
+    let acc=1;
+    for(let k=0;k<andN;k++){s=lfsr16(s);acc&=(s&1);}
+    buf[i]=acc;
   }
   return buf;
 }
 
-// XOR-apply buf onto pixel array. Since XOR is self-inverse: apply twice = undo.
-function applyBuf(pix, buf, ox, oy, blk) {
-  for (let by = 0; by < 24; by++)
-    for (let bx = 0; bx < 32; bx++) {
-      if (!buf[by*32+bx]) continue;
-      for (let dy = 0; dy < blk; dy++)
-        for (let dx = 0; dx < blk; dx++) {
-          const x = ox + bx*blk + dx, y = oy + by*blk + dy;
-          if (x >= 0 && x < 128 && y >= 0 && y < 96)
-            pix[y*128+x] ^= 1;
-        }
+function applyBuf(pix,buf,ox,oy,blk){
+  for(let by=0;by<24;by++) for(let bx=0;bx<32;bx++){
+    if(!buf[by*32+bx]) continue;
+    for(let dy=0;dy<blk;dy++) for(let dx=0;dx<blk;dx++){
+      const x=ox+bx*blk+dx, y=oy+by*blk+dy;
+      if(x>=0&&x<128&&y>=0&&y<96) pix[y*128+x]^=1;
     }
-}
-
-// ── state ────────────────────────────────────────────────────────────────────
-const W = 128, H = 96;
-let seeds = [];
-let bufs  = [];       // pre-computed Uint8Array per seed
-let pix   = new Uint8Array(W*H);
-let active = [];      // bool[] — is seed[i] currently applied?
-let cursor = 0;       // playback position
-let snapshots = {};   // step→Uint8Array for fast scrubbing
-let playing = false;
-let stepsPerSec = 30;
-
-// ── canvas ───────────────────────────────────────────────────────────────────
-const cv = document.getElementById('cv');
-const ctx = cv.getContext('2d');
-const idata = ctx.createImageData(W, H);
-
-function redraw() {
-  const inv = document.getElementById('chk-inv').checked;
-  for (let i = 0; i < W*H; i++) {
-    const v = (inv ? 1-pix[i] : pix[i]) * 255;
-    const p = i*4;
-    idata.data[p] = idata.data[p+1] = idata.data[p+2] = v;
-    idata.data[p+3] = 255;
   }
-  ctx.putImageData(idata, 0, 0);
 }
 
-// ── toggle a single seed (XOR = free undo) ───────────────────────────────────
-function toggleSeed(i) {
-  const r = seeds[i];
-  applyBuf(pix, bufs[i], r.ox, r.oy, r.blk);
-  active[i] = !active[i];
-  updateSeedRow(i);
-  updateStats();
-  redraw();
-}
+// ── state ─────────────────────────────────────────────────────────────────────
+const W=128, H=96;
+let seeds=[], bufs=[], active=[], pix=new Uint8Array(W*H);
+let cursor=0, snapshots={}, playing=false, stepsPerSec=30;
 
-// ── toggle entire AND-N level ────────────────────────────────────────────────
-function toggleLevel(andN, forceOn) {
-  const shouldBeOn = forceOn !== undefined ? forceOn :
-    !seeds.some((r, i) => r.and_n === andN && active[i]);
-  for (let i = 0; i < seeds.length; i++) {
-    if (seeds[i].and_n !== andN) continue;
-    if (active[i] !== shouldBeOn) toggleSeed(i);
+// ── canvas ────────────────────────────────────────────────────────────────────
+const cv=document.getElementById('cv'), ctx=cv.getContext('2d');
+const idata=ctx.createImageData(W,H);
+function redraw(){
+  const inv=document.getElementById('chk-inv').checked;
+  for(let i=0;i<W*H;i++){
+    const v=(inv?1-pix[i]:pix[i])*255, p=i*4;
+    idata.data[p]=idata.data[p+1]=idata.data[p+2]=v; idata.data[p+3]=255;
   }
-  updateLevelBtn(andN);
+  ctx.putImageData(idata,0,0);
+}
+
+// ── toggle single seed (XOR = free undo) ─────────────────────────────────────
+function toggleSeed(i){
+  applyBuf(pix,bufs[i],seeds[i].ox,seeds[i].oy,seeds[i].blk);
+  active[i]=!active[i];
+  document.getElementById('sr-'+i)?.classList.toggle('off',!active[i]);
+  updateLevelBtns(); updateStats(); redraw();
+}
+
+// ── toggle entire AND-N level ─────────────────────────────────────────────────
+function toggleLevel(andN){
+  const anyOn=seeds.some((r,i)=>r.and_n===andN&&active[i]);
+  for(let i=0;i<seeds.length;i++)
+    if(seeds[i].and_n===andN && active[i]===anyOn) toggleSeed(i);
+  updateLevelBtns();
 }
 
 // ── playback ──────────────────────────────────────────────────────────────────
-function jumpTo(n) {
-  n = Math.max(0, Math.min(seeds.length, n));
-  // find nearest snapshot ≤ n
-  let base = 0;
-  for (const k of Object.keys(snapshots).map(Number).sort((a,b)=>a-b))
-    if (k <= n) base = k;
+function jumpTo(n){
+  n=Math.max(0,Math.min(seeds.length,n));
+  let base=0;
+  for(const k of Object.keys(snapshots).map(Number).sort((a,b)=>a-b))
+    if(k<=n) base=k;
+  pix=snapshots[base].slice();
+  for(let i=0;i<seeds.length;i++) active[i]=i<base;
+  for(let i=base;i<n;i++){applyBuf(pix,bufs[i],seeds[i].ox,seeds[i].oy,seeds[i].blk);active[i]=true;}
+  cursor=n; updateUI(); redraw();
+}
+function stepBy(d){jumpTo(cursor+d);}
+function togglePlay(){
+  playing=!playing;
+  document.getElementById('btn-play').classList.toggle('on',playing);
+  document.getElementById('btn-play').textContent=playing?'⏸':'▶';
+  if(playing) tick();
+}
+function tick(){
+  if(!playing) return;
+  if(cursor>=seeds.length){togglePlay();return;}
+  applyBuf(pix,bufs[cursor],seeds[cursor].ox,seeds[cursor].oy,seeds[cursor].blk);
+  active[cursor]=true; cursor++;
+  updateUI(); redraw();
+  setTimeout(tick,1000/stepsPerSec);
+}
 
-  // restore snapshot state
-  pix = snapshots[base].slice();
-  for (let i = 0; i < seeds.length; i++) active[i] = i < base;
-
-  // apply remaining seeds from base to n
-  for (let i = base; i < n; i++) {
-    applyBuf(pix, bufs[i], seeds[i].ox, seeds[i].oy, seeds[i].blk);
-    active[i] = true;
+// ── load ──────────────────────────────────────────────────────────────────────
+function loadSeeds(data, presetId){
+  seeds=data.seeds||data;
+  bufs=seeds.map(r=>makeBuf(r.seed,r.warmup,r.and_n));
+  active=new Array(seeds.length).fill(false);
+  pix=new Uint8Array(W*H); cursor=0;
+  snapshots={0:pix.slice()};
+  let s=pix.slice();
+  for(let i=0;i<seeds.length;i++){
+    applyBuf(s,bufs[i],seeds[i].ox,seeds[i].oy,seeds[i].blk);
+    if((i+1)%50===0||i===seeds.length-1) snapshots[i+1]=s.slice();
   }
-  cursor = n;
-  updateUI();
-  redraw();
+  document.getElementById('scrubber').max=seeds.length;
+  // mark active preset
+  document.querySelectorAll('.preset-btn').forEach(b=>b.classList.remove('active'));
+  if(presetId) document.getElementById('pb-'+presetId)?.classList.add('active');
+  buildLevelBtns(); buildSeedList(); updateUI(); redraw();
 }
 
-function stepBy(d) { jumpTo(cursor + d); }
+// ── UI ────────────────────────────────────────────────────────────────────────
+const AND_COL={3:'#4b9a5a',4:'#5588c0',5:'#c09030',6:'#c06028',7:'#d03030'};
 
-function togglePlay() {
-  playing = !playing;
-  const btn = document.getElementById('btn-play');
-  btn.textContent = playing ? '⏸' : '▶';
-  btn.classList.toggle('on', playing);
-  if (playing) scheduleNext();
-}
-
-function scheduleNext() {
-  if (!playing) return;
-  if (cursor >= seeds.length) { togglePlay(); return; }
-  // apply one seed directly (no snapshot lookup overhead)
-  const r = seeds[cursor];
-  applyBuf(pix, bufs[cursor], r.ox, r.oy, r.blk);
-  active[cursor] = true;
-  cursor++;
-  updateUI();
-  redraw();
-  setTimeout(scheduleNext, 1000 / stepsPerSec);
-}
-
-// ── load data ─────────────────────────────────────────────────────────────────
-function loadSeeds(data) {
-  seeds = data.seeds || data;
-  bufs  = seeds.map(r => makeBuf(r.seed, r.warmup, r.and_n));
-  active = new Array(seeds.length).fill(false);
-  pix   = new Uint8Array(W*H);
-  cursor = 0;
-
-  // pre-compute snapshots every 50 seeds
-  snapshots = { 0: pix.slice() };
-  let s = pix.slice();
-  for (let i = 0; i < seeds.length; i++) {
-    applyBuf(s, bufs[i], seeds[i].ox, seeds[i].oy, seeds[i].blk);
-    if ((i+1) % 50 === 0 || i === seeds.length-1)
-      snapshots[i+1] = s.slice();
+function buildLevelBtns(){
+  const el=document.getElementById('level-toggles'); el.innerHTML='';
+  const levels=[...new Set(seeds.map(r=>r.and_n))].sort((a,b)=>a-b);
+  for(const n of levels){
+    const count=seeds.filter(r=>r.and_n===n).length;
+    const col=AND_COL[n]||'#888';
+    const btn=document.createElement('button');
+    btn.className='lvl-btn'; btn.id='lvl-'+n;
+    btn.style.setProperty('--c',col);
+    btn.innerHTML=`AND-${n}<br><span class="lvl-count">${count} seeds</span>`;
+    btn.onclick=()=>toggleLevel(n);
+    el.appendChild(btn);
   }
-
-  document.getElementById('scrubber').max = seeds.length;
-  document.getElementById('dropzone').style.opacity = '0.3';
-
-  buildLevelToggles();
-  buildSeedList();
-  updateUI();
-  redraw();
+  updateLevelBtns();
 }
 
-// ── UI building ───────────────────────────────────────────────────────────────
-const AND_COL = { 3:'#4b8a5a', 4:'#5580b0', 5:'#a07030', 6:'#b05028', 7:'#b03030' };
-
-function buildLevelToggles() {
-  const el = document.getElementById('level-toggles');
-  el.innerHTML = '';
-  const levels = [...new Set(seeds.map(r => r.and_n))].sort((a,b)=>a-b);
-  for (const n of levels) {
-    const count = seeds.filter(r => r.and_n === n).length;
-    const div = document.createElement('div');
-    div.className = 'layer-btn';
-    div.id = 'lvl-' + n;
-    div.innerHTML = `<div class="layer-dot" style="background:${AND_COL[n]||'#888'}"></div>
-      AND-${n} <span style="color:#444;font-size:10px">(${count})</span>`;
-    div.onclick = () => toggleLevel(n);
-    div.style.opacity = '0.5';
-    el.appendChild(div);
+function updateLevelBtns(){
+  const levels=[...new Set(seeds.map(r=>r.and_n))];
+  for(const n of levels){
+    const anyOn=seeds.some((r,i)=>r.and_n===n&&active[i]);
+    document.getElementById('lvl-'+n)?.classList.toggle('on',anyOn);
   }
 }
 
-function updateLevelBtn(andN) {
-  const anyOn = seeds.some((r, i) => r.and_n === andN && active[i]);
-  const el = document.getElementById('lvl-' + andN);
-  if (el) el.style.opacity = anyOn ? '1' : '0.5';
-}
-
-function buildSeedList() {
-  const el = document.getElementById('seedlist');
-  el.innerHTML = '';
-  for (let i = 0; i < seeds.length; i++) {
-    const r = seeds[i];
-    const div = document.createElement('div');
-    div.className = 'seed-row off';
-    div.id = 'sr-' + i;
-    div.innerHTML = `<div class="seed-dot" style="background:${AND_COL[r.and_n]||'#888'}"></div>
+function buildSeedList(){
+  const el=document.getElementById('seedlist'); el.innerHTML='';
+  for(let i=0;i<seeds.length;i++){
+    const r=seeds[i]; const col=AND_COL[r.and_n]||'#888';
+    const div=document.createElement('div');
+    div.className='seed-row off'; div.id='sr-'+i;
+    div.innerHTML=`<div class="seed-dot" style="background:${col}"></div>
       <span style="color:#555">${i+1}</span>
-      <span style="color:#888">AND${r.and_n}</span>
-      <span style="color:#555">${r.ox},${r.oy} ×${r.blk}</span>`;
-    div.onclick = () => toggleSeed(i);
-    div.title = `seed=${r.seed} warmup=${r.warmup} label=${r.label}`;
+      <span style="color:#777">AND${r.and_n}</span>
+      <span style="color:#444">${r.ox},${r.oy}×${r.blk}</span>`;
+    div.onclick=()=>toggleSeed(i);
+    div.title=`seed=${r.seed} warmup=${r.warmup} label=${r.label}`;
     el.appendChild(div);
   }
 }
 
-function updateSeedRow(i) {
-  const el = document.getElementById('sr-' + i);
-  if (!el) return;
-  el.classList.toggle('off', !active[i]);
-  el.classList.toggle('active', i === cursor-1);
-  // scroll into view during playback
-  if (i === cursor-1 && playing) el.scrollIntoView({block:'nearest'});
-  updateLevelBtn(seeds[i].and_n);
+function updateStats(){
+  document.getElementById('st-on').textContent=active.filter(Boolean).length;
+}
+function updateUI(){
+  const r=seeds[cursor-1];
+  document.getElementById('st-step').textContent=cursor+'/'+seeds.length;
+  document.getElementById('st-and').textContent=r?'AND-'+r.and_n:'—';
+  document.getElementById('st-lbl').textContent=r?r.label.replace(/L3p\d+-/,''):'—';
+  document.getElementById('scrubber').value=cursor;
+  updateStats(); updateLevelBtns();
+  // seed list scroll
+  const prev=document.querySelector('.seed-row.active');
+  if(prev) prev.classList.remove('active');
+  const cur=document.getElementById('sr-'+(cursor-1));
+  if(cur){cur.classList.add('active');if(playing)cur.scrollIntoView({block:'nearest'});}
+  for(let i=0;i<seeds.length;i++)
+    document.getElementById('sr-'+i)?.classList.toggle('off',!active[i]);
 }
 
-function updateStats() {
-  const on = active.filter(Boolean).length;
-  document.getElementById('st-on').textContent = on;
-}
+// ── presets ───────────────────────────────────────────────────────────────────
+const PRESETS=[
+  {id:'cascade', label:'Cascade AND-3→7', meta:'1171 seeds · 1.2% @1205',
+   paths:['../data/cascade_seeds.json','data/cascade_seeds.json']},
+  {id:'and4',    label:'AND-4 flat',       meta:'~187 seeds · 25% @213',
+   paths:['../data/flat_and4_seeds.json','data/flat_and4_seeds.json']},
+  {id:'and7',    label:'AND-7 flat',       meta:'1131 seeds · 4.3% @1205',
+   paths:['../data/flat_and7_seeds.json','data/flat_and7_seeds.json']},
+];
 
-function updateUI() {
-  const r = seeds[cursor-1];
-  document.getElementById('st-step').textContent = cursor + '/' + seeds.length;
-  document.getElementById('st-and').textContent  = r ? 'AND-' + r.and_n : '—';
-  document.getElementById('st-lbl').textContent  = r ? r.label.replace(/L3p\d+-/, '') : '—';
-  document.getElementById('scrubber').value = cursor;
-  updateStats();
-  // update seed list highlight
-  const prev = document.querySelector('.seed-row.active');
-  if (prev) prev.classList.remove('active');
-  const cur = document.getElementById('sr-' + (cursor-1));
-  if (cur) { cur.classList.add('active'); cur.scrollIntoView({block:'nearest'}); }
-  // mark applied rows
-  for (let i = 0; i < seeds.length; i++) {
-    const el = document.getElementById('sr-' + i);
-    if (el) el.classList.toggle('off', !active[i]);
+function buildPresets(){
+  const el=document.getElementById('presets');
+  for(const p of PRESETS){
+    const btn=document.createElement('button');
+    btn.className='preset-btn'; btn.id='pb-'+p.id;
+    btn.innerHTML=`${p.label}<div class="preset-meta">${p.meta}</div>`;
+    btn.onclick=()=>fetchPreset(p);
+    el.appendChild(btn);
   }
 }
 
-// ── file loading ──────────────────────────────────────────────────────────────
-function loadFile(inp) {
-  const f = inp.files[0]; if (!f) return;
-  const rd = new FileReader();
-  rd.onload = e => loadSeeds(JSON.parse(e.target.result));
-  rd.readAsText(f);
-}
-
-function loadAuto() {
-  const paths = ['../data/cascade_seeds.json', 'cascade_seeds.json', 'data/cascade_seeds.json'];
-  const tryNext = (i) => {
-    if (i >= paths.length) { alert('Could not auto-load. Drop the file manually.'); return; }
-    fetch(paths[i]).then(r => { if (!r.ok) throw 0; return r.json(); })
-      .then(loadSeeds).catch(() => tryNext(i+1));
+function fetchPreset(p){
+  const tryNext=(i)=>{
+    if(i>=p.paths.length){alert('Could not load '+p.label+'. Drop JSON manually.');return;}
+    fetch(p.paths[i]).then(r=>{if(!r.ok)throw 0;return r.json();})
+      .then(d=>loadSeeds(d,p.id)).catch(()=>tryNext(i+1));
   };
   tryNext(0);
 }
 
-// drag-drop
-const dz = document.getElementById('dropzone');
-dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('over'); });
-dz.addEventListener('dragleave', () => dz.classList.remove('over'));
-dz.addEventListener('drop', e => {
-  e.preventDefault(); dz.classList.remove('over');
-  const f = e.dataTransfer.files[0]; if (!f) return;
-  const rd = new FileReader();
-  rd.onload = ev => loadSeeds(JSON.parse(ev.target.result));
+function loadFile(inp){
+  const f=inp.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=e=>loadSeeds(JSON.parse(e.target.result));
+  rd.readAsText(f);
+}
+
+const dz=document.getElementById('dropzone');
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('over');});
+dz.addEventListener('dragleave',()=>dz.classList.remove('over'));
+dz.addEventListener('drop',e=>{
+  e.preventDefault();dz.classList.remove('over');
+  const f=e.dataTransfer.files[0]; if(!f) return;
+  const rd=new FileReader();
+  rd.onload=ev=>loadSeeds(JSON.parse(ev.target.result));
   rd.readAsText(f);
 });
 
-// auto-load on open
-loadAuto();
+buildPresets();
+fetchPreset(PRESETS[0]); // auto-load cascade
 </script>
 </body>
 </html>
