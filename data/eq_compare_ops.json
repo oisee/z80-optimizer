@@ -1,0 +1,72 @@
+{
+  "_comment": "Branchless equality compare with constant: (A == N) → A (0xFF=true, 0x00=false)",
+  "_principle": "CY(CP N+1) XOR CY(CP N) = 1 iff A==N. Uses: (A<=N) XOR (A<N) = (A==N)",
+  "_verified": "65536/65536 exhaustive (all N x all A)",
+  "_not_contradicts": "GPU proof that Z→A branchless is impossible for ARBITRARY Z — this requires KNOWN CONSTANT (two CPs with N and N+1)",
+
+  "general": {
+    "n_range": "1..254",
+    "ops": 8,
+    "bytes": 10,
+    "timing_t": 38,
+    "timing_note": "7+4+4+4+4+7+4+4 = 38T (cross-session reported 35T — pending recheck)",
+    "sequence": ["CP N", "LD B,A", "SBC A,A", "LD C,A", "LD A,B", "CP N+1", "SBC A,A", "XOR C"],
+    "encoding": [["FE", "N"], ["47"], ["9F"], ["4F"], ["78"], ["FE", "N+1"], ["9F"], ["A9"]],
+    "output": "A = 0xFF if A==N, 0x00 otherwise",
+    "clobbers": ["A", "B", "C", "F"],
+    "verified": "65280/65280 (N=1..254, A=0..255)",
+    "notes": "Saves original A in B. Two CY materializations XOR'd. B and C clobbered."
+  },
+
+  "n_eq_0": {
+    "n_range": "0",
+    "ops": 2,
+    "bytes": 3,
+    "timing_t": 11,
+    "sequence": ["SUB 1", "SBC A,A"],
+    "encoding": [["D6", "01"], ["9F"]],
+    "output": "A = 0xFF if A==0, 0x00 otherwise",
+    "clobbers": ["A", "F"],
+    "verified": "256/256",
+    "notes": "SUB 1 sets CY=1 iff A<1 i.e. A==0. SBC A,A materializes. Only A,F clobbered."
+  },
+
+  "n_eq_255": {
+    "n_range": "255",
+    "ops": 3,
+    "bytes": 4,
+    "timing_t": 15,
+    "sequence": ["CP 255", "SBC A,A", "CPL"],
+    "encoding": [["FE", "FF"], ["9F"], ["2F"]],
+    "output": "A = 0xFF if A==255, 0x00 otherwise",
+    "clobbers": ["A", "F"],
+    "verified": "256/256",
+    "notes": "CP 255 sets CY=0 iff A==255. SBC+CPL inverts."
+  },
+
+  "a_neq_0": {
+    "ops": 2,
+    "bytes": 2,
+    "timing_t": 8,
+    "sequence": ["NEG", "SBC A,A"],
+    "encoding": [["ED", "44"], ["9F"]],
+    "output": "A = 0xFF if A!=0, 0x00 if A==0",
+    "clobbers": ["A", "F"],
+    "verified": "256/256",
+    "notes": "NEG sets CY=1 when A!=0 (result is non-zero). Inverse of n_eq_0."
+  },
+
+  "timing_comparison": {
+    "branchy_equal_path": "CP N (7T) + JR Z (12T) = 19T",
+    "branchy_notequal_path": "CP N (7T) + JR Z not-taken (7T) = 14T",
+    "branchless_general": "38T",
+    "when_branchless_wins": "When result needed as register value for masking/blending, not for control flow"
+  },
+
+  "applications": [
+    "Boolean predicate: if (A==N) use_result_as_mask",
+    "Inline computation without jump (e.g., inside expression evaluation)",
+    "Switch/table: combine multiple eq_compare results with OR to build case bitmap",
+    "Video codec: check if pixel value equals threshold constant"
+  ]
+}

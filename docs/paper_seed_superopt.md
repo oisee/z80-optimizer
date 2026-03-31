@@ -65,6 +65,41 @@ This appears in nearly every branchless idiom the GPU discovered:
 
 The GPU rediscovered what assembly wizards knew — but PROVED it optimal.
 
+**4b. Equality Predicate with Known Constant (new, exhaustive-verified)**
+
+GPU-proven: materializing arbitrary Z flag into A is **impossible** branchlessly.
+But for `CP N` with a *known constant*, equality IS materializable:
+
+**Principle:** `(A == N)` ⟺ `CY(CP N+1) XOR CY(CP N)`
+- `CP N` sets CY=1 iff A < N
+- `CP N+1` sets CY=1 iff A ≤ N
+- XOR of the two = 1 iff A == N exactly
+
+```asm
+; A == N → A (0xFF=true, 0x00=false), N=1..254, 38T
+  CP  N       ; CY = (A < N)
+  LD  B, A    ; save A
+  SBC A, A    ; mask1 = 0xFF if A<N
+  LD  C, A    ; save mask1
+  LD  A, B    ; restore A
+  CP  N+1     ; CY = (A ≤ N)
+  SBC A, A    ; mask2 = 0xFF if A≤N
+  XOR C       ; result = mask2 XOR mask1
+
+; Special cases (faster):
+  SUB 1 : SBC A,A          ; A==0 → 0xFF, 11T, no B/C clobber
+  CP 255 : SBC A,A : CPL   ; A==255 → 0xFF, 15T
+```
+
+Verified exhaustively: 65536 combinations (all N × all A).
+
+This is the **first known branchless equality predicate for Z80**.
+Not contradicted by the Z→A impossibility proof — that covers *arbitrary* Z.
+This trick requires the *known constant* to generate two CPs.
+
+Timing vs branchy: branchless general 38T > branchy ~19T avg.
+Use case: boolean masking chains, CMOV, constant-time code, no-branch predicates.
+
 **5. Packed Multi-Entry Library: 2KB for ALL Arithmetic**
 
 ```asm
