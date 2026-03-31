@@ -230,6 +230,38 @@ __global__ void searchKernel(
 }
 
 /* ====================================================================
+ * buildCatalogKernel: precompute 192-bit carrier bitmaps for all seeds.
+ * One thread per seed (tid → seed = tid+1). Output layout:
+ *   cat_d[(tid)*6 .. (tid)*6+5]  =  uint32_t[6]  (24 bytes, 192 bits)
+ * Bit index: by*16 + bx  (bx in [0,15], by in [0,11]) — valid blk=8 blocks.
+ * ==================================================================== */
+__global__ void buildCatalogKernel(uint32_t * __restrict__ cat_d, int andN) {
+    int tid = blockIdx.x * blockDim.x + threadIdx.x;
+    if (tid >= NSEEDS) return;
+
+    uint16_t s = (uint16_t)(tid + 1);
+    uint32_t bm[6] = {0,0,0,0,0,0};
+
+    for (int by = 0; by < 24; by++) {
+        for (int bx = 0; bx < 32; bx++) {
+            uint8_t acc = 1;
+            for (int k = 0; k < andN; k++) {
+                uint16_t bit = s & 1u; s >>= 1; if (bit) s ^= 0xB400u;
+                acc &= (uint8_t)(s & 1u);
+            }
+            /* Only record the 192 valid carrier blocks (bx<16, by<12) */
+            if (bx < 16 && by < 12 && acc) {
+                int idx = by * 16 + bx;
+                bm[idx >> 5] |= (1u << (idx & 31));
+            }
+        }
+    }
+
+    int base = tid * 6;
+    for (int w = 0; w < 6; w++) cat_d[base + w] = bm[w];
+}
+
+/* ====================================================================
  * applyBuf (host)
  * ==================================================================== */
 void applyBuf(uint8_t *canvas, const uint8_t buf[BUF_N], int ox, int oy, int blk) {
@@ -463,12 +495,184 @@ static int cp_carrier_gpu(const uint8_t *cnv_pack, const uint8_t *tgt_pack,
     return best_delta;
 }
 
+/* ====================================================================
+ * cp_build_catalog: build and save carrier catalog file.
+ * File layout: "CPCT" magic (4B) + andN_lo(u8) + andN_hi(u8) +
+ *              n_seeds(u32le=65535) + data[n_andN × n_seeds × 24B]
+ * Total for andN 3-8: 10 + 6×65535×24 = ~9.4 MB.
+ * ==================================================================== */
+int cp_build_catalog(int gpu_id, const char *path, int andN_lo, int andN_hi) {
+    cudaSetDevice(gpu_id);
+    cudaDeviceProp prop; cudaGetDeviceProperties(&prop, gpu_id);
+    int n_andN = andN_hi - andN_lo + 1;
+    size_t layer_u32 = (size_t)NSEEDS * 6;
+    size_t layer_bytes = layer_u32 * sizeof(uint32_t);
+
+    printf("[catalog] GPU %d: %s | andN=%d..%d seeds=1..%d (%.1f MB)\n",
+           gpu_id, prop.name, andN_lo, andN_hi, NSEEDS,
+           (10.0 + n_andN * layer_bytes) / 1048576.0);
+
+    uint32_t *cat_d;
+    if (cudaMalloc(&cat_d, layer_bytes) != cudaSuccess) {
+        fprintf(stderr, "[catalog] cudaMalloc failed\n"); return 1;
+    }
+
+    FILE *fp = fopen(path, "wb");
+    if (!fp) { perror(path); cudaFree(cat_d); return 1; }
+
+    /* Header */
+    uint8_t hdr[10];
+    memcpy(hdr, "CPCT", 4);
+    hdr[4] = (uint8_t)andN_lo;
+    hdr[5] = (uint8_t)andN_hi;
+    uint32_t ns = NSEEDS;
+    memcpy(hdr + 6, &ns, 4);
+    fwrite(hdr, 1, 10, fp);
+
+    uint32_t *cat_h = (uint32_t*)malloc(layer_bytes);
+    int bs = 256, gs = (NSEEDS + bs - 1) / bs;
+
+    for (int andN = andN_lo; andN <= andN_hi; andN++) {
+        printf("[catalog] andN=%d ... ", andN); fflush(stdout);
+        buildCatalogKernel<<<gs, bs>>>(cat_d, andN);
+        cudaDeviceSynchronize();
+        cudaMemcpy(cat_h, cat_d, layer_bytes, cudaMemcpyDeviceToHost);
+        fwrite(cat_h, 4, layer_u32, fp);
+        printf("done\n");
+    }
+
+    free(cat_h);
+    fclose(fp);
+    cudaFree(cat_d);
+    printf("[catalog] saved %s\n", path);
+    return 0;
+}
+
+/* ====================================================================
+ * cp_query_catalog: find best (seed, andN) via popcount over hot blocks,
+ * then rescore top-K with actual pixel-level delta.
+ *
+ * hot_bits[6]: 192-bit mask — bit (by*16+bx) set iff 8×8 block has ≥1 error.
+ * hot_px[6]:   per-block error count (uint8, 0-64), parallel to hot_bits.
+ *              Used for weighted proxy: score = sum(active blocks, 64-2*err_count).
+ * Proxy selects TOP_K candidates; pixel rescore picks the final winner.
+ * ==================================================================== */
+#define CP_TOPK 16
+static uint16_t cp_query_catalog(const uint32_t *catalog, int n_seeds,
+                                  int cat_andN_lo, int cat_andN_hi,
+                                  const uint32_t hot_bits[6],
+                                  const uint8_t  hot_px[192],  /* err count per block */
+                                  int *out_andN) {
+    int n_andN = cat_andN_hi - cat_andN_lo + 1;
+
+    /* Top-K heap: (proxy_score, seed, andN_idx) — keep CP_TOPK lowest scores */
+    struct { int score; uint16_t seed; int ai; } topk[CP_TOPK];
+    int topk_n = 0, topk_worst = INT_MIN;
+
+    for (int ai = 0; ai < n_andN; ai++) {
+        const uint32_t *layer = catalog + (size_t)ai * n_seeds * 6;
+        for (int s = 0; s < n_seeds; s++) {
+            const uint32_t *bm = layer + s * 6;
+            /* Weighted proxy: sum over active blocks (64 - 2*err_in_block) */
+            int score = 0;
+            for (int bi = 0; bi < 192; bi++) {
+                if (bm[bi >> 5] & (1u << (bi & 31)))
+                    score += 64 - 2 * (int)hot_px[bi];
+            }
+            if (topk_n < CP_TOPK || score < topk_worst) {
+                int slot = (topk_n < CP_TOPK) ? topk_n++ : 0;
+                /* Find worst slot to replace */
+                if (topk_n > 1 && slot == 0) {
+                    int worst = 0;
+                    for (int k = 1; k < topk_n; k++)
+                        if (topk[k].score > topk[worst].score) worst = k;
+                    slot = worst;
+                }
+                topk[slot].score = score;
+                topk[slot].seed  = (uint16_t)(s + 1);
+                topk[slot].ai    = ai;
+                /* Recompute worst */
+                topk_worst = topk[0].score;
+                for (int k = 1; k < topk_n; k++)
+                    if (topk[k].score > topk_worst) topk_worst = topk[k].score;
+            }
+        }
+    }
+
+    /* Pixel-level rescore of top-K candidates */
+    *out_andN = cat_andN_lo + (topk_n ? topk[0].ai : 0);
+    uint16_t best_seed = topk_n ? topk[0].seed : 1;
+    (void)hot_bits;  /* hot_bits used implicitly via hot_px */
+    return best_seed;
+}
+
+/* Pixel rescore of catalog top-K: recompute actual delta for each candidate. */
+static uint16_t cp_rescore_topk(
+        const uint32_t *catalog, int n_seeds, int cat_andN_lo, int cat_andN_hi,
+        const uint32_t hot_bits[6], const uint8_t hot_px[192],
+        const uint8_t canvas[W*H], const uint8_t target_px[W*H],
+        int *out_andN, int *out_score) {
+    uint16_t best_seed = 1;
+    int best_andN = cat_andN_lo;
+    int best_delta = INT_MAX;
+
+    int n_andN = cat_andN_hi - cat_andN_lo + 1;
+
+    struct { int score; uint16_t seed; int ai; } topk[CP_TOPK];
+    int topk_n = 0, topk_worst = INT_MIN;
+
+    for (int ai = 0; ai < n_andN; ai++) {
+        const uint32_t *layer = catalog + (size_t)ai * n_seeds * 6;
+        for (int s = 0; s < n_seeds; s++) {
+            const uint32_t *bm = layer + s * 6;
+            int score = 0;
+            for (int bi = 0; bi < 192; bi++)
+                if (bm[bi >> 5] & (1u << (bi & 31)))
+                    score += 64 - 2 * (int)hot_px[bi];
+            if (topk_n < CP_TOPK || score < topk_worst) {
+                int slot = topk_n < CP_TOPK ? topk_n++ : 0;
+                if (slot == 0 && topk_n > 1) {
+                    for (int k = 1; k < topk_n; k++)
+                        if (topk[k].score > topk[slot].score) slot = k;
+                }
+                topk[slot] = {score, (uint16_t)(s+1), ai};
+                topk_worst = topk[0].score;
+                for (int k = 1; k < topk_n; k++)
+                    if (topk[k].score > topk_worst) topk_worst = topk[k].score;
+            }
+        }
+    }
+    (void)hot_bits;
+
+    /* Pixel rescore */
+    uint8_t buf[BUF_N];
+    for (int k = 0; k < topk_n; k++) {
+        makeBuf_h(topk[k].seed, 0, cat_andN_lo + topk[k].ai, buf);
+        int delta = 0;
+        for (int by = 0; by < 12; by++) for (int bx = 0; bx < 16; bx++) {
+            if (!buf[by*32+bx]) continue;
+            for (int dy = 0; dy < 8; dy++) for (int dx = 0; dx < 8; dx++) {
+                int x = bx*8+dx, y = by*8+dy;
+                delta += (canvas[y*W+x] != target_px[y*W+x]) ? -1 : +1;
+            }
+        }
+        if (delta < best_delta) {
+            best_delta = delta; best_seed = topk[k].seed;
+            best_andN  = cat_andN_lo + topk[k].ai;
+        }
+    }
+    *out_andN = best_andN;
+    *out_score = best_delta;
+    return best_seed;
+}
+
 int cp_search(const char *target_path, const char *init_canvas_path,
               const char *out_json, const char *out_pgm,
               int carrier_seeds,   /* max seed value for carrier (255=u8 CPU, 65535=u16 GPU) */
               int andN_lo,         /* carrier andN search range low  (default 3) */
               int andN_hi,         /* carrier andN search range high (default 8) */
-              int gpu_id) {        /* GPU device for carrier_seeds > 255 */
+              int gpu_id,          /* GPU device for carrier_seeds > 255 or catalog build */
+              const char *catalog_path) { /* NULL = no catalog; path = load and use */
 
     uint8_t tgt_pack[PS], cnv_pack[PS];
     int tw, th;
@@ -494,7 +698,54 @@ int cp_search(const char *target_path, const char *init_canvas_path,
     uint8_t carrier_buf[BUF_N], tmp_buf[BUF_N];
     uint16_t cs = 1; int can = andN_lo, c_score = INT_MAX;
 
-    if (carrier_seeds > 255) {
+    /* Try to load catalog for fast CPU carrier search */
+    uint32_t *catalog_data = NULL;
+    int cat_n_seeds = 0, cat_andN_lo = andN_lo, cat_andN_hi = andN_hi;
+    if (catalog_path) {
+        FILE *cf = fopen(catalog_path, "rb");
+        if (cf) {
+            uint8_t hdr[10]; fread(hdr, 1, 10, cf);
+            if (memcmp(hdr, "CPCT", 4) == 0) {
+                cat_andN_lo = hdr[4]; cat_andN_hi = hdr[5];
+                memcpy(&cat_n_seeds, hdr + 6, 4);
+                int n_andN = cat_andN_hi - cat_andN_lo + 1;
+                size_t data_u32 = (size_t)n_andN * cat_n_seeds * 6;
+                catalog_data = (uint32_t*)malloc(data_u32 * sizeof(uint32_t));
+                fread(catalog_data, sizeof(uint32_t), data_u32, cf);
+                printf("[carrier] catalog loaded: %s (andN=%d..%d seeds=%d)\n",
+                       catalog_path, cat_andN_lo, cat_andN_hi, cat_n_seeds);
+            } else {
+                printf("[carrier] bad catalog magic, ignoring %s\n", catalog_path);
+            }
+            fclose(cf);
+        } else {
+            printf("[carrier] catalog not found: %s, falling back\n", catalog_path);
+        }
+    }
+
+    if (catalog_data) {
+        /* Build per-block error counts (hot_px[192]) and binary bitmap (hot_bits[6]) */
+        uint32_t hot_bits[6] = {0,0,0,0,0,0};
+        uint8_t  hot_px[192];
+        int hot_count = 0;
+        for (int by = 0; by < 12; by++) for (int bx = 0; bx < 16; bx++) {
+            int err = 0;
+            for (int dy = 0; dy < 8; dy++)
+                for (int dx = 0; dx < 8; dx++)
+                    if (canvas[(by*8+dy)*W+(bx*8+dx)] != target_px[(by*8+dy)*W+(bx*8+dx)])
+                        err++;
+            hot_px[by*16+bx] = (uint8_t)err;
+            if (err) { int bit = by*16+bx; hot_bits[bit>>5] |= (1u<<(bit&31)); hot_count++; }
+        }
+        printf("[carrier] catalog query: %d hot 8×8 blocks (top-%d rescore)...",
+               hot_count, CP_TOPK); fflush(stdout);
+        cs = cp_rescore_topk(catalog_data, cat_n_seeds,
+                             cat_andN_lo, cat_andN_hi,
+                             hot_bits, hot_px, canvas, target_px, &can, &c_score);
+        free(catalog_data);
+        makeBuf_h(cs, 0, can, carrier_buf);
+        printf(" seed=%u andN=%d score=%+d\n", cs, can, c_score);
+    } else if (carrier_seeds > 255) {
         /* GPU: full u16 search (65535 seeds × each andN, one kernel launch per andN) */
         printf("[carrier] GPU search seeds=1..%d andN=%d..%d ...\n",
                carrier_seeds, andN_lo, andN_hi);
@@ -653,10 +904,12 @@ int main(int argc, char **argv) {
     int   auto_bounce = 0;    /* --auto-bounce: probe blk=1,2,4 and pick best for L0 */
     const char *weight_map  = NULL; /* --weight-map file.wmap: per-pixel uint8 importance */
     int   auto_weight = 0;          /* --auto-weight: derive weight from canvas/target diff each step */
-    int   mode_cp         = 0;      /* --cp: carrier-payload hierarchical search */
-    int   cp_carrier_seeds = 255;   /* --cp-seeds N: carrier search range 1..N (255=u8, 65535=u16) */
-    int   cp_andN_lo      = 3;      /* --cp-andN-lo N: carrier andN range low  */
-    int   cp_andN_hi      = 8;      /* --cp-andN-hi N: carrier andN range high */
+    int   mode_cp              = 0;   /* --cp: carrier-payload hierarchical search */
+    int   cp_carrier_seeds     = 255; /* --cp-seeds N: carrier search range 1..N (255=u8, 65535=u16) */
+    int   cp_andN_lo           = 3;   /* --cp-andN-lo N: carrier andN range low  */
+    int   cp_andN_hi           = 8;   /* --cp-andN-hi N: carrier andN range high */
+    const char *cp_catalog_build = NULL; /* --cp-build-catalog path: build and save catalog */
+    const char *cp_catalog       = NULL; /* --cp-catalog path: load catalog for fast carrier search */
 
     /* Multi-zone: up to 8 zones (x,y pairs) */
     int zones_x[8], zones_y[8], n_zones = 0;
@@ -685,7 +938,9 @@ int main(int argc, char **argv) {
         else if(!strcmp(argv[i],"--cp-seeds")  && i+1<argc) cp_carrier_seeds = atoi(argv[++i]);
         else if(!strcmp(argv[i],"--cp-andN-lo")&& i+1<argc) cp_andN_lo       = atoi(argv[++i]);
         else if(!strcmp(argv[i],"--cp-andN-hi")&& i+1<argc) cp_andN_hi       = atoi(argv[++i]);
-        else if(!strcmp(argv[i],"--cp-andN")   && i+1<argc) { cp_andN_lo = cp_andN_hi = atoi(argv[++i]); }
+        else if(!strcmp(argv[i],"--cp-andN")          && i+1<argc) { cp_andN_lo = cp_andN_hi = atoi(argv[++i]); }
+        else if(!strcmp(argv[i],"--cp-build-catalog") && i+1<argc) cp_catalog_build = argv[++i];
+        else if(!strcmp(argv[i],"--cp-catalog")       && i+1<argc) cp_catalog       = argv[++i];
         else if(!strcmp(argv[i],"--preset")       && i+1<argc) {
             if(!strcmp(argv[++i],"fine")) preset_fine = 1;
         }
@@ -749,11 +1004,18 @@ int main(int argc, char **argv) {
     if(budget_cap > total_phase_budget)
         phases[nphases-1].budget += (budget_cap - total_phase_budget);
 
+    /* Build carrier catalog and exit (no --target needed) */
+    if(cp_catalog_build) {
+        return cp_build_catalog(gpu_id, cp_catalog_build, cp_andN_lo, cp_andN_hi);
+    }
+
     if(!target_path) { fprintf(stderr,"--target required\n"); return 1; }
 
-    /* CP mode: CPU-only, no GPU needed */
-    if(mode_cp) return cp_search(target_path, init_canvas, out_json, out_pgm,
-                                 cp_carrier_seeds, cp_andN_lo, cp_andN_hi, gpu_id);
+    /* CP mode: dispatch to cp_search (GPU only used if carrier_seeds>255 and no catalog) */
+    if(mode_cp) {
+        return cp_search(target_path, init_canvas, out_json, out_pgm,
+                         cp_carrier_seeds, cp_andN_lo, cp_andN_hi, gpu_id, cp_catalog);
+    }
 
     cudaSetDevice(gpu_id);
     cudaDeviceProp prop; cudaGetDeviceProperties(&prop,gpu_id);

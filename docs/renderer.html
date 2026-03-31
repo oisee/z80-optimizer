@@ -92,11 +92,6 @@ button.fmode.on { background: #2a2a5a; border-color: #7a7acf; color: #aaf; }
 <div id="sidebar">
 
   <div class="panel">
-    <h3>dataset</h3>
-    <div id="presets"></div>
-  </div>
-
-  <div class="panel">
     <h3>stats</h3>
     <div id="stats">
       <div class="stat"><div class="val" id="st-step">0/0</div><div class="lbl">step</div></div>
@@ -161,6 +156,11 @@ button.fmode.on { background: #2a2a5a; border-color: #7a7acf; color: #aaf; }
       <button onclick="startGifExport()" id="gif-btn">Export GIF</button>
       <div id="gif-status" style="font-size:9px;color:#555;min-height:12px"></div>
     </div>
+  </div>
+
+  <div class="panel">
+    <h3>dataset</h3>
+    <div id="presets"></div>
   </div>
 
 </div><!-- sidebar -->
@@ -544,6 +544,18 @@ const PRESETS=[
    paths:['../data/badapple_partial.json','data/badapple_partial.json']},
   {id:'foveal',  label:'Foveal AND-3→7 ★', meta:'939 seeds · 0.06% @1209 · CUDA 28s',
    paths:['../data/foveal_cascade_seeds.json','data/foveal_cascade_seeds.json']},
+  {id:'yozhik_a5082',    label:'Ёжик anim50-82 🦔 plain (kf128/dt32)',   meta:'11 frames · 448 seeds · anim fr50-82 step3 (src 250-400 step15) · 19%→15%',
+   paths:['../data/yozhik_anim50_82_b32.json','data/yozhik_anim50_82_b32.json']},
+  {id:'yozhik_a5082_wgt',label:'Ёжик anim50-82 🦔 weighted (kf128/dt32)', meta:'11 frames · 448 seeds · heatmap weighted',
+   paths:['../data/yozhik_anim50_82_wgt.json','data/yozhik_anim50_82_wgt.json']},
+  {id:'yozhik_a5082_cp', label:'Ёжик anim50-82 🦔 CP ⚡ (kf128/dt32)',    meta:'11 frames · 138 seeds · carrier-payload · 3× fewer seeds',
+   paths:['../data/yozhik_anim50_82_cp.json','data/yozhik_anim50_82_cp.json']},
+  {id:'yozhik',label:'Ёжик в тумане 🦔 (104fr b256)',  meta:'104 frames · 16,964 seeds · 4kf+100dt · avg dt=149 · contrast boosted',
+   paths:['../data/yozhik_b256.json','data/yozhik_b256.json']},
+  {id:'che_anima2',label:'Che Anima 2 🎬 (63fr b256)',  meta:'63 frames · 16,490 seeds · 3kf+60dt · kf/30 · budget kf=512 dt=256',
+   paths:['../data/che_anima2_b256.json','data/che_anima2_b256.json']},
+  {id:'che_anima2_b64',label:'Che Anima 2 🎬 (63fr b64)',  meta:'63 frames · ~4000 seeds · 3kf+60dt · kf/30 · budget kf=128 dt=64',
+   paths:['../data/che_anima2_b64.json','data/che_anima2_b64.json']},
   {id:'che_anim',label:'Che animation 🎬',  meta:'25 frames · 16,114 seeds · 0.07% avg · delta',
    paths:['../data/che_anim_flat.json','data/che_anim_flat.json']},
   {id:'che_unw128v2',label:'Che unweighted (128) ★',  meta:'25 frames · 4104 seeds · AND-3→7 · best overall',
