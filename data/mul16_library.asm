@@ -47,20 +47,20 @@ mul16_192:  ; ×192  (9 insts, 92T)
     LD C,A
     ADD HL,BC
     ADD HL,BC
-    JP mul16_64
+    JRS mul16_64
 
 mul16_96:  ; ×96  (8 insts, 81T)
     LD C,A
     ADD HL,BC
     ADD HL,BC
-    JP mul16_32
+    JRS mul16_32
 
 mul16_160:  ; ×160  (9 insts, 92T)
     LD C,A
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_32
+    JRS mul16_32
 
 mul16_224:  ; ×224  (10 insts, 103T)
     LD C,A
@@ -68,20 +68,20 @@ mul16_224:  ; ×224  (10 insts, 103T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_32
+    JRS mul16_32
 
 mul16_48:  ; ×48  (7 insts, 70T)
     LD C,A
     ADD HL,BC
     ADD HL,BC
-    JP mul16_16
+    JRS mul16_16
 
 mul16_80:  ; ×80  (8 insts, 81T)
     LD C,A
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_16
+    JRS mul16_16
 
 mul16_112:  ; ×112  (9 insts, 92T)
     LD C,A
@@ -89,7 +89,7 @@ mul16_112:  ; ×112  (9 insts, 92T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_16
+    JRS mul16_16
 
 mul16_144:  ; ×144  (9 insts, 92T)
     LD C,A
@@ -97,7 +97,7 @@ mul16_144:  ; ×144  (9 insts, 92T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_16
+    JRS mul16_16
 
 mul16_176:  ; ×176  (10 insts, 103T)
     LD C,A
@@ -106,7 +106,7 @@ mul16_176:  ; ×176  (10 insts, 103T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_16
+    JRS mul16_16
 
 mul16_208:  ; ×208  (10 insts, 103T)
     LD C,A
@@ -115,7 +115,7 @@ mul16_208:  ; ×208  (10 insts, 103T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_16
+    JRS mul16_16
 
 mul16_240:  ; ×240  (10 insts, 107T)
     LD C,A
@@ -125,20 +125,20 @@ mul16_240:  ; ×240  (10 insts, 107T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_16
+    JRS mul16_16
 
 mul16_24:  ; ×24  (6 insts, 59T)
     LD C,A
     ADD HL,BC
     ADD HL,BC
-    JP mul16_8
+    JRS mul16_8
 
 mul16_40:  ; ×40  (7 insts, 70T)
     LD C,A
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_8
+    JRS mul16_8
 
 mul16_56:  ; ×56  (8 insts, 81T)
     LD C,A
@@ -146,7 +146,7 @@ mul16_56:  ; ×56  (8 insts, 81T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_8
+    JRS mul16_8
 
 mul16_72:  ; ×72  (8 insts, 81T)
     LD C,A
@@ -154,7 +154,7 @@ mul16_72:  ; ×72  (8 insts, 81T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_8
+    JRS mul16_8
 
 mul16_88:  ; ×88  (9 insts, 92T)
     LD C,A
@@ -163,7 +163,7 @@ mul16_88:  ; ×88  (9 insts, 92T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_8
+    JRS mul16_8
 
 mul16_104:  ; ×104  (9 insts, 92T)
     LD C,A
@@ -172,7 +172,7 @@ mul16_104:  ; ×104  (9 insts, 92T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_8
+    JRS mul16_8
 
 mul16_120:  ; ×120  (9 insts, 96T)
     LD C,A
@@ -182,7 +182,7 @@ mul16_120:  ; ×120  (9 insts, 96T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_8
+    JRS mul16_8
 
 mul16_136:  ; ×136  (9 insts, 92T)
     LD C,A
@@ -191,7 +191,7 @@ mul16_136:  ; ×136  (9 insts, 92T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_8
+    JRS mul16_8
 
 mul16_152:  ; ×152  (10 insts, 103T)
     LD C,A
@@ -201,7 +201,7 @@ mul16_152:  ; ×152  (10 insts, 103T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_8
+    JRS mul16_8
 
 mul16_168:  ; ×168  (10 insts, 103T)
     LD C,A
@@ -211,7 +211,7 @@ mul16_168:  ; ×168  (10 insts, 103T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_8
+    JRS mul16_8
 
 mul16_184:  ; ×184  (10 insts, 107T)
     LD C,A
@@ -222,7 +222,7 @@ mul16_184:  ; ×184  (10 insts, 107T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_8
+    JRS mul16_8
 
 mul16_200:  ; ×200  (10 insts, 103T)
     LD C,A
@@ -232,7 +232,7 @@ mul16_200:  ; ×200  (10 insts, 103T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_8
+    JRS mul16_8
 
 mul16_216:  ; ×216  (11 insts, 114T)
     LD C,A
@@ -243,7 +243,7 @@ mul16_216:  ; ×216  (11 insts, 114T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_8
+    JRS mul16_8
 
 mul16_232:  ; ×232  (11 insts, 114T)
     LD C,A
@@ -254,7 +254,7 @@ mul16_232:  ; ×232  (11 insts, 114T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_8
+    JRS mul16_8
 
 mul16_248:  ; ×248  (10 insts, 107T)
     LD C,A
@@ -265,20 +265,20 @@ mul16_248:  ; ×248  (10 insts, 107T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_8
+    JRS mul16_8
 
 mul16_12:  ; ×12  (5 insts, 48T)
     LD C,A
     ADD HL,BC
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_20:  ; ×20  (6 insts, 59T)
     LD C,A
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_28:  ; ×28  (7 insts, 70T)
     LD C,A
@@ -286,7 +286,7 @@ mul16_28:  ; ×28  (7 insts, 70T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_36:  ; ×36  (7 insts, 70T)
     LD C,A
@@ -294,7 +294,7 @@ mul16_36:  ; ×36  (7 insts, 70T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_44:  ; ×44  (8 insts, 81T)
     LD C,A
@@ -303,7 +303,7 @@ mul16_44:  ; ×44  (8 insts, 81T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_52:  ; ×52  (8 insts, 81T)
     LD C,A
@@ -312,7 +312,7 @@ mul16_52:  ; ×52  (8 insts, 81T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_60:  ; ×60  (8 insts, 85T)
     LD C,A
@@ -322,7 +322,7 @@ mul16_60:  ; ×60  (8 insts, 85T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_68:  ; ×68  (8 insts, 81T)
     LD C,A
@@ -331,7 +331,7 @@ mul16_68:  ; ×68  (8 insts, 81T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_76:  ; ×76  (9 insts, 92T)
     LD C,A
@@ -341,7 +341,7 @@ mul16_76:  ; ×76  (9 insts, 92T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_84:  ; ×84  (9 insts, 92T)
     LD C,A
@@ -351,7 +351,7 @@ mul16_84:  ; ×84  (9 insts, 92T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_92:  ; ×92  (9 insts, 96T)
     LD C,A
@@ -362,7 +362,7 @@ mul16_92:  ; ×92  (9 insts, 96T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_100:  ; ×100  (9 insts, 92T)
     LD C,A
@@ -372,7 +372,7 @@ mul16_100:  ; ×100  (9 insts, 92T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_108:  ; ×108  (10 insts, 103T)
     LD C,A
@@ -383,7 +383,7 @@ mul16_108:  ; ×108  (10 insts, 103T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_116:  ; ×116  (10 insts, 103T)
     LD C,A
@@ -394,7 +394,7 @@ mul16_116:  ; ×116  (10 insts, 103T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_124:  ; ×124  (9 insts, 96T)
     LD C,A
@@ -405,7 +405,7 @@ mul16_124:  ; ×124  (9 insts, 96T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_132:  ; ×132  (9 insts, 92T)
     LD C,A
@@ -415,7 +415,7 @@ mul16_132:  ; ×132  (9 insts, 92T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_140:  ; ×140  (10 insts, 103T)
     LD C,A
@@ -426,7 +426,7 @@ mul16_140:  ; ×140  (10 insts, 103T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_148:  ; ×148  (10 insts, 103T)
     LD C,A
@@ -437,7 +437,7 @@ mul16_148:  ; ×148  (10 insts, 103T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_156:  ; ×156  (10 insts, 107T)
     LD C,A
@@ -449,7 +449,7 @@ mul16_156:  ; ×156  (10 insts, 107T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_164:  ; ×164  (10 insts, 103T)
     LD C,A
@@ -460,7 +460,7 @@ mul16_164:  ; ×164  (10 insts, 103T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_172:  ; ×172  (11 insts, 114T)
     LD C,A
@@ -472,7 +472,7 @@ mul16_172:  ; ×172  (11 insts, 114T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_180:  ; ×180  (11 insts, 114T)
     LD C,A
@@ -484,7 +484,7 @@ mul16_180:  ; ×180  (11 insts, 114T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_188:  ; ×188  (10 insts, 107T)
     LD C,A
@@ -496,7 +496,7 @@ mul16_188:  ; ×188  (10 insts, 107T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_196:  ; ×196  (10 insts, 103T)
     LD C,A
@@ -507,7 +507,7 @@ mul16_196:  ; ×196  (10 insts, 103T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_204:  ; ×204  (11 insts, 114T)
     LD C,A
@@ -519,7 +519,7 @@ mul16_204:  ; ×204  (11 insts, 114T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_212:  ; ×212  (11 insts, 114T)
     LD C,A
@@ -531,7 +531,7 @@ mul16_212:  ; ×212  (11 insts, 114T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_220:  ; ×220  (11 insts, 118T)
     LD C,A
@@ -544,7 +544,7 @@ mul16_220:  ; ×220  (11 insts, 118T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_228:  ; ×228  (11 insts, 114T)
     LD C,A
@@ -556,7 +556,7 @@ mul16_228:  ; ×228  (11 insts, 114T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_236:  ; ×236  (11 insts, 122T)
     LD C,A
@@ -570,7 +570,7 @@ mul16_236:  ; ×236  (11 insts, 122T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_244:  ; ×244  (11 insts, 118T)
     LD C,A
@@ -583,20 +583,20 @@ mul16_244:  ; ×244  (11 insts, 118T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_4
+    JRS mul16_4
 
 mul16_6:  ; ×6  (4 insts, 37T)
     LD C,A
     ADD HL,BC
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_10:  ; ×10  (5 insts, 48T)
     LD C,A
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_14:  ; ×14  (6 insts, 59T)
     LD C,A
@@ -604,7 +604,7 @@ mul16_14:  ; ×14  (6 insts, 59T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_18:  ; ×18  (6 insts, 59T)
     LD C,A
@@ -612,7 +612,7 @@ mul16_18:  ; ×18  (6 insts, 59T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_22:  ; ×22  (7 insts, 70T)
     LD C,A
@@ -621,7 +621,7 @@ mul16_22:  ; ×22  (7 insts, 70T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_26:  ; ×26  (7 insts, 70T)
     LD C,A
@@ -630,7 +630,7 @@ mul16_26:  ; ×26  (7 insts, 70T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_30:  ; ×30  (7 insts, 74T)
     LD C,A
@@ -640,7 +640,7 @@ mul16_30:  ; ×30  (7 insts, 74T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_34:  ; ×34  (7 insts, 70T)
     LD C,A
@@ -649,7 +649,7 @@ mul16_34:  ; ×34  (7 insts, 70T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_38:  ; ×38  (8 insts, 81T)
     LD C,A
@@ -659,7 +659,7 @@ mul16_38:  ; ×38  (8 insts, 81T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_42:  ; ×42  (8 insts, 81T)
     LD C,A
@@ -669,7 +669,7 @@ mul16_42:  ; ×42  (8 insts, 81T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_46:  ; ×46  (8 insts, 85T)
     LD C,A
@@ -680,7 +680,7 @@ mul16_46:  ; ×46  (8 insts, 85T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_50:  ; ×50  (8 insts, 81T)
     LD C,A
@@ -690,7 +690,7 @@ mul16_50:  ; ×50  (8 insts, 81T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_54:  ; ×54  (9 insts, 92T)
     LD C,A
@@ -701,7 +701,7 @@ mul16_54:  ; ×54  (9 insts, 92T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_58:  ; ×58  (9 insts, 92T)
     LD C,A
@@ -712,7 +712,7 @@ mul16_58:  ; ×58  (9 insts, 92T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_62:  ; ×62  (8 insts, 85T)
     LD C,A
@@ -723,7 +723,7 @@ mul16_62:  ; ×62  (8 insts, 85T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_66:  ; ×66  (8 insts, 81T)
     LD C,A
@@ -733,7 +733,7 @@ mul16_66:  ; ×66  (8 insts, 81T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_70:  ; ×70  (9 insts, 92T)
     LD C,A
@@ -744,7 +744,7 @@ mul16_70:  ; ×70  (9 insts, 92T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_74:  ; ×74  (9 insts, 92T)
     LD C,A
@@ -755,7 +755,7 @@ mul16_74:  ; ×74  (9 insts, 92T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_78:  ; ×78  (9 insts, 96T)
     LD C,A
@@ -767,7 +767,7 @@ mul16_78:  ; ×78  (9 insts, 96T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_82:  ; ×82  (9 insts, 92T)
     LD C,A
@@ -778,7 +778,7 @@ mul16_82:  ; ×82  (9 insts, 92T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_86:  ; ×86  (10 insts, 103T)
     LD C,A
@@ -790,7 +790,7 @@ mul16_86:  ; ×86  (10 insts, 103T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_90:  ; ×90  (10 insts, 103T)
     LD C,A
@@ -802,7 +802,7 @@ mul16_90:  ; ×90  (10 insts, 103T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_94:  ; ×94  (9 insts, 96T)
     LD C,A
@@ -814,7 +814,7 @@ mul16_94:  ; ×94  (9 insts, 96T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_98:  ; ×98  (9 insts, 92T)
     LD C,A
@@ -825,7 +825,7 @@ mul16_98:  ; ×98  (9 insts, 92T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_102:  ; ×102  (10 insts, 103T)
     LD C,A
@@ -837,7 +837,7 @@ mul16_102:  ; ×102  (10 insts, 103T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_106:  ; ×106  (10 insts, 103T)
     LD C,A
@@ -849,7 +849,7 @@ mul16_106:  ; ×106  (10 insts, 103T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_110:  ; ×110  (10 insts, 107T)
     LD C,A
@@ -862,7 +862,7 @@ mul16_110:  ; ×110  (10 insts, 107T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_114:  ; ×114  (10 insts, 103T)
     LD C,A
@@ -874,7 +874,7 @@ mul16_114:  ; ×114  (10 insts, 103T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_118:  ; ×118  (10 insts, 111T)
     LD C,A
@@ -888,7 +888,7 @@ mul16_118:  ; ×118  (10 insts, 111T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_122:  ; ×122  (10 insts, 107T)
     LD C,A
@@ -901,7 +901,7 @@ mul16_122:  ; ×122  (10 insts, 107T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_126:  ; ×126  (9 insts, 96T)
     LD C,A
@@ -913,7 +913,7 @@ mul16_126:  ; ×126  (9 insts, 96T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_130:  ; ×130  (9 insts, 92T)
     LD C,A
@@ -924,7 +924,7 @@ mul16_130:  ; ×130  (9 insts, 92T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_134:  ; ×134  (10 insts, 103T)
     LD C,A
@@ -936,7 +936,7 @@ mul16_134:  ; ×134  (10 insts, 103T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_138:  ; ×138  (10 insts, 103T)
     LD C,A
@@ -948,7 +948,7 @@ mul16_138:  ; ×138  (10 insts, 103T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_142:  ; ×142  (10 insts, 107T)
     LD C,A
@@ -961,7 +961,7 @@ mul16_142:  ; ×142  (10 insts, 107T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_146:  ; ×146  (10 insts, 103T)
     LD C,A
@@ -973,7 +973,7 @@ mul16_146:  ; ×146  (10 insts, 103T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_150:  ; ×150  (11 insts, 114T)
     LD C,A
@@ -986,7 +986,7 @@ mul16_150:  ; ×150  (11 insts, 114T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_154:  ; ×154  (11 insts, 114T)
     LD C,A
@@ -999,7 +999,7 @@ mul16_154:  ; ×154  (11 insts, 114T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_158:  ; ×158  (10 insts, 107T)
     LD C,A
@@ -1012,7 +1012,7 @@ mul16_158:  ; ×158  (10 insts, 107T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_162:  ; ×162  (10 insts, 103T)
     LD C,A
@@ -1024,7 +1024,7 @@ mul16_162:  ; ×162  (10 insts, 103T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_166:  ; ×166  (11 insts, 114T)
     LD C,A
@@ -1037,7 +1037,7 @@ mul16_166:  ; ×166  (11 insts, 114T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_170:  ; ×170  (11 insts, 114T)
     LD C,A
@@ -1050,7 +1050,7 @@ mul16_170:  ; ×170  (11 insts, 114T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_174:  ; ×174  (11 insts, 118T)
     LD C,A
@@ -1064,7 +1064,7 @@ mul16_174:  ; ×174  (11 insts, 118T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_178:  ; ×178  (11 insts, 114T)
     LD C,A
@@ -1077,7 +1077,7 @@ mul16_178:  ; ×178  (11 insts, 114T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_182:  ; ×182  (11 insts, 122T)
     LD C,A
@@ -1092,7 +1092,7 @@ mul16_182:  ; ×182  (11 insts, 122T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_186:  ; ×186  (11 insts, 118T)
     LD C,A
@@ -1106,7 +1106,7 @@ mul16_186:  ; ×186  (11 insts, 118T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_190:  ; ×190  (10 insts, 107T)
     LD C,A
@@ -1119,7 +1119,7 @@ mul16_190:  ; ×190  (10 insts, 107T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_194:  ; ×194  (10 insts, 103T)
     LD C,A
@@ -1131,7 +1131,7 @@ mul16_194:  ; ×194  (10 insts, 103T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_198:  ; ×198  (11 insts, 114T)
     LD C,A
@@ -1144,7 +1144,7 @@ mul16_198:  ; ×198  (11 insts, 114T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_202:  ; ×202  (11 insts, 114T)
     LD C,A
@@ -1157,7 +1157,7 @@ mul16_202:  ; ×202  (11 insts, 114T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_206:  ; ×206  (11 insts, 118T)
     LD C,A
@@ -1171,7 +1171,7 @@ mul16_206:  ; ×206  (11 insts, 118T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_210:  ; ×210  (11 insts, 114T)
     LD C,A
@@ -1184,7 +1184,7 @@ mul16_210:  ; ×210  (11 insts, 114T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_214:  ; ×214  (12 insts, 125T)
     LD C,A
@@ -1198,7 +1198,7 @@ mul16_214:  ; ×214  (12 insts, 125T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_218:  ; ×218  (12 insts, 125T)
     LD C,A
@@ -1212,7 +1212,7 @@ mul16_218:  ; ×218  (12 insts, 125T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_222:  ; ×222  (11 insts, 118T)
     LD C,A
@@ -1226,7 +1226,7 @@ mul16_222:  ; ×222  (11 insts, 118T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_226:  ; ×226  (11 insts, 114T)
     LD C,A
@@ -1239,7 +1239,7 @@ mul16_226:  ; ×226  (11 insts, 114T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_230:  ; ×230  (12 insts, 125T)
     LD C,A
@@ -1253,7 +1253,7 @@ mul16_230:  ; ×230  (12 insts, 125T)
     ADD HL,BC
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_234:  ; ×234  (12 insts, 125T)
     LD C,A
@@ -1267,7 +1267,7 @@ mul16_234:  ; ×234  (12 insts, 125T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_238:  ; ×238  (11 insts, 122T)
     LD C,A
@@ -1282,7 +1282,7 @@ mul16_238:  ; ×238  (11 insts, 122T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_242:  ; ×242  (11 insts, 118T)
     LD C,A
@@ -1296,7 +1296,7 @@ mul16_242:  ; ×242  (11 insts, 118T)
     ADD HL,HL
     ADD HL,HL
     ADD HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_246:  ; ×246  (11 insts, 122T)
     LD C,A
@@ -1311,7 +1311,7 @@ mul16_246:  ; ×246  (11 insts, 122T)
     ADD HL,HL
     OR A
     SBC HL,BC
-    JP mul16_2
+    JRS mul16_2
 
 mul16_3:  ; ×3  (3 insts, 26T)
     LD C,A

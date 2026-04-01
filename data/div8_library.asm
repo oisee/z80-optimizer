@@ -89,7 +89,7 @@ div_65:  ; ÷65  (14 insts, 123T | clobbers: A, C, F, H, L)
     SBC HL,BC
     LD A,H
     SRL A
-    JP div_32
+    JRS div_32
 
 div_73:  ; ÷73  (20 insts, 177T | clobbers: A, C, F, H, L)
     LD H,0
@@ -107,7 +107,7 @@ div_73:  ; ÷73  (20 insts, 177T | clobbers: A, C, F, H, L)
     ADD HL,BC
     LD A,H
     SRL A
-    JP div_32
+    JRS div_32
 
 div_74:  ; ÷74  (18 insts, 162T | clobbers: A, C, F, H, L)
     LD H,0
@@ -125,7 +125,7 @@ div_74:  ; ÷74  (18 insts, 162T | clobbers: A, C, F, H, L)
     OR A
     SBC HL,BC
     LD A,H
-    JP div_32
+    JRS div_32
 
 div_78:  ; ÷78  (21 insts, 188T | clobbers: A, C, F, H, L)
     SRL A
@@ -144,7 +144,7 @@ div_78:  ; ÷78  (21 insts, 188T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_32
+    JRS div_32
 
 div_81:  ; ÷81  (21 insts, 188T | clobbers: A, C, F, H, L)
     LD H,0
@@ -163,7 +163,7 @@ div_81:  ; ÷81  (21 insts, 188T | clobbers: A, C, F, H, L)
     ADD HL,BC
     LD A,H
     SRL A
-    JP div_32
+    JRS div_32
 
 div_85:  ; ÷85  (19 insts, 166T | clobbers: A, C, F, H, L)
     LD H,0
@@ -180,7 +180,7 @@ div_85:  ; ÷85  (19 insts, 166T | clobbers: A, C, F, H, L)
     ADD HL,BC
     LD A,H
     SRL A
-    JP div_32
+    JRS div_32
 
 div_89:  ; ÷89  (20 insts, 181T | clobbers: A, C, F, H, L)
     LD H,0
@@ -200,7 +200,7 @@ div_89:  ; ÷89  (20 insts, 181T | clobbers: A, C, F, H, L)
     ADD HL,BC
     LD A,H
     SRL A
-    JP div_32
+    JRS div_32
 
 div_99:  ; ÷99  (18 insts, 158T | clobbers: A, C, F, H, L)
     LD H,0
@@ -216,7 +216,7 @@ div_99:  ; ÷99  (18 insts, 158T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_32
+    JRS div_32
 
 div_17:  ; ÷17  (18 insts, 165T | clobbers: A, C, F, H, L)
     LD H,0
@@ -235,7 +235,7 @@ div_17:  ; ÷17  (18 insts, 165T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_16
+    JRS div_16
 
 div_37:  ; ÷37  (17 insts, 154T | clobbers: A, C, F, H, L)
     LD H,0
@@ -253,7 +253,7 @@ div_37:  ; ÷37  (17 insts, 154T | clobbers: A, C, F, H, L)
     OR A
     SBC HL,BC
     LD A,H
-    JP div_16
+    JRS div_16
 
 div_66:  ; ÷66  (18 insts, 162T | clobbers: A, C, F, H, L)
     SRL A
@@ -272,7 +272,7 @@ div_66:  ; ÷66  (18 insts, 162T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_16
+    JRS div_16
 
 div_100:  ; ÷100  (15 insts, 128T | clobbers: A, C, F, H, L)
     LD H,0
@@ -286,7 +286,7 @@ div_100:  ; ÷100  (15 insts, 128T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_16
+    JRS div_16
 
 div_102:  ; ÷102  (17 insts, 147T | clobbers: A, C, F, H, L)
     SRL A
@@ -302,7 +302,7 @@ div_102:  ; ÷102  (17 insts, 147T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_16
+    JRS div_16
 
 div_110:  ; ÷110  (18 insts, 158T | clobbers: A, C, F, H, L)
     SRL A
@@ -319,7 +319,7 @@ div_110:  ; ÷110  (18 insts, 158T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_16
+    JRS div_16
 
 div_111:  ; ÷111  (15 insts, 128T | clobbers: A, C, F, H, L)
     LD H,0
@@ -333,7 +333,7 @@ div_111:  ; ÷111  (15 insts, 128T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_16
+    JRS div_16
 
 div_116:  ; ÷116  (17 insts, 151T | clobbers: A, C, F, H, L)
     SRL A
@@ -351,7 +351,7 @@ div_116:  ; ÷116  (17 insts, 151T | clobbers: A, C, F, H, L)
     OR A
     SBC HL,BC
     LD A,H
-    JP div_16
+    JRS div_16
 
 div_22:  ; ÷22  (18 insts, 169T | clobbers: A, C, F, H, L)
     SRL A
@@ -373,7 +373,7 @@ div_22:  ; ÷22  (18 insts, 169T | clobbers: A, C, F, H, L)
     OR A
     SBC HL,BC
     LD A,H
-    JP div_8
+    JRS div_8
 
 div_26:  ; ÷26  (15 insts, 135T | clobbers: A, C, F, H, L)
     LD H,0
@@ -390,7 +390,7 @@ div_26:  ; ÷26  (15 insts, 135T | clobbers: A, C, F, H, L)
     OR A
     SBC HL,BC
     LD A,H
-    JP div_8
+    JRS div_8
 
 div_34:  ; ÷34  (17 insts, 154T | clobbers: A, C, F, H, L)
     SRL A
@@ -409,7 +409,7 @@ div_34:  ; ÷34  (17 insts, 154T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_8
+    JRS div_8
 
 div_36:  ; ÷36  (15 insts, 131T | clobbers: A, C, F, H, L)
     LD H,0
@@ -424,7 +424,7 @@ div_36:  ; ÷36  (15 insts, 131T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_8
+    JRS div_8
 
 div_50:  ; ÷50  (14 insts, 120T | clobbers: A, C, F, H, L)
     LD H,0
@@ -438,7 +438,7 @@ div_50:  ; ÷50  (14 insts, 120T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_8
+    JRS div_8
 
 div_58:  ; ÷58  (16 insts, 143T | clobbers: A, C, F, H, L)
     SRL A
@@ -456,7 +456,7 @@ div_58:  ; ÷58  (16 insts, 143T | clobbers: A, C, F, H, L)
     OR A
     SBC HL,BC
     LD A,H
-    JP div_8
+    JRS div_8
 
 div_70:  ; ÷70  (16 insts, 147T | clobbers: A, C, F, H, L)
     SRL A
@@ -476,7 +476,7 @@ div_70:  ; ÷70  (16 insts, 147T | clobbers: A, C, F, H, L)
     OR A
     SBC HL,BC
     LD A,H
-    JP div_8
+    JRS div_8
 
 div_82:  ; ÷82  (13 insts, 109T | clobbers: A, C, F, H, L)
     LD H,0
@@ -489,7 +489,7 @@ div_82:  ; ÷82  (13 insts, 109T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_8
+    JRS div_8
 
 div_84:  ; ÷84  (15 insts, 128T | clobbers: A, C, F, H, L)
     SRL A
@@ -504,7 +504,7 @@ div_84:  ; ÷84  (15 insts, 128T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_8
+    JRS div_8
 
 div_92:  ; ÷92  (16 insts, 139T | clobbers: A, C, F, H, L)
     SRL A
@@ -520,7 +520,7 @@ div_92:  ; ÷92  (16 insts, 139T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_8
+    JRS div_8
 
 div_98:  ; ÷98  (13 insts, 109T | clobbers: A, C, F, H, L)
     LD H,0
@@ -533,7 +533,7 @@ div_98:  ; ÷98  (13 insts, 109T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_8
+    JRS div_8
 
 div_106:  ; ÷106  (15 insts, 132T | clobbers: A, C, F, H, L)
     SRL A
@@ -550,7 +550,7 @@ div_106:  ; ÷106  (15 insts, 132T | clobbers: A, C, F, H, L)
     OR A
     SBC HL,BC
     LD A,H
-    JP div_8
+    JRS div_8
 
 div_108:  ; ÷108  (13 insts, 109T | clobbers: A, C, F, H, L)
     LD H,0
@@ -563,7 +563,7 @@ div_108:  ; ÷108  (13 insts, 109T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_8
+    JRS div_8
 
 div_118:  ; ÷118  (15 insts, 128T | clobbers: A, C, F, H, L)
     SRL A
@@ -578,7 +578,7 @@ div_118:  ; ÷118  (15 insts, 128T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_8
+    JRS div_8
 
 div_13:  ; ÷13  (14 insts, 127T | clobbers: A, C, F, H, L)
     LD H,0
@@ -595,7 +595,7 @@ div_13:  ; ÷13  (14 insts, 127T | clobbers: A, C, F, H, L)
     OR A
     SBC HL,BC
     LD A,H
-    JP div_4
+    JRS div_4
 
 div_18:  ; ÷18  (14 insts, 123T | clobbers: A, C, F, H, L)
     LD H,0
@@ -610,7 +610,7 @@ div_18:  ; ÷18  (14 insts, 123T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_4
+    JRS div_4
 
 div_25:  ; ÷25  (13 insts, 112T | clobbers: A, C, F, H, L)
     LD H,0
@@ -624,7 +624,7 @@ div_25:  ; ÷25  (13 insts, 112T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_4
+    JRS div_4
 
 div_41:  ; ÷41  (12 insts, 101T | clobbers: A, C, F, H, L)
     LD H,0
@@ -637,7 +637,7 @@ div_41:  ; ÷41  (12 insts, 101T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_4
+    JRS div_4
 
 div_42:  ; ÷42  (14 insts, 120T | clobbers: A, C, F, H, L)
     SRL A
@@ -652,7 +652,7 @@ div_42:  ; ÷42  (14 insts, 120T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_4
+    JRS div_4
 
 div_54:  ; ÷54  (12 insts, 101T | clobbers: A, C, F, H, L)
     LD H,0
@@ -665,7 +665,7 @@ div_54:  ; ÷54  (12 insts, 101T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_4
+    JRS div_4
 
 div_68:  ; ÷68  (16 insts, 143T | clobbers: A, C, F, H, L)
     SRL A
@@ -684,7 +684,7 @@ div_68:  ; ÷68  (16 insts, 143T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_4
+    JRS div_4
 
 div_79:  ; ÷79  (11 insts, 90T | clobbers: A, C, F, H, L)
     LD H,0
@@ -696,7 +696,7 @@ div_79:  ; ÷79  (11 insts, 90T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_4
+    JRS div_4
 
 div_90:  ; ÷90  (13 insts, 113T | clobbers: A, C, F, H, L)
     SRL A
@@ -712,7 +712,7 @@ div_90:  ; ÷90  (13 insts, 113T | clobbers: A, C, F, H, L)
     OR A
     SBC HL,BC
     LD A,H
-    JP div_4
+    JRS div_4
 
 div_112:  ; ÷112  (15 insts, 128T | clobbers: A, C, F, H, L)
     SRL A
@@ -728,7 +728,7 @@ div_112:  ; ÷112  (15 insts, 128T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_4
+    JRS div_4
 
 div_114:  ; ÷114  (10 insts, 79T | clobbers: A, C, F, H, L)
     LD H,0
@@ -739,7 +739,7 @@ div_114:  ; ÷114  (10 insts, 79T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_4
+    JRS div_4
 
 div_9:  ; ÷9  (13 insts, 115T | clobbers: A, C, F, H, L)
     LD H,0
@@ -754,7 +754,7 @@ div_9:  ; ÷9  (13 insts, 115T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_2
+    JRS div_2
 
 div_10:  ; ÷10  (15 insts, 138T | clobbers: A, C, F, H, L)
     SRL A
@@ -773,7 +773,7 @@ div_10:  ; ÷10  (15 insts, 138T | clobbers: A, C, F, H, L)
     OR A
     SBC HL,BC
     LD A,H
-    JP div_2
+    JRS div_2
 
 div_24:  ; ÷24  (14 insts, 123T | clobbers: A, C, F, H, L)
     SRL A
@@ -789,7 +789,7 @@ div_24:  ; ÷24  (14 insts, 123T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_2
+    JRS div_2
 
 div_27:  ; ÷27  (11 insts, 93T | clobbers: A, C, F, H, L)
     LD H,0
@@ -802,7 +802,7 @@ div_27:  ; ÷27  (11 insts, 93T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_2
+    JRS div_2
 
 div_44:  ; ÷44  (14 insts, 124T | clobbers: A, C, F, H, L)
     SRL A
@@ -820,7 +820,7 @@ div_44:  ; ÷44  (14 insts, 124T | clobbers: A, C, F, H, L)
     OR A
     SBC HL,BC
     LD A,H
-    JP div_2
+    JRS div_2
 
 div_56:  ; ÷56  (14 insts, 120T | clobbers: A, C, F, H, L)
     SRL A
@@ -836,7 +836,7 @@ div_56:  ; ÷56  (14 insts, 120T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_2
+    JRS div_2
 
 div_57:  ; ÷57  (9 insts, 71T | clobbers: A, C, F, H, L)
     LD H,0
@@ -847,7 +847,7 @@ div_57:  ; ÷57  (9 insts, 71T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_2
+    JRS div_2
 
 div_94:  ; ÷94  (11 insts, 90T | clobbers: A, C, F, H, L)
     SRL A
@@ -860,7 +860,7 @@ div_94:  ; ÷94  (11 insts, 90T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_2
+    JRS div_2
 
 div_120:  ; ÷120  (15 insts, 128T | clobbers: A, C, F, H, L)
     SRL A
@@ -877,7 +877,7 @@ div_120:  ; ÷120  (15 insts, 128T | clobbers: A, C, F, H, L)
     ADD HL,HL
     ADD HL,BC
     LD A,H
-    JP div_2
+    JRS div_2
 
 ; CAUTION: div_3 — Z80 simulation FAILED (a_in=3: got 0, expected 1)
 ; Method: double_mul_shift — sequence may be incorrect for this input.

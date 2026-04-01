@@ -22,9 +22,11 @@ code that executes instructions in wrong order and gives wrong results for
 all non-power-of-2 constants. This script emits sequences in correct order.
 """
 
+import argparse
 import json
 import sys
 from pathlib import Path
+from jump_optimizer import optimize_jumps
 
 REPO = Path(__file__).parent.parent
 JSON_OPT = REPO / "data" / "mulopt8_clobber.json"
@@ -223,7 +225,7 @@ def build_chains(by_k, suffix_map):
     return chains
 
 
-def emit_library(by_k, suffix_map, n_abstract):
+def emit_library(by_k, suffix_map, n_abstract, osize=False):
     chains = build_chains(by_k, suffix_map)
 
     in_chain = {}
@@ -302,7 +304,7 @@ def emit_library(by_k, suffix_map, n_abstract):
         )
         for op in unique_ops:
             group_lines.append(f"    {op}")
-        group_lines.append(f"    JP mul_{jp_target}")
+        group_lines.append(f"    JRS mul_{jp_target}")
         group_lines.append("")
         emitted.add(k)
 

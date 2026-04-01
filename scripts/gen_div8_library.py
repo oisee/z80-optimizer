@@ -278,7 +278,7 @@ def emit_library(by_k, suffix_map):
             f" | clobbers: {clobber_str(entry)})"
         )
         emit_ops_for_chain_member(k, unique_ops)
-        group_lines.append(f"    JP div_{jp_target}")
+        group_lines.append(f"    JRS div_{jp_target}")
         group_lines.append("")
         emitted.add(k)
 

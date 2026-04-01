@@ -225,7 +225,7 @@ def emit_library(by_k, suffix_map):
         for op in unique_ops:
             for eop in expand_op(op):
                 group_lines.append(f"    {eop}")
-        group_lines.append(f"    JP mul16_{jp_target}")
+        group_lines.append(f"    JRS mul16_{jp_target}")
         group_lines.append("")
         emitted.add(k)
 

@@ -76,7 +76,7 @@ mul_5:  ; ×5  (4 insts, 16T [abstract])
 
 mul_224:  ; ×224  (6 insts, 28T)
     NEG
-    JP mul_32
+    JRS mul_32
 
 ; --- Chain: ×112 → ×56 → ×28 → ×14 → ×7 ---
 mul_112:  ; ×112  (9 insts, 36T [abstract])
@@ -118,14 +118,14 @@ mul_176:  ; ×176  (9 insts, 40T)
     ADD A,B
     ADD A,A
     ADD A,B
-    JP mul_16
+    JRS mul_16
 
 mul_208:  ; ×208  (8 insts, 36T)
     NEG
     LD B,A
     ADD A,B
     ADD A,B
-    JP mul_16
+    JRS mul_16
 
 ; --- Chain: ×88 → ×44 → ×22 → ×11 ---
 mul_88:  ; ×88  (9 insts, 36T [abstract])
@@ -232,7 +232,7 @@ mul_184:  ; ×184  (9 insts, 40T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_8
+    JRS mul_8
 
 mul_200:  ; ×200  (9 insts, 40T)
     NEG
@@ -241,7 +241,7 @@ mul_200:  ; ×200  (9 insts, 40T)
     ADD A,A
     RLCA
     SBC A,B
-    JP mul_8
+    JRS mul_8
 
 mul_216:  ; ×216  (8 insts, 36T)
     NEG
@@ -249,14 +249,14 @@ mul_216:  ; ×216  (8 insts, 36T)
     ADD A,B
     ADD A,A
     ADD A,B
-    JP mul_8
+    JRS mul_8
 
 mul_232:  ; ×232  (7 insts, 32T)
     NEG
     LD B,A
     ADD A,B
     ADD A,B
-    JP mul_8
+    JRS mul_8
 
 ; --- Chain: ×92 → ×46 → ×23 ---
 mul_92:  ; ×92  (9 insts, 36T [abstract])
@@ -407,7 +407,7 @@ mul_172:  ; ×172  (10 insts, 44T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_4
+    JRS mul_4
 
 mul_180:  ; ×180  (10 insts, 44T)
     NEG
@@ -418,7 +418,7 @@ mul_180:  ; ×180  (10 insts, 44T)
     ADD A,A
     RLCA
     SBC A,B
-    JP mul_4
+    JRS mul_4
 
 mul_188:  ; ×188  (9 insts, 40T)
     NEG
@@ -428,7 +428,7 @@ mul_188:  ; ×188  (9 insts, 40T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_4
+    JRS mul_4
 
 mul_196:  ; ×196  (9 insts, 40T)
     NEG
@@ -438,7 +438,7 @@ mul_196:  ; ×196  (9 insts, 40T)
     ADD A,A
     RLCA
     SBC A,B
-    JP mul_4
+    JRS mul_4
 
 mul_204:  ; ×204  (9 insts, 40T)
     NEG
@@ -448,7 +448,7 @@ mul_204:  ; ×204  (9 insts, 40T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_4
+    JRS mul_4
 
 mul_212:  ; ×212  (9 insts, 40T)
     NEG
@@ -458,7 +458,7 @@ mul_212:  ; ×212  (9 insts, 40T)
     ADD A,A
     RLCA
     SBC A,B
-    JP mul_4
+    JRS mul_4
 
 mul_220:  ; ×220  (8 insts, 36T)
     NEG
@@ -467,7 +467,7 @@ mul_220:  ; ×220  (8 insts, 36T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_4
+    JRS mul_4
 
 mul_228:  ; ×228  (8 insts, 36T)
     NEG
@@ -476,7 +476,7 @@ mul_228:  ; ×228  (8 insts, 36T)
     ADD A,A
     ADD A,A
     SUB B
-    JP mul_4
+    JRS mul_4
 
 mul_236:  ; ×236  (7 insts, 32T)
     NEG
@@ -484,19 +484,19 @@ mul_236:  ; ×236  (7 insts, 32T)
     ADD A,B
     ADD A,A
     ADD A,B
-    JP mul_4
+    JRS mul_4
 
 mul_244:  ; ×244  (6 insts, 28T)
     NEG
     LD B,A
     ADD A,B
     ADD A,B
-    JP mul_4
+    JRS mul_4
 
 mul_248:  ; ×248  (4 insts, 20T)
     RLA
     NEG
-    JP mul_4
+    JRS mul_4
 
 ; --- Chain: ×86 → ×43 ---
 mul_86:  ; ×86  (10 insts, 40T [abstract])
@@ -566,7 +566,7 @@ mul_108:  ; ×108  (10 insts, 40T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_2
+    JRS mul_2
 
 ; --- Chain: ×110 → ×55 ---
 mul_110:  ; ×110  (10 insts, 40T [abstract])
@@ -728,7 +728,7 @@ mul_174:  ; ×174  (10 insts, 44T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_2
+    JRS mul_2
 
 mul_178:  ; ×178  (10 insts, 44T)
     NEG
@@ -740,7 +740,7 @@ mul_178:  ; ×178  (10 insts, 44T)
     ADD A,A
     RLCA
     SBC A,B
-    JP mul_2
+    JRS mul_2
 
 mul_182:  ; ×182  (10 insts, 44T)
     NEG
@@ -752,7 +752,7 @@ mul_182:  ; ×182  (10 insts, 44T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_2
+    JRS mul_2
 
 mul_186:  ; ×186  (10 insts, 44T)
     NEG
@@ -764,7 +764,7 @@ mul_186:  ; ×186  (10 insts, 44T)
     ADD A,A
     RLCA
     SBC A,B
-    JP mul_2
+    JRS mul_2
 
 mul_190:  ; ×190  (9 insts, 40T)
     NEG
@@ -775,7 +775,7 @@ mul_190:  ; ×190  (9 insts, 40T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_2
+    JRS mul_2
 
 mul_194:  ; ×194  (9 insts, 40T)
     NEG
@@ -786,7 +786,7 @@ mul_194:  ; ×194  (9 insts, 40T)
     ADD A,A
     RLCA
     SBC A,B
-    JP mul_2
+    JRS mul_2
 
 mul_198:  ; ×198  (10 insts, 44T)
     NEG
@@ -798,7 +798,7 @@ mul_198:  ; ×198  (10 insts, 44T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_2
+    JRS mul_2
 
 mul_202:  ; ×202  (10 insts, 44T)
     NEG
@@ -810,7 +810,7 @@ mul_202:  ; ×202  (10 insts, 44T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_2
+    JRS mul_2
 
 mul_206:  ; ×206  (9 insts, 40T)
     NEG
@@ -821,7 +821,7 @@ mul_206:  ; ×206  (9 insts, 40T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_2
+    JRS mul_2
 
 mul_210:  ; ×210  (9 insts, 40T)
     NEG
@@ -832,14 +832,14 @@ mul_210:  ; ×210  (9 insts, 40T)
     ADD A,A
     RLCA
     SBC A,B
-    JP mul_2
+    JRS mul_2
 
 mul_211:  ; ×211  (10 insts, 44T)
     NEG
     LD B,A
     ADD A,B
     ADD A,B
-    JP mul_15
+    JRS mul_15
 
 mul_214:  ; ×214  (9 insts, 40T)
     NEG
@@ -850,7 +850,7 @@ mul_214:  ; ×214  (9 insts, 40T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_2
+    JRS mul_2
 
 mul_218:  ; ×218  (9 insts, 40T)
     NEG
@@ -861,7 +861,7 @@ mul_218:  ; ×218  (9 insts, 40T)
     ADD A,A
     RLCA
     SBC A,B
-    JP mul_2
+    JRS mul_2
 
 mul_222:  ; ×222  (8 insts, 36T)
     NEG
@@ -871,7 +871,7 @@ mul_222:  ; ×222  (8 insts, 36T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_2
+    JRS mul_2
 
 mul_226:  ; ×226  (8 insts, 36T)
     NEG
@@ -881,7 +881,7 @@ mul_226:  ; ×226  (8 insts, 36T)
     ADD A,A
     RLCA
     SBC A,B
-    JP mul_2
+    JRS mul_2
 
 mul_230:  ; ×230  (8 insts, 36T)
     NEG
@@ -891,7 +891,7 @@ mul_230:  ; ×230  (8 insts, 36T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_2
+    JRS mul_2
 
 mul_234:  ; ×234  (8 insts, 36T)
     NEG
@@ -901,7 +901,7 @@ mul_234:  ; ×234  (8 insts, 36T)
     ADD A,B
     ADD A,A
     ADD A,B
-    JP mul_2
+    JRS mul_2
 
 mul_238:  ; ×238  (7 insts, 32T)
     NEG
@@ -910,11 +910,11 @@ mul_238:  ; ×238  (7 insts, 32T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_2
+    JRS mul_2
 
 mul_239:  ; ×239  (7 insts, 32T)
     NEG
-    JP mul_17
+    JRS mul_17
 
 ; --- Chain: ×240 → ×255 ---
 mul_240:  ; ×240  (5 insts, 24T)
@@ -933,7 +933,7 @@ mul_242:  ; ×242  (7 insts, 32T)
     ADD A,A
     RLCA
     SBC A,B
-    JP mul_2
+    JRS mul_2
 
 mul_246:  ; ×246  (6 insts, 28T)
     NEG
@@ -941,16 +941,16 @@ mul_246:  ; ×246  (6 insts, 28T)
     ADD A,A
     ADD A,A
     ADD A,B
-    JP mul_2
+    JRS mul_2
 
 mul_252:  ; ×252  (3 insts, 16T)
     RLA
     NEG
-    JP mul_2
+    JRS mul_2
 
 mul_254:  ; ×254  (2 insts, 12T)
     RLA
-    JP mul_255
+    JRS mul_255
 
 mul_27:  ; ×27  (8 insts, 32T)
     LD B,A
