@@ -248,6 +248,30 @@ python3 cuda/encode_anim.py --input long.mp4 --out data/long.json \
 
 ---
 
+## Carrier-Payload (CP) Delta Encoding
+
+For streaming animations where seed budget is precious:
+
+- **CP mode**: 1 carrier seed per frame (blk=8) maps error zones to OR-mask → **3× fewer seeds** vs naive delta
+- **Carrier catalog** (`data/carrier_catalog.bin`, 9.4MB): 65536 precomputed bitmaps, built in 236ms, queried at 2ms/frame
+- **ZX Spectrum tape math**: CP = 16 bytes/frame → 0.1s/frame — the only viable real-time path
+- Pass `--cp` to `encode_anim.py`; enable CP preset in `docs/renderer.html`
+
+Demos available: Ёжик в тумане 104fr, Che portrait 63fr, plain/weighted/CP comparison sets.
+
+## Heatmap-Weighted Search
+
+Focus pixel budget on the visually important regions (face, eyes, edges):
+
+```bash
+python3 cuda/make_heatmap.py --input target.pgm --output target.wmap  # OpenCV Haar + edge detection
+./cuda/prng_budget_search --target target.pgm --weight-map target.wmap --budget 64 --output result/
+```
+
+- At `--budget 64`: face zone error 21.94% → 11.54% (**47% reduction**), total cost +5.76%
+- Sweet spot: budget 64–128 seeds/frame for low-bitrate streaming
+- At large budget (≥600): canonical already near-perfect everywhere — heatmap doesn't help
+
 ## Inspired By
 
 - **Introspec** — [BB](https://www.pouet.net/prod.php?which=63074) ZX 256b, 1st Multimatograf 2014

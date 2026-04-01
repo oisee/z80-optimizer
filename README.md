@@ -36,22 +36,14 @@ A GPU-accelerated superoptimizer for the Zilog Z80 processor. The compiler that 
 
 ### pRNG Image Search & Animation Pipeline — ZX Spectrum Demoscene
 
-GPU-accelerated search for recognizable images + **full video→animation pipeline**. See the **[full gallery](media/prng_images/README.md)** and **[accumulated wisdom](contexts/prng_brute_force_wisdom.md)** (all methods, phase schedules, CP encoding, compressibility analysis, open problems).
+GPU-accelerated search for recognizable images from minimal LFSR seeds + full video→animation pipeline.
 
-| Cat (4.9%, 128B) | Che Guevara (15%, 1194B) | Einstein (15.1%, 128B) |
+| Cat (4.9%, 128B) | Che Guevara (15%, 1194B) | Einstein (15.3%) |
 |---|---|---|
 | ![cat](media/prng_images/dual_cat_long/final_compare.png) | ![che](media/prng_images/segmented_che/level3_compare.png) | ![einstein](media/prng_images/dual_einstein_v3/final_compare.png) |
 
-- **Dual-layer evolutionary**: 5 layers (3 additive OR + 2 subtractive AND NOT), island model, 557K img/s
-- **Segmented hierarchical LFSR**: brute-force 65536 seeds per segment, guaranteed convergence
-- **Introspec BB port**: 24-bit Galois LFSR, 66 layers, CUDA port runs 4 min vs days on CPU
-
-**Animation pipeline** (`cuda/encode_anim.py` + `docs/renderer.html`):
-- Any MP4 or YouTube → LFSR animation in ~2-4s/frame (RTX 4060 Ti)
-- **Carrier-Payload (CP)** delta mode: 1 carrier seed (blk=8) maps error zones → **3× fewer seeds**
-- **Carrier catalog** (`data/carrier_catalog.bin`, 9.4MB): precomputed bitmaps, built 236ms, queried 2ms/frame
-- **ZX Spectrum tape math**: CP = 16 bytes/frame → 0.1s/frame — only viable real-time path
-- Demos: Ёжик в тумане 104fr, Che portrait 63fr, plain/weighted/CP comparison sets
+**→ [Full gallery, 6 methods, video pipeline, CP encoding, heatmap weighting](media/prng_images/README.md)**
+**→ [Accumulated wisdom](contexts/prng_brute_force_wisdom.md)** — phase schedules, carrier catalog, compressibility, open problems
 
 ### v1.0.0 Foundation (March 26)
 
