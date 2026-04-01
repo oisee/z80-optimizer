@@ -129,5 +129,53 @@
     "tstates": "32-40",
     "clobbers": ["F"],
     "notes": "32T if no wrap, 40T if carry wraps to bit 31. Branch variant."
+  },
+
+  "_hlhl_convention": "HLH'L' alternative u32 layout: HL (main bank) = low 16-bit, H'L' (shadow via EXX) = high 16-bit. Frees DE for pointer arithmetic. EXX does not disturb flags (CY survives across EXX).",
+
+  "hlhl_add32": {
+    "description": "HLH'L' += BCB'C' (BC=low 16 addend, B'C'=high 16 addend in shadow)",
+    "ops": ["ADD HL,BC", "EXX", "ADC HL,BC", "EXX"],
+    "length": 4,
+    "bytes": 6,
+    "tstates": 34,
+    "clobbers": ["F"],
+    "notes": "ADD HL,BC=11T, EXX=4T, ADC HL,BC=15T (shadow B'C' now in BC), EXX=4T. EXX preserves CY — ADC correctly propagates carry from low to high. Advantage over DEHL: two independent 16-bit addends in BC/B'C'; DE remains free for pointer use."
+  },
+
+  "hlhl_shl32": {
+    "description": "HLH'L' << 1 (logical shift left, doubles the u32 value)",
+    "ops": ["ADD HL,HL", "EXX", "ADC HL,HL", "EXX"],
+    "length": 4,
+    "bytes": 6,
+    "tstates": 34,
+    "clobbers": ["F"],
+    "proven_optimal": true,
+    "notes": "Same cost as DEHL shl32 (34T). ADD HL,HL=11T doubles low 16; EXX=4T; ADC HL,HL=15T doubles high 16 with carry from low; EXX=4T. Identical pattern to DEHL but uses EXX instead of EX DE,HL."
+  },
+
+  "hlhl_load_nn": {
+    "description": "Load 32-bit immediate into HLH'L' (HL=low, H'L'=high)",
+    "ops": ["LD HL,lo16", "EXX", "LD HL,hi16", "EXX"],
+    "length": 4,
+    "bytes": 12,
+    "tstates": 44,
+    "clobbers": [],
+    "notes": "LD HL,nn=10T each, EXX=4T each. Total 44T. For runtime values: LD HL,(addr) = 16T each → 48T total."
+  },
+
+  "hlhl_vs_dehl": {
+    "_doc": "When to prefer HLH'L' over DEHL",
+    "prefer_hlhl_when": [
+      "Function needs DE for pointer (e.g., LDIR, screen address via DE)",
+      "32-bit add has two genuinely independent 16-bit halves (avoids 54T stack path)",
+      "Multiple u32 variables: DEHL uses all 4 main GPR pairs; HLH'L' leaves DE+BC free"
+    ],
+    "prefer_dehl_when": [
+      "No EXX-zone conflict with other shadow register usage",
+      "Need INC/DEC on individual bytes (INC D, INC E — no shadow equivalent without EXX)",
+      "Interfacing with existing DEHL ABI"
+    ],
+    "key_constraint": "HLH'L' requires exclusive EXX-zone: cannot mix with other EXX usage (e.g., loop counter in B'C'). Shadow is a shared resource — all 6 shadow regs swap simultaneously."
   }
 }

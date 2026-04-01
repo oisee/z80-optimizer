@@ -11,7 +11,7 @@ A GPU with 5000 cores can test billions of sequences per second. A human can't. 
 ### Peephole Rules (602,008 entries)
 - **What:** For every pair of Z80 instructions, find a shorter replacement
 - **Search space:** 4,215² = 17.8M pairs (length-2)
-- **Results:** 602K proven optimizations in `results-len2.json`
+- **Results:** 602K proven optimizations in `data/peephole_len2_complete.json`
 - **Example:** `SLA A / RR A` → `OR A` (saves 3 bytes)
 
 ### Register Allocation Table (61 entries)
@@ -201,7 +201,7 @@ Each thread tests one sequence against the QuickCheck vectors. Survivors get ful
 
 ```
 z80-optimizer/
-├── results-len2.json         # 602K peephole rules (done)
+├── data/peephole_len2_complete.json         # 602K peephole rules (done)
 ├── regalloc_table.json       # 61 register assignments (done)
 ├── mul_table_tier1.json      # constant multiply (in progress)
 ├── mul_table_tier2.json      # + ADC/SBC

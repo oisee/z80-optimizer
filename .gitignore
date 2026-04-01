@@ -51,3 +51,10 @@ mulopt
 partopt
 regalloc-enum
 dedelulu.jsonl
+peephole_len2_complete.json
+
+data/enriched_5v.ofb
+data/enriched_6v_dense.ofb
+data/ix_expanded_5v.ofb
+data/merged_5v.ofb
+data/merged_ix_5v.ofb

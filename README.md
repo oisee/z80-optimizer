@@ -2,7 +2,15 @@
 
 A GPU-accelerated superoptimizer for the Zilog Z80 processor. The compiler that **never guesses** — every optimization is provably optimal.
 
-## What's New (Birthday Marathon — March 26–29, 2026)
+## What's New (Birthday Marathon — March 26 – April 1, 2026)
+
+### Day 7 Highlights (April 1, 2026)
+
+- **`pkg/regalloc/ofb.go`** — public OFB API: `ComputeOFB()`, `LoadOFB()`, 15 flag constants, `OFBNames()`. No more local duplicates in consumer tools.
+- **OFB sidecars for ALL table files** — `enrich-ofb` now auto-detects ENRT and Z80T v2 formats. Sidecars generated for `merged_ix_5v.bin`, `ix_expanded_5v.bin`, etc. (~233MB each).
+- **`cmd/gen6v-ix-feed`** — fast FuncDesc JSON generator for the 6v IX-expanded GPU run. Pre-computes 562 valid treewidth≥4 masks (out of 32,768 possible 6v graphs) in <0.5s, then iterates masks as outer loop → 200K shapes/sec feeder vs 8 shapes/sec from regalloc-enum CPU bottleneck.
+- **Dual-GPU ix_expanded_6v_dense run** — 298.7M shapes split across GPU0 (masks 0–280) + GPU1 (masks 281–561), running in background, ETA ~5h. Will yield the largest IX-aware regalloc table yet.
+- **EXX zone architecture** — S1+S2 independent table lookups, IXH/IXL/IYH/IYL as zero-cost inter-zone bridges. Full pipeline: `total_cost = lookup(S1) + lookup(S2) + 4T×N_exx + 8T×N_ix_accesses`.
 
 ### Week 1 Highlights
 
@@ -24,6 +32,7 @@ A GPU-accelerated superoptimizer for the Zilog Z80 processor. The compiler that 
 | 4 | Mar 28 | Regalloc | Five-level pipeline, backtracking solver, phase cliff — [log](contexts/day4_wisdom.md) |
 | 5 | Mar 29 | Images+u32 | 3 CUDA generators, u32 library, Introspec BB port — [log](contexts/day5_wisdom.md) |
 | 6 | Mar 29 | Division | div8 v3 (−49%), carry_compare, sign/sat/arith16 — [log](contexts/day6_wisdom.md) |
+| 7 | Apr 1 | OFB+6v | OFB public API, Z80T v2 sidecars, gen6v-ix-feed, dual-GPU 298M run |
 
 ### pRNG Image Search & Animation Pipeline — ZX Spectrum Demoscene
 
@@ -435,6 +444,68 @@ Length 4:  4,215^4 = 315T targets  → STOKE only
 Length 5+: combinatorial explosion → STOKE only
 ```
 
+## Pending Tables
+
+These table files are currently being computed or are planned. Each will be a drop-in addition to the existing regalloc pipeline.
+
+### `data/ix_expanded_6v_dense.bin` — **in progress** (ETA ~5h from April 1, 2026)
+
+The largest regalloc table yet: 6 virtual registers with full IX/IY half-register support and treewidth≥4 interference graphs.
+
+**What it enables:**
+- IX-aware register allocation for dense 6-vreg functions — currently the `merged_ix_5v.bin` table (60.9M entries) only covers up to 5 vregs with IX halves
+- Complete `pkg/regalloc` O(1) lookup for the common case of 6 live variables with pointer or EXX-zone patterns
+- Covers `HLH'L' u32` patterns (HL in main bank + BC or DE free as shadow) that appear in 32-bit arithmetic loops
+
+**Generation:**
+```bash
+# Currently running (background, dual-GPU on main i7):
+./gen6v-ix-feed -mask-start 0   -mask-end 281 | ./cuda/z80_regalloc --server --gpu-id 0 > data/ix_6v_gpu0.jsonl &
+./gen6v-ix-feed -mask-start 281 -mask-end 562 | ./cuda/z80_regalloc --server --gpu-id 1 > data/ix_6v_gpu1.jsonl &
+
+# After completion:
+cat data/ix_6v_gpu0.jsonl data/ix_6v_gpu1.jsonl > data/ix_expanded_6v_dense.jsonl
+CGO_ENABLED=0 ~/go/bin/go1.24.3 run ./cmd/build-ix-table/ \
+  -n-locsets8 6 -max-vregs 6 < data/ix_expanded_6v_dense.jsonl > data/ix_expanded_6v_dense.bin
+./enrich-ofb -input data/ix_expanded_6v_dense.bin -output data/ix_expanded_6v_dense.ofb
+```
+
+**Stats (projected):** ~298.7M shapes, ~79% feasible ≈ ~236M feasible assignments, ~2.5GB raw binary.
+
+The key algorithmic insight behind `gen6v-ix-feed`: of 32,768 possible nv=6 interference graphs, only **562 have treewidth≥4** (the ones worth exhaustive search). Pre-computing these 562 masks and iterating them as the outer loop reduces the feeder from 8 shapes/sec (CPU bottleneck) to 200K shapes/sec.
+
+### OFB sidecars — complete for all current `.bin` tables
+
+OFB (Op Feasibility Bag) sidecars precompute 15 per-assignment flags in O(1), aligned 1:1 with the source file:
+
+| Sidecar | Source | Size | Description |
+|---------|--------|------|-------------|
+| `data/enriched_4v.ofb` | enriched_4v.enr | ~625KB | 156K entries |
+| `data/enriched_5v.ofb` | enriched_5v.enr | ~67MB | 17.4M entries |
+| `data/enriched_6v_dense.ofb` | enriched_6v_dense.enr | ~253MB | 66.1M entries |
+| `data/merged_ix_5v.ofb` | merged_ix_5v.bin | ~233MB | 60.9M entries |
+| `data/ix_expanded_5v.ofb` | ix_expanded_5v.bin | ~233MB | 60.9M entries |
+| `data/ix_expanded_6v_dense.ofb` | ix_expanded_6v_dense.bin | ~1.0GB | ~298M entries *(pending)* |
+
+OFB flags let the backend skip table lookups for common feasibility checks: `OFBMul8Safe` (H/L/C all free → safe to clobber for mul8), `OFBDJNZFree` (B free → DJNZ without save), `OFBHLArith` (HL assigned → ADD HL,rr native), etc.
+
+```go
+// pkg/regalloc usage:
+import "github.com/oisee/z80-optimizer/pkg/regalloc"
+
+ofb := regalloc.ComputeOFB(entry.Assignment)  // O(1), no sidecar needed
+// Or load precomputed sidecar:
+table, _ := regalloc.LoadOFB("data/enriched_5v.ofb")
+ofb := table.Get(entryIndex)
+
+if ofb & regalloc.OFBMul8Safe != 0 {
+    // H, L, C all free — safe to use H/L/C as mul8 scratch
+}
+if ofb & regalloc.OFBDJNZFree != 0 {
+    // B not assigned — emit DJNZ loop without PUSH BC / POP BC
+}
+```
+
 ## What's next
 
 ### In progress
@@ -523,7 +594,9 @@ GPU brute-force over all possible register allocation constraint shapes. For eac
 |-------|--------|----------|----------|
 | ≤4 vregs | 156,506 | 40 sec | 78.9% |
 | ≤5 vregs | 17,366,874 | 20 min | 67.7% |
-| 6 vregs (dense, tw≥4) | 66,118,738 | ~6 hours | TBD |
+| 6 vregs (dense, tw≥4) | 66,118,738 | ~6 hours | 38.9% |
+| **IX-expanded ≤5v** | **60,900,000** | **~2h** | **79.2%** — `data/merged_ix_5v.bin` |
+| **IX-expanded 6v** | **~298,700,000** | **~5.2h** | *pending* — dual-GPU run in progress |
 
 **Key findings:**
 

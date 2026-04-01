@@ -86,6 +86,9 @@ struct FuncDesc {
     uint8_t paramLoc[MAX_VREGS];
     // Vreg widths: 8 or 16. 16-bit vregs restricted to pair/mem locs.
     uint8_t vregWidth[MAX_VREGS];   // 0 or 8 = 8-bit (any loc), 16 = 16-bit (pairs only)
+    // Constrained loc enumeration (computed by compute_constrained_locs before GPU launch)
+    int     locCount[MAX_VREGS];           // number of valid locs per vreg
+    uint8_t locMap[MAX_VREGS][MAX_LOCS];  // index → physical loc mapping
 };
 
 // Constant memory — shared by all threads, cached
@@ -95,12 +98,50 @@ __constant__ FuncDesc d_func;
 // Kernel: evaluate one register assignment
 // ============================================================
 
-// Decode assignment from thread index.
-// Thread idx encodes: vreg[0] = idx % 7, vreg[1] = (idx/7) % 7, ...
-__host__ __device__ void decode_assignment(uint64_t idx, int nVregs, uint8_t *assignment) {
+// Decode assignment from thread index using per-vreg constrained loc maps.
+// d_func.locMap[i] maps index → physical loc; d_func.locCount[i] is the base.
+__device__ void decode_assignment(uint64_t idx, int nVregs, uint8_t *assignment) {
     for (int i = 0; i < nVregs; i++) {
-        assignment[i] = (uint8_t)(idx % MAX_LOCS);
-        idx /= MAX_LOCS;
+        int cnt = d_func.locCount[i];
+        assignment[i] = d_func.locMap[i][idx % cnt];
+        idx /= cnt;
+    }
+}
+
+// Host-side decode using func's locCount/locMap (for print_json_result after GPU run).
+static void decode_assignment_host(uint64_t idx, const FuncDesc &func, uint8_t *assignment) {
+    for (int i = 0; i < func.nVregs; i++) {
+        int cnt = func.locCount[i];
+        assignment[i] = func.locMap[i][idx % cnt];
+        idx /= cnt;
+    }
+}
+
+// Compute per-vreg constrained loc lists from op pattern bitmasks.
+// Call this on the host FuncDesc before uploading to GPU.
+static void compute_constrained_locs(FuncDesc &func) {
+    for (int i = 0; i < func.nVregs; i++) {
+        uint16_t mask = 0;
+        for (int oi = 0; oi < func.nOps; oi++) {
+            const OpDesc &op = func.ops[oi];
+            for (int pi = 0; pi < op.nPatterns; pi++) {
+                if (op.dstVreg  == i) mask |= op.patDstLocs[pi];
+                if (op.srcVreg0 == i) mask |= op.patSrcLocs0[pi];
+                if (op.srcVreg1 == i) mask |= op.patSrcLocs1[pi];
+            }
+        }
+        // No op references this vreg → any loc valid
+        if (mask == 0) mask = (uint16_t)((1u << MAX_LOCS) - 1);
+        // Width constraint: 16-bit vregs can only go in pair/mem locs
+        if (func.vregWidth[i] == 16) {
+            mask &= (1u<<LOC_BC)|(1u<<LOC_DE)|(1u<<LOC_HL)|(1u<<LOC_MEM0);
+        }
+        int cnt = 0;
+        for (int loc = 0; loc < MAX_LOCS; loc++) {
+            if (mask & (1u << loc)) func.locMap[i][cnt++] = (uint8_t)loc;
+        }
+        if (cnt == 0) { func.locMap[i][0] = 0; cnt = 1; } // safety fallback
+        func.locCount[i] = cnt;
     }
 }
 
@@ -206,10 +247,13 @@ __device__ uint16_t evaluate_cost(const uint8_t *assignment) {
         // Cost depends on src/dst location type:
         //   locs 0-6 (GPR): 4T, locs 7-9 (pairs): 4T,
         //   locs 10-13 (IX/IY): 8T, loc 14 (mem): 13T
+        //   H(5)/L(6) ↔ IX/IY halves(10-13): 16T (requires EX DE,HL trick — DD prefix hijacks H/L)
         if (op.srcVreg0 >= 0 && prevLoc[op.srcVreg0] != 0xFF &&
             prevLoc[op.srcVreg0] != assignment[op.srcVreg0]) {
             uint8_t from = prevLoc[op.srcVreg0], to = assignment[op.srcVreg0];
             uint8_t mc = (from == LOC_MEM0 || to == LOC_MEM0) ? 13 :
+                         ((from == LOC_H || from == LOC_L) && (to >= LOC_IXH)) ? 16 :
+                         ((to == LOC_H || to == LOC_L) && (from >= LOC_IXH)) ? 16 :
                          (from >= LOC_IXH || to >= LOC_IXH) ? 8 : 4;
             totalCost += mc;
         }
@@ -217,6 +261,8 @@ __device__ uint16_t evaluate_cost(const uint8_t *assignment) {
             prevLoc[op.srcVreg1] != assignment[op.srcVreg1]) {
             uint8_t from = prevLoc[op.srcVreg1], to = assignment[op.srcVreg1];
             uint8_t mc = (from == LOC_MEM0 || to == LOC_MEM0) ? 13 :
+                         ((from == LOC_H || from == LOC_L) && (to >= LOC_IXH)) ? 16 :
+                         ((to == LOC_H || to == LOC_L) && (from >= LOC_IXH)) ? 16 :
                          (from >= LOC_IXH || to >= LOC_IXH) ? 8 : 4;
             totalCost += mc;
         }
@@ -575,13 +621,13 @@ static bool solve_one(const FuncDesc &func,
                       uint32_t *d_bestCost, uint64_t *d_bestIdx, uint64_t *d_feasibleCount,
                       uint32_t &outCost, uint64_t &outIdx, uint64_t &outFeasible,
                       uint64_t &outTotal, bool quiet) {
-    // Compute search space
+    // Compute constrained search space (product of per-vreg valid loc counts)
     outTotal = 1;
     for (int i = 0; i < func.nVregs; i++) {
-        outTotal *= MAX_LOCS;
+        outTotal *= (uint64_t)func.locCount[i];
         if (outTotal > 5000000000000ULL) {
-            fprintf(stderr, "Search space too large: %d vregs -> %d^%d > 5T\n",
-                    func.nVregs, MAX_LOCS, func.nVregs);
+            fprintf(stderr, "Search space too large: %llu > 5T\n",
+                    (unsigned long long)outTotal);
             return false;
         }
     }
@@ -695,6 +741,8 @@ static uint16_t cpu_evaluate_cost(const FuncDesc &func, const uint8_t *assignmen
             prevLoc[op.srcVreg0] != assignment[op.srcVreg0]) {
             uint8_t from = prevLoc[op.srcVreg0], to = assignment[op.srcVreg0];
             uint8_t mc = (from == LOC_MEM0 || to == LOC_MEM0) ? 13 :
+                         ((from == LOC_H || from == LOC_L) && (to >= LOC_IXH)) ? 16 :
+                         ((to == LOC_H || to == LOC_L) && (from >= LOC_IXH)) ? 16 :
                          (from >= LOC_IXH || to >= LOC_IXH) ? 8 : 4;
             totalCost += mc;
         }
@@ -702,6 +750,8 @@ static uint16_t cpu_evaluate_cost(const FuncDesc &func, const uint8_t *assignmen
             prevLoc[op.srcVreg1] != assignment[op.srcVreg1]) {
             uint8_t from = prevLoc[op.srcVreg1], to = assignment[op.srcVreg1];
             uint8_t mc = (from == LOC_MEM0 || to == LOC_MEM0) ? 13 :
+                         ((from == LOC_H || from == LOC_L) && (to >= LOC_IXH)) ? 16 :
+                         ((to == LOC_H || to == LOC_L) && (from >= LOC_IXH)) ? 16 :
                          (from >= LOC_IXH || to >= LOC_IXH) ? 8 : 4;
             totalCost += mc;
         }
@@ -959,7 +1009,7 @@ static void print_json_result(const FuncDesc &func, uint32_t cost, uint64_t best
                (unsigned long long)totalAssignments);
     } else {
         uint8_t best[MAX_VREGS];
-        decode_assignment(bestIdx, func.nVregs, best);
+        decode_assignment_host(bestIdx, func, best);
         printf("{\"cost\": %u, \"assignment\": [", cost);
         for (int i = 0; i < func.nVregs; i++) {
             if (i > 0) printf(", ");
@@ -1015,6 +1065,11 @@ static int run_server() {
             continue;
         }
 
+        // Build constrained loc maps from op patterns before GPU launch.
+        // This shrinks search space from MAX_LOCS^N to product(locCount[i]).
+        // Example: locSet2 (7 GPRs), nv=6 → 7^6=117K vs 15^6=11.4M (97× faster).
+        compute_constrained_locs(func);
+
         uint32_t cost;
         uint64_t bestIdx, feasible, total;
         if (!solve_one(func, d_bestCost, d_bestIdx, d_feasibleCount,
@@ -1053,6 +1108,14 @@ static int run_server() {
 }
 
 int main(int argc, char *argv[]) {
+    // Parse --gpu-id N before anything else (default: GPU 0).
+    int gpuId = 0;
+    for (int i = 1; i + 1 < argc; i++) {
+        if (strcmp(argv[i], "--gpu-id") == 0) {
+            gpuId = atoi(argv[i + 1]);
+        }
+    }
+    cudaSetDevice(gpuId);
     cudaSetDeviceFlags(cudaDeviceScheduleBlockingSync);
 
     FuncDesc func;
@@ -1144,7 +1207,7 @@ int main(int argc, char *argv[]) {
         }
 
         uint8_t best[MAX_VREGS];
-        decode_assignment(bestIdx, func.nVregs, best);
+        decode_assignment_host(bestIdx, func, best);
 
         const char *locNames[] = {"A", "B", "C", "D", "E", "H", "L", "BC", "DE", "HL", "IXH", "IXL", "IYH", "IYL", "mem0"};
         printf("\nOptimal assignment (cost=%u T-states, %llu feasible):\n",

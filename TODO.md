@@ -1,6 +1,6 @@
 # TODO — Z80 Superoptimizer Roadmap
 
-> Last updated: 2026-03-29 (Day 6 birthday marathon)
+> Last updated: 2026-04-01 (Day 7 — IX expansion, OFB, mul16c)
 
 Legend: `[x]` done, `[-]` in progress, `[ ]` planned.
 Effort: S = hours, M = day, L = days, XL = week+.
@@ -12,9 +12,11 @@ Effort: S = hours, M = day, L = days, XL = week+.
 ### 1.1 Multiply — COMPLETE
 - [x] **mul8**: 254/254 constants, A×K→A — `data/mulopt8_clobber.json` (S)
 - [x] **mul16**: 254/254 constants, A×K→HL — `data/mulopt16_complete.json` (M)
-- [ ] **mul16c**: HL×K→HL (16-bit × constant, full 16-bit) — needs new CUDA kernel (M)
-  - Approach: decompose as HL×K = L×K + H×K×256, use mul16 building blocks
-  - Or: new CUDA search with HL input, reduced op pool
+- [-] **mul16c**: HL×K→HL (16-bit × constant) — `cuda/z80_mulopt16c.cu` built, running (M)
+  - 12-op pool: ADD HL,HL/BC/DE + 8×LD saves + EX DE,HL
+  - ~86/254 found (max-len=10). Structural limit: floor(log2(K))+hamming(K)≤9
+  - Not found (168/254): K values with high Hamming weight — need SBC HL,rr to add
+  - Next: gen_mul16c_table.py → pkg/mulopt/mul16c_table.go; Go wrapper Emit16c(k)
 
 ### 1.2 Division / Modulo — COMPLETE (u8)
 - [x] **div8**: 254/254 constants, A÷K→A — `data/div8_optimal.json` v3 (M)
@@ -112,11 +114,16 @@ Effort: S = hours, M = day, L = days, XL = week+.
 
 ## 3. Register Allocation
 
-### 3.1 Tables — COMPLETE
+### 3.1 Tables — COMPLETE + IX EXPANDED
 - [x] **83.6M shapes** (≤6v): enumerated, enriched, compressed (78MB)
 - [x] **37.6M feasible**: each with optimal assignment + 15 metrics
 - [x] **O(1) lookup**: signature = (interference_shape, operation_bag) → hash
 - [x] **Enriched tables**: 43% lack A, 21% lack HL, smart CALL save 17T avg
+- [x] **IX-expanded 5v**: `data/ix_expanded_5v.bin` (60.9M entries, 79.2% feasible, 117s GPU)
+- [x] **Merged IX+5v**: `data/merged_ix_5v.bin` (60.9M entries, 79.8% feasible, 382MB)
+- [x] **OFB sidecars**: `data/enriched_{4v,5v,6v_dense}.ofb` — 32-bit feasibility bitmask per entry
+  - 15 bits: ALU, ptr ops, mul8-safe, DJNZ, EXX bridge, HLH'L' u32, ADC/SBC src validity
+  - 5v: 11.76M feasible; 6v dense: 25.77M feasible
 
 ### 3.2 Five-Level Pipeline — MOSTLY COMPLETE
 - [x] Level 1: Cut vertex decomposition (free split, 87%)
@@ -176,10 +183,11 @@ Effort: S = hours, M = day, L = days, XL = week+.
 
 ### 5.1 CUDA Kernels — WORKING
 - [x] **z80_search_v2.cu**: 3-stage pipeline (QC→Mid→Exhaustive), dual-GPU
-- [x] **z80_regalloc.cu**: GPU allocator + CPU backtracking fallback
+- [x] **z80_regalloc.cu**: GPU allocator + CPU backtracking fallback (constrained enumeration fix: 97× speedup)
 - [x] **z80_mulopt_fast.cu**: 14-op constant multiply (38× faster)
 - [x] **z80_divmod_fast.cu**: 14-op division/modulo search
-- [x] **z80_mulopt16.cu**: 16-bit multiply search
+- [x] **z80_mulopt16.cu**: 16-bit multiply search (A×K→HL)
+- [x] **z80_mulopt16c.cu**: HL×K→HL search, 12-op pool (new day 7)
 - [x] **z80_common.h**: shared executor, flag tables, test vectors
 
 ### 5.2 Multi-Platform DSL — WORKING
@@ -204,6 +212,9 @@ Effort: S = hours, M = day, L = days, XL = week+.
 - [x] `pkg/regalloc/`: LoadBinary(path), IndexOf(shape), Lookup(idx)
 - [x] `pkg/peephole/`: Lookup(source) top500, LoadRules(path) full 739K
 - [x] `pkg/gpugen/`: ISA DSL for multi-platform code generation
+- [ ] `cmd/enrich-ofb/`: Emit OFB sidecar — built and validated (day 7)
+  - [ ] Add to Go package exports for use by regalloc pipeline
+- [ ] `pkg/mulopt/mul16c_table.go`: Emit16c(k) HL×K→HL — pending mul16c JSON complete
 
 ### 6.2 Pending Integration
 - [ ] **div8 inline expansion**: MinZ codegen wiring for JP __div8 → inline (S)

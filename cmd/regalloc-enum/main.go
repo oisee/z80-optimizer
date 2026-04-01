@@ -19,11 +19,22 @@ import (
 )
 
 // Realistic per-vreg allowed loc sets from actual Z80 patterns
+//
+// Loc indices: A=0,B=1,C=2,D=3,E=4,H=5,L=6,BC=7,DE=8,HL=9,
+//              IXH=10,IXL=11,IYH=12,IYL=13
+//
+// IX/IY half-register constraints:
+//   - LD r,IXH / LD IXH,r works for r=A,B,C,D,E (NOT H,L — DD/FD prefix hijacks)
+//   - ADD A,IXH / SUB / AND / OR / XOR / CP / INC / DEC work with IX halves
+//   - ADC A,IXH / SBC do NOT (ED+DD prefix combination invalid)
+//   - Move cost: 8T (A,B,C,D,E ↔ IXH/IXL), 16T (H/L ↔ IXH via EX DE,HL trick)
 var locSets8 = [][]int{
-	{0},             // must be A (ALU dst, IN, OUT)
-	{2},             // must be C (PFCCO 2nd param)
-	{0, 1, 2, 3, 4, 5, 6}, // any GPR8 (LD r,n)
-	{1, 2, 3, 4, 5, 6},    // any GPR8 except A (non-accumulator)
+	{0},                         // 0: must be A (ALU dst, IN, OUT)
+	{2},                         // 1: must be C (PFCCO 2nd param)
+	{0, 1, 2, 3, 4, 5, 6},      // 2: any GPR8 (LD r,n)
+	{1, 2, 3, 4, 5, 6},         // 3: any GPR8 except A (non-accumulator)
+	{10, 11, 12, 13},            // 4: must be IX/IY half (temp/spill, 8T overhead)
+	{0, 1, 2, 3, 4, 10, 11, 12, 13}, // 5: any 8-bit except H/L (avoids 16T H/L↔IX cost)
 }
 
 var locSets16 = [][]int{

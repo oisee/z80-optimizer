@@ -43,6 +43,7 @@ nvcc -O3 -o cuda/z80_divmod_fast cuda/z80_divmod_fast.cu    # division/modulo (1
 - `cuda/z80_mulopt_fast.cu` — Constant multiply search (14-op reduced pool, 38x faster)
 - `cuda/z80_divmod_fast.cu` — Division/modulo search (14-op, 5T limit)
 - `cuda/z80_mulopt16.cu` — 16-bit multiply (u8×K=u16, result in HL)
+- `cuda/z80_mulopt16c.cu` — HL×K→HL (16-bit × constant, 12-op pool, EX DE,HL)
 - `cuda/z80_common.h` — Shared Z80 executor, flag tables, test vectors
 
 ### Data
@@ -53,6 +54,7 @@ nvcc -O3 -o cuda/z80_divmod_fast cuda/z80_divmod_fast.cu    # division/modulo (1
 - `data/z80_register_graph.json` — Complete 11-register cost model (moves, ALU, swaps)
 - `data/mulopt8_clobber.json` — 254 mul8 sequences (A×K→A) with clobber masks
 - `data/mulopt16_complete.json` — 254 mul16 sequences (A×K→HL)
+- `data/mulopt16c_complete.json` — 86/254 mul16c sequences (HL×K→HL, all K=2..31 plus select larger)
 - `data/div8_optimal.json` — 254 div8 sequences (A÷K→A) via multiply-and-shift
 - `data/mod8_optimal.json` — 254 mod8 sequences (A%K→A)
 - `data/divmod8_optimal.json` — 254 divmod8 sequences
@@ -64,6 +66,7 @@ nvcc -O3 -o cuda/z80_divmod_fast cuda/z80_divmod_fast.cu    # division/modulo (1
 - `data/bcd_idioms.json` — BCD arithmetic (GPU-proven with H-flag)
 
 ### Documentation
+- `docs/z80_opref.md` — **Complete Z80 operation reference**: all instructions, T-states, flags, encoding, spill tier hierarchy, boolean repr
 - `docs/glossary.md` — Complete glossary of all terms and abbreviations
 - `docs/paper_seed_superopt.md` — Paper/book seed: 8 sections covering all research findings
 - `docs/research_statement.md` — Paper-oriented framing with phase diagram data
@@ -101,10 +104,13 @@ Register count: 7 main (A,B,C,D,E,H,L) + 4 IX/IY halves = **11 registers** for a
 - 37M len-3→len-1 rules (partial, ~0.05% coverage)
 
 ### Constant Multiplication
-- 254/254 constants solved (complete!)
+- 254/254 constants solved (complete!) — A×K→A (mul8) and A×K→HL (mul16)
 - Key finding: 21-instruction universal pool (2.7% of ISA generates ALL optimal arithmetic)
 - NEG trick: ×255 = NEG (1 instruction, 8T)
 - All 254 mul8 preserve A, all DE-safe
+- **mul16c (HL×K→HL)**: 86/254 solved. All K=2..31 complete. Avg 79.3T, 8.4 ops.
+  - Structural limit: floor(log2(K))+hamming(K)≤9. K=47,63,127,255 etc. need SBC HL,rr.
+  - Go table: `pkg/mulopt/Mul16cTable`, `Emit16c(k)`
 
 ### Division/Modulo — COMPLETE (254/254)
 - **div8 v3**: 6 methods, avg **79T** (−49% from v1). All exhaustively verified.
@@ -125,6 +131,8 @@ Register count: 7 main (A,B,C,D,E,H,L) + 4 IX/IY halves = **11 registers** for a
 - ≤4v: 156,506 shapes (78.9% feasible), 40 seconds
 - ≤5v: 17,366,874 shapes (67.7% feasible), 20 minutes
 - 6v dense (tw≥4): 66,118,738 shapes (38.9% feasible), ~6 hours
+- **IX-expanded 5v**: 60.9M entries (79.2% feasible) — `data/merged_ix_5v.bin`
+- **OFB sidecars**: `data/enriched_{4v,5v,6v_dense}.ofb` — 32-bit op-feasibility bitmask per entry (15 flags)
 - Enrichment: 43% lack A (hidden ALU infeasibility), 21% lack HL
 - Smart CALL save: 17T avg (vs 34T naive) = 50% reduction
 - Feasibility cliff: 95.9% (2v) → 0.9% (6v) — phase transition
