@@ -34,17 +34,6 @@ A GPU-accelerated superoptimizer for the Zilog Z80 processor. The compiler that 
 | 6 | Mar 29 | Division | div8 v3 (−49%), carry_compare, sign/sat/arith16 — [log](contexts/day6_wisdom.md) |
 | 7 | Apr 1 | OFB+6v | OFB public API, Z80T v2 sidecars, gen6v-ix-feed, dual-GPU 298M run |
 
-### pRNG Image Search & Animation Pipeline — ZX Spectrum Demoscene
-
-GPU-accelerated search for recognizable images from minimal LFSR seeds + full video→animation pipeline.
-
-| Cat (4.9%, 128B) | Che Guevara (15%, 1194B) | Einstein (15.3%) |
-|---|---|---|
-| ![cat](media/prng_images/dual_cat_long/final_compare.png) | ![che](media/prng_images/segmented_che/level3_compare.png) | ![einstein](media/prng_images/dual_einstein_v3/final_compare.png) |
-
-**→ [Full gallery, 6 methods, video pipeline, CP encoding, heatmap weighting](media/prng_images/README.md)**
-**→ [Accumulated wisdom](contexts/prng_brute_force_wisdom.md)** — phase schedules, carrier catalog, compressibility, open problems
-
 ### v1.0.0 Foundation (March 26)
 
 - **83.6M exhaustive register allocations** for ≤6 virtual registers (78MB enriched, 15 metrics per shape)
