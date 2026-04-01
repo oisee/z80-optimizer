@@ -25,9 +25,9 @@ A GPU-accelerated superoptimizer for the Zilog Z80 processor. The compiler that 
 | 5 | Mar 29 | Images+u32 | 3 CUDA generators, u32 library, Introspec BB port — [log](contexts/day5_wisdom.md) |
 | 6 | Mar 29 | Division | div8 v3 (−49%), carry_compare, sign/sat/arith16 — [log](contexts/day6_wisdom.md) |
 
-### pRNG Image Search — ZX Spectrum Demoscene
+### pRNG Image Search & Animation Pipeline — ZX Spectrum Demoscene
 
-GPU-accelerated search for recognizable images from minimal data generators (128–1194 bytes). Three methods, all CUDA. See the **[full gallery](media/prng_images/README.md)** (29 experiments).
+GPU-accelerated search for recognizable images + **full video→animation pipeline**. See the **[full gallery](media/prng_images/README.md)** and **[accumulated wisdom](contexts/prng_brute_force_wisdom.md)** (all methods, phase schedules, CP encoding, compressibility analysis, open problems).
 
 | Cat (4.9%, 128B) | Che Guevara (15%, 1194B) | Einstein (15.1%, 128B) |
 |---|---|---|
@@ -36,6 +36,13 @@ GPU-accelerated search for recognizable images from minimal data generators (128
 - **Dual-layer evolutionary**: 5 layers (3 additive OR + 2 subtractive AND NOT), island model, 557K img/s
 - **Segmented hierarchical LFSR**: brute-force 65536 seeds per segment, guaranteed convergence
 - **Introspec BB port**: 24-bit Galois LFSR, 66 layers, CUDA port runs 4 min vs days on CPU
+
+**Animation pipeline** (`cuda/encode_anim.py` + `docs/renderer.html`):
+- Any MP4 or YouTube → LFSR animation in ~2-4s/frame (RTX 4060 Ti)
+- **Carrier-Payload (CP)** delta mode: 1 carrier seed (blk=8) maps error zones → **3× fewer seeds**
+- **Carrier catalog** (`data/carrier_catalog.bin`, 9.4MB): precomputed bitmaps, built 236ms, queried 2ms/frame
+- **ZX Spectrum tape math**: CP = 16 bytes/frame → 0.1s/frame — only viable real-time path
+- Demos: Ёжик в тумане 104fr, Che portrait 63fr, plain/weighted/CP comparison sets
 
 ### v1.0.0 Foundation (March 26)
 
