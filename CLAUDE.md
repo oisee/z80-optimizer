@@ -4,7 +4,6 @@ Brute-force Z80 superoptimizer. Go + CUDA project.
 
 **Roadmap**: [TODO.md](TODO.md) — full task list with effort estimates and priority matrix.
 
-**pRNG/LFSR Image Search**: [contexts/prng_brute_force_wisdom.md](contexts/prng_brute_force_wisdom.md) — accumulated wisdom: all methods, phase schedules, CP encoding, carrier catalog, compressibility, open problems. **Read this before starting any LFSR/animation session.**
 
 ## Build & Test
 
